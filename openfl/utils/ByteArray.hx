@@ -716,15 +716,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
 			bytes.blit (0, this, 0, this.length);
 			__setData (bytes);
-			length = size;
 			
 		}
 		
-		if (length < size) {
-			
-			length = size;
-			
-		}
+		length = size;
 		
 	}
 	
