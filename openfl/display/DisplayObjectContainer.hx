@@ -442,13 +442,17 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __getRenderBounds (rect:Rectangle):Void {
 
-		super.__getRenderBounds (rect);
+		// :TRICKY: cannot call super.__getRenderBounds() here because it already iterates its children internally through overriden __getBounds()
+		 
+		if (__scrollRect != null) {
 
-		if (__scrollRect != null || __children.length == 0) {
-
+			rect.copyFrom (__scrollRect);
+			
 			return;
-
 		}
+
+		super.__getBounds (rect);
+		rect.__transform (rect, __renderScaleTransform);
 
 		var childRect = Rectangle.pool.get();
 
@@ -463,8 +467,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			if(child.__useSeparateRenderScaleTransform) {
 				temp_transform = @:privateAccess Matrix.__temp;
 				temp_transform.copyFrom(child.__transform);
-				var scaleX = child.scaleX;
-				var scaleY = child.scaleY;
+				var scaleX = Math.abs (child.scaleX);
+				var scaleY = Math.abs (child.scaleY);
 				temp_transform.a /= scaleX;
 				temp_transform.b /= scaleX;
 				temp_transform.c /= scaleY;
