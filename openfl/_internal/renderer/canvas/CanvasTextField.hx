@@ -135,7 +135,7 @@ class CanvasTextField {
 					
 					if (textField.__graphics == null) {
 						
-						textField.__graphics = new Graphics ();
+						textField.__graphics = Graphics.pool.get();
 						
 					}
 					

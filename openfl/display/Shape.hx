@@ -5,50 +5,52 @@ import openfl.geom.Rectangle;
 
 
 @:access(openfl.display.Graphics)
- 
+
 
 class Shape extends DisplayObject {
-	
-	
+
+	public static var pool = new ObjectPool<Shape>(
+		function() { return new Shape(); }
+	);
+
 	public var graphics (get, null):Graphics;
-	
-	
+
+
 	public function new () {
-		
+
 		super ();
-		
-	}
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	private function get_graphics ():Graphics {
-		
-		if (__graphics == null) {
-			
-			__graphics = new Graphics ();
-			__graphics.__owner = this;
-			
-		}
-		
-		return __graphics;
-		
-	}
-	
-	private override function __getRenderBounds (rect:Rectangle):Void {
-		
-		super.__getRenderBounds (rect);
-		
-		rect.x -= __graphics.__padding / renderScaleX;
-		rect.y -= __graphics.__padding / renderScaleY;
-		
+
 	}
 
+
+
+
+	// Get & Set Methods
+
+
+
+
+	private function get_graphics ():Graphics {
+
+		if (__graphics == null) {
+
+			__graphics = @:privateAccess Graphics.pool.get();
+			__graphics.__owner = this;
+
+		}
+
+		return __graphics;
+
+	}
+
+	private override function __getRenderBounds (rect:Rectangle):Void {
+
+		super.__getRenderBounds (rect);
+
+		rect.x -= __graphics.__padding / renderScaleX;
+		rect.y -= __graphics.__padding / renderScaleY;
+
+	}
 }
 
 

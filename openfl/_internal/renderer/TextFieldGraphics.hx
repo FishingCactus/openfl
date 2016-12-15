@@ -37,7 +37,7 @@ class TextFieldGraphics {
 		
 		if (textField.__graphics == null) {
 			
-			textField.__graphics = new Graphics ();
+			textField.__graphics = @:privateAccess DisplayObject.__graphicsPool.get();
 			
 		}
 		

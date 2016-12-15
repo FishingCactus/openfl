@@ -606,8 +606,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			if( !__mask.__maskCached ){
 				if (__mask.__maskGraphics == null) {
 
-					__mask.__maskGraphics = new Graphics ();
-
+					__mask.__maskGraphics = Graphics.pool.get();
 				}
 
 				__mask.__maskGraphics.clear ();
@@ -772,11 +771,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null) {
 			__graphics.dispose();
+			Graphics.pool.put(__graphics);
+			__graphics = null;
 			dirty = true;
 		}
 
 		if (__maskGraphics != null) {
 			__maskGraphics.dispose();
+			Graphics.pool.put(__maskGraphics);
+			__maskGraphics = null;
 			dirty = true;
 		}
 
@@ -1247,6 +1250,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__mask.__setTransformDirty();
 			__mask.__setRenderDirty();
 			__maskGraphics.dispose();
+			Graphics.pool.put(__maskGraphics);
 			__maskGraphics = null;
 		}
 

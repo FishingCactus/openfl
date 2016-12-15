@@ -136,7 +136,7 @@ class Sprite extends DisplayObjectContainer {
 
 		if (__graphics == null) {
 
-			__graphics = new Graphics ();
+			__graphics = Graphics.pool.get();
 			@:privateAccess __graphics.__owner = this;
 
 		}

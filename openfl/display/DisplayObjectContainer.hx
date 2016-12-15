@@ -842,7 +842,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				if( !child.__maskCached ){
 					if (child.__maskGraphics == null) {
 
-						child.__maskGraphics = new Graphics ();
+						child.__maskGraphics = Graphics.pool.get();
 
 					}
 

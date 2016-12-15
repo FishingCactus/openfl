@@ -23,6 +23,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+import openfl.ObjectPool;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -35,6 +36,9 @@ import js.html.CanvasRenderingContext2D;
 
 @:final class Graphics {
 
+	public static var pool = new ObjectPool<Graphics>(
+		function() { return new Graphics(); }
+	);
 
 	public static inline var TILE_SCALE = 0x0001;
 	public static inline var TILE_ROTATION = 0x0002;
@@ -64,14 +68,12 @@ import js.html.CanvasRenderingContext2D;
 	private var __dirty (default, set):Bool = true;
 	private var __glStack:Array<GLStack> = [];
 	private var __drawPaths:Array<DrawPath>;
-	private var __image:Image;
 	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __strokePadding:Float;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
-	private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
 
 	#if (js && html5)
@@ -170,20 +172,6 @@ import js.html.CanvasRenderingContext2D;
 		#if (js && html5)
 		moveTo (0, 0);
 		#end
-
-	}
-
-
-	public function copyFrom (sourceGraphics:Graphics):Void {
-
-		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
-		__commands = sourceGraphics.__commands.copy ();
-		__dirty = true;
-		__strokePadding = sourceGraphics.__strokePadding;
-		__positionX = sourceGraphics.__positionX;
-		__positionY = sourceGraphics.__positionY;
-		__transformDirty = true;
-		__visible = sourceGraphics.__visible;
 
 	}
 
@@ -937,15 +925,36 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 	public function dispose ():Void {
+		__commands.clear();
+
 		for( stack in __glStack ) {
 			if (stack != null) {
 				stack.dispose();
 			}
 		}
 
-		__glStack = [];
+		__glStack.splice(0, __glStack.length);
 		__bitmap = null;
+		__owner = null;
 		__dirty = true;
+		readOnly = false;
+		__bounds = null;
+
+		__strokePadding = 0;
+		__positionX = 0;
+		__positionY = 0;
+		__padding = 1;
+		__hardware = true;
+
+		#if (js && html5)
+		moveTo (0, 0);
+		#end
+
+		__transformDirty = false;
+		__visible = false;
+
+		//__canvas = null;
+		//__context = null;
 	}
 
 
