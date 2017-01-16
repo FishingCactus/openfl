@@ -507,15 +507,6 @@ class SpriteBatch {
 		
 		if (batchedSprites == 0) return;
 		
-		if (clipRect != null) {
-			gl.enable(gl.SCISSOR_TEST);
-			gl.scissor(Math.floor(clipRect.x), 
-						Math.floor(clipRect.y),
-						Math.ceil(clipRect.width),
-						Math.ceil(clipRect.height)
-					);
-		}
-		
 		if (dirty) {
 			dirty = false;
 			
@@ -539,6 +530,7 @@ class SpriteBatch {
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		currentState.colorTransform = null;
 		currentState.skipColorTransformAlpha = false;
+		currentState.clipRect = null;
 		
 		for (i in 0...batchedSprites) {
 			
@@ -564,6 +556,7 @@ class SpriteBatch {
 				currentState.blendMode = nextState.blendMode;
 				currentState.skipColorTransform = nextState.skipColorTransform;
 				currentState.colorTransform = currentState.skipColorTransform ? null : nextState.colorTransform;
+				currentState.clipRect = nextState.clipRect;
 				
 			}
 			
@@ -574,10 +567,7 @@ class SpriteBatch {
 		batchedSprites = 0;
 		writtenVertexBytes = 0;
 		
-		if (clipRect != null) {
-			gl.disable(gl.SCISSOR_TEST);
-		}
-		
+		gl.disable(gl.SCISSOR_TEST);
 	}
 	
 	
@@ -635,6 +625,22 @@ class SpriteBatch {
 			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
 		}
 
+		if(state.clipRect != null)
+		{
+			var cr = state.clipRect;
+			gl.enable(gl.SCISSOR_TEST);
+			gl.scissor(
+				cast cr.x,
+				cast cr.y,
+				cast cr.width,
+				cast cr.height
+				);
+		}
+		else
+		{
+			gl.disable(gl.SCISSOR_TEST);
+		}
+
 		shader.applyData(state.shaderData, renderSession);
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
@@ -659,6 +665,7 @@ class SpriteBatch {
 		} else {
 			state.maskTexture = null;
 		}
+
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
 		
@@ -684,6 +691,8 @@ class SpriteBatch {
 			state.shader = shader.__shader;
 			state.shaderData = shader.data;
 		}
+
+		state.clipRect = clipRect;
 	}
 	
 	public function setContext(gl:GLRenderContext) {
@@ -753,6 +762,8 @@ private class State {
 	public var maskTextureUVScale:Vector2 = new Vector2();
 	public var maskMatrix:Matrix;
 
+	public var clipRect:Rectangle = null;
+
 	public function new() { }
 	
 	public inline function equals(other:State) {
@@ -761,11 +772,11 @@ private class State {
 				((shader == null && other.shader == null) || (shader != null && other.shader != null && shader.ID == other.shader.ID)) &&
 				texture == other.texture &&
 				maskTexture == other.maskTexture && /* :TRICKY: if masks are equal, we expect on matrices being equal as well */
+				clipRect == other.clipRect &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
 				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
-				
 		);
 	}
 	
@@ -773,6 +784,7 @@ private class State {
 		texture = null;
 		colorTransform = null;
 		maskTexture = null;
+		clipRect = null;
 		
 		if (maskMatrix != null) {
 			Matrix.pool.put (maskMatrix);
