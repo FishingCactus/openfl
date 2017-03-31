@@ -51,7 +51,6 @@ class CanvasGraphics {
 
 	private static var positionX = 0.0;
 	private static var positionY = 0.0;
-	private static var closeGap = false;
 	private static var startX = 0.0;
 	private static var startY = 0.0;
 
@@ -212,7 +211,6 @@ class CanvasGraphics {
 		context.beginPath ();
 		positionX = 0.0;
 		positionY = 0.0;
-		closeGap = false;
 		startX = 0.0;
 		startY = 0.0;
 		#end
@@ -231,16 +229,6 @@ class CanvasGraphics {
 		if (canvasGraphics.hasStroke || canvasGraphics.hasFill) {
 
 			if (!canvasGraphics.hitTesting && canvasGraphics.hasStroke) context.stroke ();
-
-			if (canvasGraphics.hasFill && closeGap) {
-
-				context.lineTo (startX, startY);
-
-			} else if (closeGap && positionX == startX && positionY == startY) {
-
-				context.closePath ();
-
-			}
 
 			if (canvasGraphics.hasFill) {
 				context.save();
@@ -514,7 +502,7 @@ class CanvasGraphics {
 				else {
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 				}
-				
+
 				Rectangle.pool.put(scaled_bounds);
 
 				beginRenderStep();
@@ -788,7 +776,6 @@ class CanvasGraphics {
 		positionX = c.x;
 		positionY = c.y;
 
-		closeGap = true;
 		startX = c.x;
 		startY = c.y;
 	}
