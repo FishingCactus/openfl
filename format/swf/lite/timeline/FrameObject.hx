@@ -25,8 +25,29 @@ class FrameObject {
 
 	public function new () {
 
+	}
 
+	public function copyFrom(other:FrameObject) {
+		id = other.id;
+		type = other.type;
 
+		merge(other);
+	}
+
+	public function merge(other:FrameObject) {
+		if ( id != other.id ) {
+			throw "Cannot merge 2 unrelated symbols!";
+		}
+		if ( other.cacheAsBitmap != null ) cacheAsBitmap = other.cacheAsBitmap;
+		if ( other.clipDepth != null ) clipDepth = other.clipDepth;
+		if ( other.colorTransform != null ) colorTransform = other.colorTransform;
+		if ( other.depth != null ) depth = other.depth;
+		if ( other.filters != null ) filters = other.filters.copy();
+		if ( other.matrix != null ) matrix = other.matrix;
+		if ( other.name != null ) name = other.name;
+		if ( other.symbol != null ) symbol = other.symbol;
+		if ( other.blendMode != null ) blendMode = other.blendMode;
+		if ( other.ratio != null ) ratio = other.ratio;
 	}
 
 

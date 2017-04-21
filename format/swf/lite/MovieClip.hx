@@ -57,6 +57,7 @@ class MovieClip extends flash.display.MovieClip {
 	private var __updating9SliceBitmap:Bool = false;
 	private var __maskDataDirty:Bool = false;
 
+	private var __accumulatedFrameObjects:Map<Int, FrameObject>;
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
 	private var __maskDataKeys:Array<DisplayObject>;
@@ -120,7 +121,10 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		__renderFrame (0);
+		__accumulatedFrameObjects = new Map<Int, FrameObject>();
+
+		__processFrame(0);
+		__renderFrame ();
 
 	}
 
@@ -263,6 +267,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		__lastUpdate = 0;
 		__updateFrame ();
+		__renderFrame();
 
 	}
 
@@ -448,6 +453,7 @@ class MovieClip extends flash.display.MovieClip {
 			}
 
 			__updateFrame ();
+			__renderFrame ();
 
 		}
 
@@ -509,6 +515,8 @@ class MovieClip extends flash.display.MovieClip {
 
 				__playing = true;
 			} while (__targetFrame != __currentFrame);
+
+			__renderFrame();
 
 			__targetFrame = null;
 
@@ -795,24 +803,122 @@ class MovieClip extends flash.display.MovieClip {
 		}
 	}
 
-	private function __renderFrame (index:Int):Bool {
-
+	private function __processFrame (index:Int):Bool {
 		if (__symbol == null || __symbol.frames.length == 0) {
 			return false;
 		}
 
 		if (index == 0) {
 			frame0ChildrenUpdate();
+			__accumulatedFrameObjects = new Map<Int, FrameObject>();
 		}
 
-		var frame, displayObject;
+		var frame;
 
 		frame = __symbol.frames[index];
 
 		__currentFrame = index + 1;
 		__lastUpdate = index + 1;
 
+
 		for (frameObject in frame.objects) {
+			var accumulatedFrameObject = __accumulatedFrameObjects.get(frameObject.id);
+
+			if (frameObject.type == FrameObjectType.DESTROY) {
+				if ( accumulatedFrameObject != null && accumulatedFrameObject.type == FrameObjectType.CREATE ) {
+					// :TODO: return frameObject to pool.
+					accumulatedFrameObject = null;
+					__accumulatedFrameObjects.remove(frameObject.id);
+				} else {
+					accumulatedFrameObject = new FrameObject();
+					accumulatedFrameObject.copyFrom(frameObject);
+				}
+			} else if (frameObject.type == FrameObjectType.UPDATE_CHARACTER) {
+				if ( accumulatedFrameObject != null && accumulatedFrameObject.type == FrameObjectType.CREATE) {
+					accumulatedFrameObject.copyFrom(frameObject);
+					accumulatedFrameObject.type = FrameObjectType.CREATE;
+				}
+			} else if (frameObject.type == FrameObjectType.CREATE || frameObject.type == null) {
+				if ( accumulatedFrameObject != null ) {
+					throw "SHOULD NOT HAPPEN";
+				}
+			} else if (frameObject.type == FrameObjectType.UPDATE) {
+				if ( accumulatedFrameObject != null ) {
+					accumulatedFrameObject.merge(frameObject);
+				}
+			} else {
+				throw "WHAT DOES THIS DO";
+			}
+
+			if ( frameObject.type != FrameObjectType.DESTROY ) {
+				if ( accumulatedFrameObject == null ) {
+					accumulatedFrameObject = new FrameObject();
+					accumulatedFrameObject.copyFrom(frameObject);
+				}
+
+			}
+			if ( accumulatedFrameObject != null ) {
+				__accumulatedFrameObjects.set(frameObject.id, accumulatedFrameObject);
+			}
+		}
+
+		__maskDataDirty = true;
+
+		#if (!flash && openfl && !openfl_legacy)
+		inline function labelLogic() {
+			var label = __symbol.frames[index].label;
+			__currentFrameLabel = label;
+			if ( label != null ) {
+				__currentLabel = label;
+			}
+		}
+		if (__frameScripts != null) {
+
+			if (__frameScripts.exists (index)) {
+				labelLogic();
+
+				__frameScripts.get (index) ();
+
+				if(index  + 1 != __currentFrame){
+					return true;
+				}
+			}
+
+		}
+		if (__staticFrameScripts != null) {
+
+			if (__staticFrameScripts.exists (index)) {
+				labelLogic();
+
+				__staticFrameScripts.get (index) (this);
+
+				if(index  + 1 != __currentFrame){
+					return true;
+				}
+			}
+
+		}
+		#end
+
+		return false;
+	}
+
+	private function __renderFrame ():Void {
+
+		if (__symbol == null || __symbol.frames.length == 0) {
+			return;
+		}
+
+		var displayObject;
+
+		if (__symbol.id == 573) {
+			var count = 0;
+			for(val in __accumulatedFrameObjects) {
+				count++;
+			}
+			trace ('Creating $count items in frame $__currentFrame');
+		}
+		for (frameObject in __accumulatedFrameObjects) {
 
 			if (frameObject.type != FrameObjectType.DESTROY) {
 
@@ -893,45 +999,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		__maskDataDirty = true;
-
-		#if (!flash && openfl && !openfl_legacy)
-		inline function labelLogic() {
-			var label = __symbol.frames[index].label;
-			__currentFrameLabel = label;
-			if ( label != null ) {
-				__currentLabel = label;
-			}
-		}
-		if (__frameScripts != null) {
-
-			if (__frameScripts.exists (index)) {
-				labelLogic();
-
-				__frameScripts.get (index) ();
-
-				if(index  + 1 != __currentFrame){
-					return true;
-				}
-			}
-
-		}
-		if (__staticFrameScripts != null) {
-
-			if (__staticFrameScripts.exists (index)) {
-				labelLogic();
-
-				__staticFrameScripts.get (index) (this);
-
-				if(index  + 1 != __currentFrame){
-					return true;
-				}
-			}
-
-		}
-		#end
-
-		return false;
+		__accumulatedFrameObjects = new Map<Int, FrameObject>();
 
 	}
 
@@ -945,7 +1013,7 @@ class MovieClip extends flash.display.MovieClip {
 			if( __currentFrame < __lastUpdate ){
 				var cacheCurrentFrame = __currentFrame;
 				for( frameIndex in ( __lastUpdate ... __totalFrames ) ){
-					scriptHasChangedFlow = __renderFrame (frameIndex);
+					scriptHasChangedFlow = __processFrame (frameIndex);
 					if (!__playing || scriptHasChangedFlow)
 					{
 						break;
@@ -953,7 +1021,7 @@ class MovieClip extends flash.display.MovieClip {
 				}
 				if (__playing){
 					for( frameIndex in ( 0 ... cacheCurrentFrame ) ){
-						scriptHasChangedFlow = __renderFrame (frameIndex);
+						scriptHasChangedFlow = __processFrame (frameIndex);
 						if (!__playing || scriptHasChangedFlow)
 						{
 							break;
@@ -963,7 +1031,7 @@ class MovieClip extends flash.display.MovieClip {
 			} else {
 
 				for( frameIndex in ( __lastUpdate ... __currentFrame ) ){
-					scriptHasChangedFlow = __renderFrame (frameIndex);
+					scriptHasChangedFlow = __processFrame (frameIndex);
 					if (!__playing || scriptHasChangedFlow)
 					{
 						break;
