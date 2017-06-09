@@ -1,13 +1,8 @@
 package openfl.display; #if !openfl_legacy
 
 
-import lime.graphics.cairo.Cairo;
-import lime.graphics.Image;
-import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.opengl.utils.RenderTexture;
-import openfl.display.Shader;
 import openfl.errors.ArgumentError;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;

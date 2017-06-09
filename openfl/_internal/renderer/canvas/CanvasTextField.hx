@@ -342,7 +342,6 @@ class CanvasTextField {
 
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas (textField.__graphics.__canvas, scaleX, scaleY);
 				textField.__dirty = false;
 				graphics.__dirty = false;
 

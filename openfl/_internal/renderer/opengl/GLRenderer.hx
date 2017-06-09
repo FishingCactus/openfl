@@ -314,6 +314,7 @@ class GLRenderer extends AbstractRenderer {
 		}
 
 		gl.clear (gl.COLOR_BUFFER_BIT);
+		stage.__prepareResources (renderSession);
 		renderDisplayObject (stage, projection);
 
 	}
@@ -322,7 +323,13 @@ class GLRenderer extends AbstractRenderer {
 	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession, smooth:Bool = true):Void {
 
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
-		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
+		if (shape.__graphics == null ) return;
+
+		var graphics = shape.__graphics;
+
+		if (graphics.__bitmap == null) {
+			graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, shape.renderScaleX, shape.renderScaleY);
+		}
 
 		var matrix = openfl.geom.Matrix.__temp;
 

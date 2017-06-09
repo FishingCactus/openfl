@@ -2,7 +2,6 @@ package openfl.display; #if !openfl_legacy
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -693,6 +692,73 @@ class DisplayObjectContainer extends InteractiveObject {
 		throw ":TODO: Remove";
 	}
 
+	private override function __prepareResources (renderSession:RenderSession):Void {
+
+		for (child in __children) {
+			child.__prepareResources (renderSession);
+		}
+
+		if (this == stage) { // :HACK: should be if MustRenderGL()
+
+			if (__graphics == null) {
+
+				__graphics = new Graphics ();
+				__graphics.__bounds = new Rectangle ();
+
+			} else {
+
+			 	__graphics.__commands.clear ();
+			 	__graphics.dispose ();
+
+			}
+
+			__getBounds (__graphics.__bounds);
+
+			var graphics = new UnshrinkableArray<DisplayObject>(0);
+			var openSet = new UnshrinkableArray<DisplayObject>(0);
+			openSet.pushFromArray (__children);
+			openSet.reverse ();
+
+			while (openSet.length > 0) {
+
+				var child = openSet.pop ();
+
+				if (child.__graphics != null) {
+
+					graphics.push (child);
+
+				} else {
+
+					var children = new UnshrinkableArray<DisplayObject>(0);
+					children.pushFromArray (child.__children);
+					children.reverse ();
+					openSet.pushFromArray (children);
+
+				}
+
+			}
+
+			for (child in graphics) {
+				var child_bounds = child.__graphics.__bounds;
+				var width = Math.ceil (child_bounds.width);
+				var height = Math.ceil (child_bounds.height);
+
+				if (width > 0 && height > 0) {
+
+					var dummyBitmapData = new BitmapData ( width, height);
+					dummyBitmapData.image.src = child.__graphics.__canvas;
+					var transform = new Matrix (child_bounds.width, 0, 0, child_bounds.height, child_bounds.x, child_bounds.y);
+					transform.concat (child.__worldTransform); // :TODO: fix transform if this != stage
+					__graphics.__commands.drawImage (dummyBitmapData, transform, true);
+
+				}
+	 		}
+
+			CanvasGraphics.initCanvas (__graphics, renderSession, renderScaleX, renderScaleY);
+			CanvasGraphics.drawCommands (__graphics.__context, __graphics, false, false);
+
+		}
+	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 

@@ -1,7 +1,5 @@
 package openfl.utils;
 
-import haxe.ds.Vector;
-
 abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 {
     public var length(get, never):Int;

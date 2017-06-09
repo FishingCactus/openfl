@@ -779,38 +779,15 @@ class TextField extends InteractiveObject {
 
 	}
 
-
-	public override function __renderGL (renderSession:RenderSession):Void {
-
-		if (__cacheAsBitmap) {
-			__isCachingAsBitmap = true;
-			__cacheGL(renderSession);
-			__isCachingAsBitmap = false;
-			return;
-		}
-
-		__preRenderGL(renderSession);
-
-		#if !disable_cairo_graphics
+	private override function __prepareResources (renderSession:RenderSession):Void {
 
 		#if lime_cairo
-		CairoTextField.render (this, renderSession);
+			CairoTextField.render (this, renderSession);
 		#else
-		CanvasTextField.render (this, renderSession);
+			CanvasTextField.render (this, renderSession);
 		#end
-
-		GLRenderer.renderBitmap (this, renderSession, false);
-
-		#else
-
-		//GLTextField.render (this, renderSession);
-
-		#end
-
-		__postRenderGL(renderSession);
 
 	}
-
 
 	private function __startCursorTimer ():Void {
 

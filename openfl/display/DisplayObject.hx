@@ -571,13 +571,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null) {
 
-			#if (js && html5)
-			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask);
-			#elseif lime_cairo
-			CairoGraphics.render (__graphics, renderSession);
-			#end
-
 			GLRenderer.renderBitmap (this, renderSession);
+
+		}
+
+	}
+
+	private function __prepareResources (renderSession:RenderSession):Void {
+
+		if (__graphics != null) {
+
+			#if (js && html5)
+				CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY, __isMask);
+			#elseif lime_cairo
+				CairoGraphics.render (__graphics, renderSession);
+			#end
 
 		}
 
