@@ -145,6 +145,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		super ();
 
+		graphicsOnly = true; // temp hack
+
 		this.application = window.application;
 		this.window = window;
 

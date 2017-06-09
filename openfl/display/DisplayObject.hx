@@ -41,6 +41,9 @@ import js.html.Element;
 @:keepSub
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 
+	private var graphicsOnly:Bool;
+
+
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 	#if compliant_stage_events
@@ -549,6 +552,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	private inline function __mustRenderGL():Bool {
+		return /*!graphicsOnly || __cacheAsBitmap ||*/ this == stage; // :TODO: test for mask (is mask or has mask), color transform?
+	}
 
 	public function __renderGL (renderSession:RenderSession):Void {
 
@@ -561,9 +567,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return;
 		}
 
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
-		__postRenderGL (renderSession);
+		if (__mustRenderGL ()) {
+			__preRenderGL (renderSession);
+			__drawGraphicsGL (renderSession);
+			__postRenderGL (renderSession);
+		}
 
 	}
 
@@ -938,6 +946,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	public function __update (transformOnly:Bool, updateChildren:Bool):Void {
+		graphicsOnly = __graphics != null;
 		__inlineUpdate(transformOnly, updateChildren);
 	}
 

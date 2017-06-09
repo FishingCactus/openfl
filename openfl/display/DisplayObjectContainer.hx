@@ -771,50 +771,54 @@ class DisplayObjectContainer extends InteractiveObject {
 			return;
 		}
 
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
+		if (__mustRenderGL ()) {
 
-		var maskEndDepth = -1;
+			__preRenderGL (renderSession);
+			__drawGraphicsGL (renderSession);
 
-		for (child in __children) {
+			var maskEndDepth = -1;
 
-			--maskEndDepth;
+			for (child in __children) {
 
-			if( maskEndDepth == -1 ){
+				--maskEndDepth;
+
+				if( maskEndDepth == -1 ){
+					renderSession.maskManager.popMask();
+				}
+
+				if (child == null ) {
+					continue;
+				}
+
+				if( child.__clipDepth != 0 ){
+
+					if( !child.__maskCached ){
+						if( child.__cachedBitmap != null ){
+							child.__cachedBitmap.dispose();
+							child.__cachedBitmap = null;
+						}
+
+						child.__isMask = true;
+						child.__update (true, true);
+
+						child.__maskCached = true;
+					}
+
+					renderSession.maskManager.pushMask (child);
+					maskEndDepth =  child.__clipDepth;
+				}
+				else {
+					child.__renderGL (renderSession);
+				}
+			}
+
+			if( maskEndDepth >= 0 ){
 				renderSession.maskManager.popMask();
 			}
 
-			if (child == null ) {
-				continue;
-			}
+			__postRenderGL (renderSession);
 
-			if( child.__clipDepth != 0 ){
-
-				if( !child.__maskCached ){
-					if( child.__cachedBitmap != null ){
-						child.__cachedBitmap.dispose();
-						child.__cachedBitmap = null;
-					}
-
-					child.__isMask = true;
-					child.__update (true, true);
-
-					child.__maskCached = true;
-				}
-
-				renderSession.maskManager.pushMask (child);
-				maskEndDepth =  child.__clipDepth;
-			}
-			else {
-				child.__renderGL (renderSession);
-			}
 		}
-
-		if( maskEndDepth >= 0 ){
-			renderSession.maskManager.popMask();
-		}
-
-		__postRenderGL (renderSession);
 
 	}
 
@@ -870,6 +874,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		super.__update (transformOnly, updateChildren);
+		graphicsOnly = true;
 
 		// nested objects into a mask are non renderables but are part of the mask
 		if (!__renderable && !__isMask) {
@@ -886,7 +891,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 				if (child == null ) continue;
 				child.__update (transformOnly, true);
-
+				graphicsOnly = graphicsOnly && child.graphicsOnly;
 			}
 
 		}
