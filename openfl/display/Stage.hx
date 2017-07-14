@@ -112,7 +112,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __originalHeight:Int;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
-	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(4096);
 	private var __ancestorHasMouseListenerStack:UnshrinkableArray<Bool> = new UnshrinkableArray<Bool>(4096);

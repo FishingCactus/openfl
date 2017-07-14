@@ -127,6 +127,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __forbidCachedBitmapUpdate = false;
 	private var __mouseListenerCount:Int = 0;
 	private var __mustEvaluateHitTest:Bool = false;
+	private var __stack:UnshrinkableArray<DisplayObject>;
 
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -758,23 +759,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	#if compliant_stage_events
-		private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
-			var stack = new UnshrinkableArray<DisplayObject>(16);
+		private function __calculateDisplayStack(object:DisplayObject) {
+			if ( __stack == null ) {
+				__stack = new UnshrinkableArray<DisplayObject>();
+			}
+			__stack.clear();
 			var element : DisplayObject = object;
 			while(element != null) {
-				stack.push(element);
+				__stack.push(element);
 				element = element.parent;
 			}
-			stack.reverse();
-			return stack;
+			__stack.reverse();
 		}
 	#end
 
 	private function setStage (stage:Stage):Stage {
 		if (this.stage != stage) {
-			var stack = null;
 			#if compliant_stage_events
-				stack = __getDisplayStack( this );
+				__calculateDisplayStack( this );
 			#end
 
 			if (this.stage != null) {
@@ -782,7 +784,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					this.stage.focus = null;
 				}
 
-				__fireRemovedFromStageEvent(stack);
+				__fireRemovedFromStageEvent(__stack);
 				__releaseResources();
 
 			}
@@ -791,7 +793,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			this.__updateStageInternal(stage);
 
 			if (stage != null) {
-				__fireAddedToStageEvent(stack);
+				__fireAddedToStageEvent(__stack);
 			}
 		}
 		return stage;
