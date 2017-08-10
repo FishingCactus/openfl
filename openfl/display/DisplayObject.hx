@@ -113,7 +113,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cacheAsBitmap:Bool = false;
 	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
-	private var __cacheAsBitmapSmooth:Bool = true;
+	private var __cacheAsBitmapSmooth:Bool = null;
 	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
@@ -790,7 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth == null ? true : __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER, true );
 
 	}
 
