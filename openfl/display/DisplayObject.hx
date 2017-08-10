@@ -790,7 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth == null ? true : __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER, true );
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth == null ? true : __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER, __cacheAsBitmapSmooth );
 
 	}
 
