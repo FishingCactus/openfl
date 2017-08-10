@@ -159,9 +159,9 @@ class SpriteBatch {
 
 		gl = null;
 	}
-	
+
 	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null, ?maskBitmap:BitmapData, ?maskMatrix:Matrix):Void {
-		
+
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
 		start(clipRect, maskBitmap, maskMatrix);
@@ -186,13 +186,13 @@ class SpriteBatch {
 		flush();
 	}
 
-	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
+	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping, ?forceSmoothingValue:Null<Bool>) {
 		if (bitmapData == null) return;
 
-		renderBitmapDataEx(bitmapData, bitmapData.width, bitmapData.height, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
+		renderBitmapDataEx(bitmapData, bitmapData.width, bitmapData.height, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping, forceSmoothingValue);
 	}
 
-	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
+	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping, ?forceSmoothingValue:Null<Bool>) {
 		var texture = bitmapData.getTexture(gl);
 
 		if (batchedSprites >= maxSprites) {
@@ -222,7 +222,11 @@ class SpriteBatch {
 		&& Math.abs (localMatrix.b) < 0.001
 		&& Math.abs (localMatrix.c) < 0.001;
 
-		setState(batchedSprites, texture, smoothing && !itIsSimpleBlit, blendMode, ct, flashShader);
+		var smoothingResult = smoothing && !itIsSimpleBlit;
+		if ( forceSmoothingValue != null ) {
+			smoothingResult = forceSmoothingValue;
+		}
+		setState(batchedSprites, texture, smoothingResult, blendMode, ct, flashShader);
 
 		batchedSprites++;
 		Matrix.pool.put (localMatrix);
