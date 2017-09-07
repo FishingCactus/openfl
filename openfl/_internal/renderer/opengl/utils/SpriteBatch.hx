@@ -206,7 +206,6 @@ class SpriteBatch {
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 
 		//enableAttributes(color);
-		enableAttributes(0);
 
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
@@ -285,12 +284,11 @@ class SpriteBatch {
 		if (enableColor != lastEnableColor) {
 			flush();
 			lastEnableColor = enableColor;
+			attributes[2].enabled = lastEnableColor;
+			elementsPerVertex = getElementsPerVertex();
 		}
-
-		attributes[2].enabled = lastEnableColor;
-
-		elementsPerVertex = getElementsPerVertex();
 	}
+
 
 	function flush() {
 
@@ -483,6 +481,7 @@ class SpriteBatch {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
+		enableAttributes(0);
 	}
 
 	inline function prepareShader(flashShader:FlashShader, ?bd:BitmapData) {
