@@ -2,6 +2,7 @@ package format.swf.lite;
 
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
+import openfl.display.PixelSnapping;
 import openfl.Assets;
 import format.swf.lite.SWFLite;
 import format.swf.lite.symbols.SimpleSpriteSymbol;
@@ -16,6 +17,7 @@ class SimpleSprite extends flash.display.MovieClip
         var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
         addChild(bitmap);
         bitmap.smoothing = true;
+        bitmap.pixelSnapping = PixelSnapping.NEVER;
         bitmap.__transform.copyFrom(symbol.matrix);
     }
 
