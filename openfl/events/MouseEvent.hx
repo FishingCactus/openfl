@@ -99,6 +99,16 @@ class MouseEvent extends Event {
 		}
 		event.target = target;
 
+		// data from base class
+		event.currentTarget = null;
+		event.__isCanceled = false;
+		event.__isCanceledNow = false;
+		event.__preventDefault = false;
+		event.__fromPool = true;
+		event.__refcount = 0;
+		event.eventPhase = EventPhase.AT_TARGET;
+
+
 		return event;
 
 	}
