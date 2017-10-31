@@ -177,6 +177,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setRenderDirty ();
 			__setRenderDirty();
 
+			var symbol = child.getSymbol();
+			if(symbol != null && symbol.poolable) {
+				symbol.pool.put(child);
+			}
 		}
 
 		return child;
