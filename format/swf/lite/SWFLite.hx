@@ -59,6 +59,12 @@ import openfl.Assets;
 
 			if (symbol != null) {
 
+				if (symbol.poolable && symbol.pool.size > 0) {
+					var obj = symbol.pool.get();
+					@:privateAccess obj.__reset();
+					return cast obj;
+				}
+
 				var _class: Class<Dynamic> = classes.get(symbol.className);
 
 				if( _class != null )
