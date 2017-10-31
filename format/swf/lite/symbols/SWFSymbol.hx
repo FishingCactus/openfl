@@ -30,6 +30,21 @@ import openfl.display.BitmapData;
 		return poolable = value;
 	}
 
+	public function initPool(swflite:format.swf.lite.SWFLite, count:Int):Void {
+		#if dev
+			if (pool != null) throw ":TODO: support pool resize";
+		#end
+
+		pool = new ObjectPool<DisplayObject>( function() { throw "Forbidden"; return null; } );
+
+		for (i in 0...count) {
+			var instance = swflite.createMovieClip (className);
+			pool.put (instance);
+		}
+
+		poolable = true;
+	}
+
 	public function toString():String {
 		return 'SWFSymbol[id: $id, name: $className] ';
 	}
