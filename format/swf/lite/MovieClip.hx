@@ -1185,11 +1185,6 @@ class MovieClip extends flash.display.MovieClip {
 			__maskDataKeys.remove(object);
 			__maskData.remove(object);
 			__maskDataDirty = true;
-
-			var symbol = child.getSymbol();
-			if(symbol != null && symbol.poolable) {
-				symbol.pool.put(child);
-			}
 		}
 		return object;
 	}
