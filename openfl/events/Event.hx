@@ -78,17 +78,20 @@ class Event {
 		event.type = type;
 		event.bubbles = bubbles;
 		event.cancelable = cancelable;
-
-		event.target = null;
-		event.currentTarget = null;
-		event.__isCanceled = false;
-		event.__isCanceledNow = false;
-		event.__preventDefault = false;
-		event.__fromPool = true;
-		event.__refcount = 0;
-
-		event.eventPhase = EventPhase.AT_TARGET;
+		event.__resetPooledEvent();
 		return event;
+	}
+
+	private inline function __resetPooledEvent() {
+		this.target = null;
+		this.currentTarget = null;
+		this.__isCanceled = false;
+		this.__isCanceledNow = false;
+		this.__preventDefault = false;
+		this.__fromPool = true;
+		this.__refcount = 0;
+
+		this.eventPhase = EventPhase.AT_TARGET;
 	}
 
 
