@@ -23,7 +23,6 @@ class Sound extends EventDispatcher {
 	private var soundName:String;
 	private var __sound:Howl;
 	private var itHasSoundSprite:Bool = false;
-	private var __soundId:Int;
 	#else
 	private var __sound:AudioSource;
 	#end
@@ -114,8 +113,7 @@ class Sound extends EventDispatcher {
 		var spriteOptions = lime.Assets.getExtraSoundOptions(logicalPath);
 		var data:Dynamic = null;
 
-		if ( spriteOptions != null && spriteOptions.start != null && spriteOptions.duration != null )
-		{
+		if ( spriteOptions != null && spriteOptions.start != null && spriteOptions.duration != null ) {
 			itHasSoundSprite = true;
 		}
 
@@ -207,22 +205,20 @@ class Sound extends EventDispatcher {
 		if (pan != 0) {
 			throw ":TODO: use spatial plugin";
 		}
-		this.numberOfLoopsRemaining = loops;
+		var soundId = -1;
 		if(itHasSoundSprite) {
-			__soundId = __sound.play('clip');
+			soundId = __sound.play('clip');
 		}else {
-			__soundId = __sound.play();
+			soundId = __sound.play();
 		}
 
-		__sound.volume(sndTransform.volume, __soundId);
-		__sound.loop(loops > 1, __soundId);
-		__sound.on("end", onEnd, __soundId);
+		__sound.volume(sndTransform.volume, soundId);
+		__sound.loop(loops > 1, soundId);
 		if ( startTime != 0 ) {
-			__sound.seek(startTime / 1000, __soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
+			__sound.seek(startTime / 1000, soundId); // :TODO: seek don't work as intended, seek must ignore the first part of the sound and do the same every loops
 		}
 
-
-		return SoundChannel.__create (this);
+		return SoundChannel.__create (this, soundId, loops);
 
 		#end
 
@@ -237,32 +233,22 @@ class Sound extends EventDispatcher {
 	}
 	#end
 
-	public function stop() {
+	public function stop(soundId:Int = null) {
 		#if html5
-		__sound.stop(__soundId);
+		__sound.stop(soundId);
 		#else
 		__sound.stop();
 		#end
 	}
 
-	public function dispose() {
+	public function dispose(soundId:Int = null) {
 		#if !html5
 		__sound.dispose ();
 		#else
-		__sound.off("end", null, __soundId);
-		__sound.off("stop", null, __soundId);
+		__sound.off("end", null, soundId);
+		__sound.off("stop", null, soundId);
 		#end
 	}
-
-	#if html5
-	public function onEnd() {
-		this.numberOfLoopsRemaining--;
-		if(this.numberOfLoopsRemaining <= 0) {
-			__sound.stop(__soundId);
-		}
-	}
-	#end
-
 
 	// Get & Set Methods
 
@@ -294,7 +280,7 @@ class Sound extends EventDispatcher {
 
 		#if html5
 		if(__sound != null) {
-			return __sound.duration(__soundId);
+			return __sound.duration();
 		}
 		#end
 
