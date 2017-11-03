@@ -190,7 +190,7 @@ class Sound extends EventDispatcher {
 		if (loops > 1) source.loops = loops - 1;
 		if (sndTransform != null) source.gain = sndTransform.volume;
 		__sound = source;
-		return SoundChannel.__create (this);
+		return SoundChannel.__create (this, -1, loops);
 
 		#else
 
