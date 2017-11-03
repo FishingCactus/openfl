@@ -23,7 +23,6 @@ class Sound extends EventDispatcher {
 	private var soundName:String;
 	private var __sound:Howl;
 	private var itHasSoundSprite:Bool = false;
-	private var __soundId:Int;
 	#else
 	private var __sound:AudioSource;
 	#end
@@ -281,7 +280,7 @@ class Sound extends EventDispatcher {
 
 		#if html5
 		if(__sound != null) {
-			return __sound.duration(__soundId);
+			return __sound.duration();
 		}
 		#end
 
