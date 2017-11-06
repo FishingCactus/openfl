@@ -71,6 +71,7 @@ class MouseEvent extends Event {
 
 		var event = pool.get();
 
+		event.__resetPooledEvent();
 		event.type = type;
 		event.bubbles = true;
 		event.cancelable = false;
