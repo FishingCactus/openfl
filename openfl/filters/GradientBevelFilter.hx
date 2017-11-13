@@ -75,14 +75,14 @@ class GradientBevelFilter extends GradientFilter {
 			commands.push (Blur1D (__highlightBitmapData, src, blurX, quality, true, 1.0, distance, angle+180));
 			commands.push (Blur1D (__shadowBitmapData, src, blurX, quality, true, 1.0, distance, angle));
 
-			commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, quality, false, strength, 0.0, 0.0));
-			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
+			commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, quality, false, 1.0, 0.0, 0.0));
+			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, quality, false, 1.0, 0.0, 0.0));
 		} else {
 			commands.push (Offset (__highlightBitmapData, src, 1.0, distance, angle+180));
 			commands.push (Offset (__shadowBitmapData, src, 1.0, distance, angle));
 		}
 
-		commands.push ( DestOut( __highlightBitmapData, __highlightBitmapData, __shadowBitmapData));
+		commands.push ( DestOut( __highlightBitmapData, __highlightBitmapData, __shadowBitmapData, strength));
 
 		if ( knockout && type == BitmapFilterType.FULL) {
 			commands.push ( ColorLookup (bitmap, __highlightBitmapData, __lookupTexture));

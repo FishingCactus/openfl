@@ -18,5 +18,5 @@ enum CommandType {
 	InnerKnockout(target:BitmapData, source1:BitmapData, source2:BitmapData);
 	OuterKnockout(target:BitmapData, source1:BitmapData, source2:BitmapData);
 	OuterKnockoutTransparency(target:BitmapData, source1:BitmapData, source2:BitmapData, allowTransparency:Bool);
-	DestOut(target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData);
+	DestOut(target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData, strength:Float);
 }
