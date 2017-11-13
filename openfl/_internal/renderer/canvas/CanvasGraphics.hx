@@ -500,8 +500,10 @@ class CanvasGraphics {
 
 				var renderBounds = Rectangle.pool.get ();
 				bounds.transform (renderBounds, renderTransform);
-				var width = Math.ceil (renderBounds.width) + 2 * padding;
-				var height = Math.ceil (renderBounds.height) + 2 * padding;
+				var flooredRenderPositionX = Math.ffloor(renderBounds.x);
+				var flooredRenderPositionY = Math.ffloor(renderBounds.y);
+				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
+				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
 
 				if (graphics.__symbol != null) {
 
@@ -540,7 +542,7 @@ class CanvasGraphics {
 
 				var transform = Matrix.pool.get ();
 				transform.copyFrom (renderTransform);
-				transform.translate (padding - Math.ffloor(renderBounds.x), padding - Math.ffloor(renderBounds.y));
+				transform.translate (padding - flooredRenderPositionX, padding - flooredRenderPositionY);
 
 				Rectangle.pool.put (renderBounds);
 
