@@ -10,9 +10,10 @@ class DestOutCommand {
 
 	private static var __shader = new DestOutShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData, strength:Float) {
 
 		__shader.uShadowSourceSampler = shadowSource;
+		__shader.uStrength = strength;
 
 		CommandHelper.apply (renderSession, target, highlightSource, __shader, highlightSource == target || shadowSource == target);
 
@@ -41,14 +42,14 @@ private class DestOutShader extends Shader {
 
 	@fragment var fragment = [
 		'uniform sampler2D uShadowSourceSampler;',
-		'uniform float outer;',
+		'uniform float uStrength;',
 
 		'void main(void)',
 		'{',
 			'float highlight = texture2D(${Shader.uSampler}, ${Shader.vTexCoord}).a;',
 			'float shadow = texture2D(uShadowSourceSampler, ${Shader.vTexCoord}).a;',
-			'float high = clamp(highlight - shadow, 0., 1.);',
-			'float low = clamp(shadow - highlight, 0., 1.);',
+			'float high = clamp((highlight - shadow) * uStrength, 0., 1.);',
+			'float low = clamp((shadow - highlight) * uStrength, 0., 1.);',
 			'gl_FragColor = vec4(0.5 * ( 1. + high - low ));',
 		'}',
 	];
