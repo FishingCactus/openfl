@@ -60,7 +60,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert(index,child);
 		} else {
 			if (child.parent != null) {
+				var childStage:Stage = child.stage;
+				child.stage = null;
 				child.parent.removeChild (child);
+				child.stage = childStage;
 			}
 
 			__children.insert(index,child);
