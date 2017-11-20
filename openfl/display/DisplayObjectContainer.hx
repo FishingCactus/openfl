@@ -60,6 +60,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert(index,child);
 		} else {
 			if (child.parent != null) {
+				// :TRICKY: We make the stage null to avoid the child being disposed.
+				// By default, removing a child makes us assume that the child should be cleaned up
+				// In this case it's only moved.
+				// :NOTE: This will still be incorrect when manually removing + adding.
+				// We should maybe use a smarter internal GC system.
 				var childStage:Stage = child.stage;
 				child.stage = null;
 				child.parent.removeChild (child);
