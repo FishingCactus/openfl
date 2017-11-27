@@ -13,6 +13,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	@:s public var bounds:Rectangle;
 	@:s public var graphics:Graphics;
+	private var activeGraphicsTable:Array<Graphics> = new Array<Graphics>();
 
 	private var __cachePrecision:Null<Int> = null;
 	private var __translationCachePrecision:Null<Int> = null;
@@ -294,7 +295,9 @@ class ShapeSymbol extends SWFSymbol {
 
 
 	private function __clearCachedTable() {
-		graphics.dispose();
+		for( g in activeGraphicsTable ) {
+			g.dispose(false);
+		}
 
 		for ( cache in cachedTable ) {
 			cache.bitmapData.dispose();
@@ -311,9 +314,9 @@ class ShapeSymbol extends SWFSymbol {
 
 		if(lastStageWidth != width || lastStageHeight != height) {
 			for(s in shapeSymbolsUsingBitmapCacheMap) {
-                if(!s.forbidClearCacheOnResize) {
-				    s.__clearCachedTable();
-                }
+				if(!s.forbidClearCacheOnResize) {
+					s.__clearCachedTable();
+				}
 			}
 
 			lastStageWidth = width;
@@ -355,6 +358,17 @@ class ShapeSymbol extends SWFSymbol {
 		#end
 
 		return __translationCachePrecision = value;
+	}
+	
+	public function registerGraphics(graphics:Graphics) {
+		if(activeGraphicsTable.indexOf(graphics) != -1) {
+			return;
+		}
+		activeGraphicsTable.push(graphics);
+	}
+
+	public function unregisterGraphics(graphics:Graphics) {
+		activeGraphicsTable.remove(graphics);
 	}
 }
 

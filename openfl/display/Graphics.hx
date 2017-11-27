@@ -740,9 +740,12 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
-	public function dispose ():Void {
+	public function dispose (mustUnregister:Bool = true):Void {
 		__disposeBitmap();
 		dirty = true;
+		if(mustUnregister && __symbol != null && Std.is(__symbol, ShapeSymbol)) {
+			(cast __symbol).unregisterGraphics(this);
+		}
 	}
 
 	private inline function __disposeBitmap():Void {
