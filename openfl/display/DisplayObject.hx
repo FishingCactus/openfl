@@ -178,6 +178,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__clipDepth = 0;
 
 		__cachedParent = null;
+
+		__worldTransformDirty++;
 	}
 
     private function __reset() {
@@ -499,8 +501,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			if (parent == null) {
 
-				if (transformDirty) __update (true, false);
-
+				if (transformDirty) {
+					__update (true, false);
+				}
 			} else {
 
 				while (current.parent != null) {
@@ -1039,13 +1042,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__updateTransforms ();
 
-		if (updateChildren && __transformDirty) {
-
-			__transformDirty = false;
-			__worldTransformDirty--;
-
-		}
-
 		if (!transformOnly) {
 
 			#if (profile && js)
@@ -1101,13 +1097,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderable = (visible && !hasZeroScale() && !__isMask);
 		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
-
-		if (__transformDirty) {
-
-			__transformDirty = false;
-			__worldTransformDirty--;
-
-		}
 
 	}
 
@@ -1207,6 +1196,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransform.copyFrom (wt);
 
 		Matrix.pool.put(wt);
+
+		if (__transformDirty) {
+			__transformDirty = false;
+			__worldTransformDirty--;
+		}
 	}
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
