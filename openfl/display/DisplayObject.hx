@@ -130,7 +130,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	static private var __lastMouseListenerBranchDepth:Int = NO_MOUSE_LISTENER_BRANCH_DEPTH;
 
 	private var __renderDirty:Bool;
-	private var __transformDirty:Bool;
+	private var __transformDirty:Bool = true;
 	private var __updateDirty:Bool;
 	private var __branchDirty:Bool;
 	#if (js && html5)
