@@ -436,19 +436,11 @@ class MovieClip extends flash.display.MovieClip {
 	private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
-
-		if ( @:privateAccess symbol.graphics.__owner != null ) {
-			@:privateAccess shape.__graphics = new Graphics(false);
-			shape.graphics.copyFrom( symbol.graphics, true );
-			return shape;
-		}
-
-		@:privateAccess symbol.graphics.__owner = shape;
-		@:privateAccess shape.__graphics = symbol.graphics;
-		shape.graphics.__symbol = symbol;
-
+		var graphics = new Graphics(false);
+		@:privateAccess shape.__graphics = graphics;
+		graphics.copyFrom( symbol.graphics, true );
+		graphics.__owner = shape;
 		return shape;
-
 	}
 
 	private function __createMorphShape (symbol:MorphShapeSymbol): MorphShape {

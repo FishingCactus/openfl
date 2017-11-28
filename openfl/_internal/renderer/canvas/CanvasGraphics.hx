@@ -510,7 +510,9 @@ class CanvasGraphics {
 					var cachedBitmapData:BitmapData = null;
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
-						cachedBitmapData = cast(graphics.__symbol, ShapeSymbol).getCachedBitmapData (renderTransform);
+						var shapeSymbol = cast(graphics.__symbol, ShapeSymbol);
+						shapeSymbol.registerGraphics(graphics);
+						cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
 					}
 
 					if (cachedBitmapData != null) {
