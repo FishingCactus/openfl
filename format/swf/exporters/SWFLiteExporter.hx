@@ -67,7 +67,6 @@ class SWFLiteExporter {
 	public var bitmaps:Map <Int, ByteArray>;
 	public var bitmapExtents:Map <Int, Vector2>;
 	public var bitmapTypes:Map <Int, BitmapType>;
-	public var filterClasses:Map <String, Bool>;
 	public var swfLite:SWFLite;
 
 	private var alphaPalette:Bytes;
@@ -91,7 +90,6 @@ class SWFLiteExporter {
 		bitmaps = new Map <Int, ByteArray> ();
 		bitmapExtents = new Map <Int, Vector2> ();
 		bitmapTypes = new Map <Int, BitmapType> ();
-		filterClasses = new Map <String, Bool> ();
 
 		swfLite = new SWFLite ();
 		swfLite.frameRate = data.frameRate;
@@ -118,6 +116,36 @@ class SWFLiteExporter {
 
 		}
 		}
+
+	}
+
+
+	static private function isDummyFilter (filter:FilterType):Bool {
+
+		switch (filter) {
+			case BlurFilter (blurX, blurY, quality):
+			case ColorMatrixFilter (multipliers32ArrayContainer, offsets32ArrayContainer):
+				var multipliers = multipliers32ArrayContainer.value;
+				var offsets = offsets32ArrayContainer.value;
+
+				if (multipliers.length != 16 || offsets.length != 4) {
+					throw 'invalid color matrix filter: multipliers = $multipliers; offsets = $offsets';
+				}
+
+				return offsets[0] == 0 && offsets[1] == 0 && offsets[2] == 0 && offsets[3] == 0
+					&& multipliers[0] == 1 && multipliers[1] == 0 && multipliers[2] == 0 && multipliers[3] == 0
+					&& multipliers[4] == 0 && multipliers[5] == 1 && multipliers[6] == 0 && multipliers[7] == 0
+					&& multipliers[8] == 0 && multipliers[9] == 0 && multipliers[10] == 1 && multipliers[11] == 0
+					&& multipliers[12] == 0 && multipliers[13] == 0 && multipliers[14] == 0 && multipliers[15] == 1;
+
+			case DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject):
+			case GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout):
+			case GradientGlowFilter (distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout):
+			case BevelFilter(distance, angle, highlightColor, highlightAlpha, shadowColor, shadowAlpha, blurX, blurY, strength, quality, type, knockout):
+			case GradientBevelFilter(distance, angle, colors, alphas, radios, blurX, blurY, strength, quality, type, knockout):
+		}
+
+		return false;
 
 	}
 
@@ -175,8 +203,11 @@ class SWFLiteExporter {
 
 							if (type != null) {
 
-								filters.push (filter.type);
-								//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
+								if (!isDummyFilter(type)) {
+
+									filters.push (type);
+
+								}
 
 							}
 
@@ -838,8 +869,11 @@ class SWFLiteExporter {
 
 						if (type != null) {
 
-							filters.push (surfaceFilter.type);
-							//filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
+							if (!isDummyFilter(type)) {
+
+								filters.push (type);
+
+							}
 
 						}
 
