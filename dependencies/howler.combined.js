@@ -1719,6 +1719,9 @@
         sound._rateSeek = 0;
         self._clearTimer(sound._id);
 
+        // emit stop event for consistency
+        self._emit('stop', sound._id);
+
         // Clean up the buffer source.
         self._cleanBuffer(sound._node);
 
