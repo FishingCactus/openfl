@@ -1639,16 +1639,17 @@
       var events = self['_on' + event];
 
       // Loop through event store and fire all functions.
-      var eventsCopy = events.slice();
-      for (var i=eventsCopy.length-1; i>=0; i--) {
-        var eventAtId = eventsCopy[i];
+      for (var i = events.length - 1; i >= 0; i--) {
+        var eventAtId = events[i];
         if (!eventAtId.id || eventAtId.id === id || event === 'load') {
+          setTimeout(function (fn) {
+            fn.call(this, id, msg);
+          }.bind(self, eventAtId.fn), 0);
+
           // If this event was setup with `once`, remove it.
           if (eventAtId.once) {
             self.off(event, eventAtId.fn, eventAtId.id);
           }
-
-          eventAtId.fn.call(this, id, msg);
         }
       }
 
@@ -1717,6 +1718,9 @@
         sound._seek = sound._start || 0;
         sound._rateSeek = 0;
         self._clearTimer(sound._id);
+
+        // emit stop event for consistency
+        self._emit('stop', sound._id);
 
         // Clean up the buffer source.
         self._cleanBuffer(sound._node);
