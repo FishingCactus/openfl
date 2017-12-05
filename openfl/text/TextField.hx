@@ -938,6 +938,8 @@ class TextField extends InteractiveObject {
 		if ( scaleRotationChanged ) {
 			if ( __savedScaleAtRefreshGraphics == null ) {
 				__savedScaleAtRefreshGraphics = new Point(this.renderScaleX, this.renderScaleY);
+				__graphics.clearGraphicsCounter();
+				return;
 			}
 			var currentScale = Point.pool.get();
 			currentScale.setTo(this.renderScaleX, this.renderScaleY);
