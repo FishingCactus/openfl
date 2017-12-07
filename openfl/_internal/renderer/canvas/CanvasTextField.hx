@@ -352,6 +352,8 @@ class CanvasTextField {
 				renderToLocalMatrix.copyFrom (transform);
 				renderToLocalMatrix.invert ();
 				graphics.__bitmap = BitmapData.fromGraphics (graphics, renderToLocalMatrix);
+				textField.__graphicsSavedScale.x = textField.renderScaleX;
+				textField.__graphicsSavedScale.y = textField.renderScaleY;
 				textField.__dirty = false;
 				graphics.dirty = false;
 
