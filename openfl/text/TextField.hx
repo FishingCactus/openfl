@@ -90,7 +90,7 @@ class TextField extends InteractiveObject {
 	private var __clickTimer:haxe.Timer;
 	private var __firstDownPos:Point;
 
-	private var __savedScaleAtRefreshGraphics:Point = null;
+	private var __graphicsSavedScale:Point = new Point(0, 0);
 
 	private static var __moveDelta:Int = 10;
 	private static var __maxScaleDifferenceBetweenRefreshGraphics:Float = 0.4;
@@ -106,6 +106,7 @@ class TextField extends InteractiveObject {
 
 		__caretIndex = -1;
 		__graphics = new Graphics (false);
+		@:privateAccess __graphics.__owner = this;
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;
@@ -936,22 +937,14 @@ class TextField extends InteractiveObject {
 	private override function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
 		super.delayGraphicsRefresh(translationChanged, scaleRotationChanged);
 		if ( scaleRotationChanged ) {
-			if ( __savedScaleAtRefreshGraphics == null ) {
-				__savedScaleAtRefreshGraphics = new Point(this.renderScaleX, this.renderScaleY);
-				__graphics.clearGraphicsCounter();
-				return;
-			}
-			var currentScale = Point.pool.get();
-			currentScale.setTo(this.renderScaleX, this.renderScaleY);
-			if ( Math.abs(__savedScaleAtRefreshGraphics.x - currentScale.x) > __maxScaleDifferenceBetweenRefreshGraphics
-			  || Math.abs(__savedScaleAtRefreshGraphics.y - currentScale.y) > __maxScaleDifferenceBetweenRefreshGraphics ) {
-				__savedScaleAtRefreshGraphics.copyFrom(currentScale);
+			// :TODO: add a rotation threshold if necessary
+
+			if ( Math.abs(__graphicsSavedScale.x - this.renderScaleX) > __maxScaleDifferenceBetweenRefreshGraphics
+			  || Math.abs(__graphicsSavedScale.y - this.renderScaleY) > __maxScaleDifferenceBetweenRefreshGraphics ) {
 				__graphics.clearGraphicsCounter();
 			} else {
 				__graphics.resetGraphicsCounter();
 			}
-
-			Point.pool.put(currentScale);
 		}
 	}
 
