@@ -106,6 +106,7 @@ class TextField extends InteractiveObject {
 
 		__caretIndex = -1;
 		__graphics = new Graphics (false);
+		@:privateAccess __graphics.__owner = this;
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;
