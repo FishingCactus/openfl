@@ -17,6 +17,9 @@ class SimpleSprite extends flash.display.MovieClip
 
         super();
 
+        __totalFrames = 1;
+        __currentFrame = 1;
+
         var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
         addChild(bitmap);
         bitmap.smoothing = symbol.smooth;
