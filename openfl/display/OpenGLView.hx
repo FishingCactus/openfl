@@ -55,7 +55,7 @@ class OpenGLView extends DirectRenderer {
 	#if !flash
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (stage != null && __renderable) {
+		if (stage != null && isRenderable()) {
 			
 			var rect = Rectangle.pool.get();
 			

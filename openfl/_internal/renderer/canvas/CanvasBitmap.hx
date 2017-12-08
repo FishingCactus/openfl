@@ -14,7 +14,7 @@ class CanvasBitmap {
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
 		#if (js && html5)
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
+		if (!bitmap.isRenderable() || bitmap.__worldAlpha <= 0) return;
 
 		var context = renderSession.context;
 

@@ -94,7 +94,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __name:String = "";
 	private var __objectTransform:Transform;
 	private var __offset:Point;
-	private var __renderable:Bool;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
@@ -605,7 +604,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __renderGL (renderSession:RenderSession):Void {
 
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!isRenderable() || __worldAlpha <= 0) return;
 
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
@@ -1038,8 +1037,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
 
-		__renderable = isRenderable();
-
 		__updateTransforms ();
 
 		if (updateChildren && __transformDirty) {
@@ -1099,8 +1096,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateChildren (transformOnly:Bool):Void {
 
-		__renderable = (visible && !hasZeroScale() && !__isMask);
-		if (!__renderable && !__isMask) return;
+		if (!isRenderable() && !__isMask) return;
 		__worldAlpha = alpha;
 
 		if (__transformDirty) {

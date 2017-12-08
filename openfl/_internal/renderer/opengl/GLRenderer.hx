@@ -313,7 +313,7 @@ class GLRenderer extends AbstractRenderer {
 
 	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession, smooth:Null<Bool> = null):Void {
 
-		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (!shape.isRenderable() || shape.__worldAlpha <= 0) return;
 		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
 
 		var matrix = openfl.geom.Matrix.__temp;

@@ -861,8 +861,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Telemetry.__startTiming (TelemetryCommandName.RENDER);
 		#end
 
-		__renderable = true;
-
 		__updateAllChildrenStack();
 		__enterFrame (__deltaTime);
 		__updateAllChildrenStack();

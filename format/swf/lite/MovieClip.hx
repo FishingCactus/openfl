@@ -823,7 +823,7 @@ class MovieClip extends flash.display.MovieClip {
 			__update9SliceBitmap ();
 		}
 
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!isRenderable() || __worldAlpha <= 0) return;
 
 		if ( __maskDataDirty ) {
 			__updateSwfMaskData();
