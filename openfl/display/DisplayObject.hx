@@ -1042,6 +1042,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__updateTransforms ();
 
+		if (updateChildren && __transformDirty) {
+			__transformDirty = false;
+			__worldTransformDirty--;
+		}
+
 		if (!transformOnly) {
 
 			#if (profile && js)
@@ -1098,6 +1103,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
 
+		if (__transformDirty) {
+			__transformDirty = false;
+			__worldTransformDirty--;
+		}
 	}
 
 
@@ -1196,11 +1205,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransform.copyFrom (wt);
 
 		Matrix.pool.put(wt);
-
-		if (__transformDirty) {
-			__transformDirty = false;
-			__worldTransformDirty--;
-		}
 	}
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
