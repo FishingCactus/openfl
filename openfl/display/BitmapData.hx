@@ -411,7 +411,7 @@ class BitmapData implements IBitmapDrawable {
 		var cached_visible = true;
 		if ( Std.is( source, DisplayObject ) ) {
 			var src_display_object = cast(source,DisplayObject);
-			cached_visible = src_display_object.visible && src_display_object.__renderable;
+			cached_visible = src_display_object.visible && src_display_object.isRenderable();
 			if ( !cached_visible ) {
 				src_display_object.visible = true;
 				src_display_object.__update(false, true);

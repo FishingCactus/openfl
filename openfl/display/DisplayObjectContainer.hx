@@ -551,7 +551,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!isRenderable() || __worldAlpha <= 0) return;
 
 		#if !neko
 
@@ -598,7 +598,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!isRenderable() || __worldAlpha <= 0) return;
 
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
@@ -731,7 +731,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__update (transformOnly, updateChildren);
 
 		// nested objects into a mask are non renderables but are part of the mask
-		if (!__renderable && !__isMask) {
+		if (!isRenderable() && !__isMask) {
 
 			return;
 
