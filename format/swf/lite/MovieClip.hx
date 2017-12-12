@@ -265,7 +265,7 @@ class MovieClip extends flash.display.MovieClip {
 	public function unflatten ():Void {
 
 		__lastUpdate = 0;
-		__updateFrame ();
+		__updateFrame (__currentFrame);
 
 	}
 
@@ -473,15 +473,15 @@ class MovieClip extends flash.display.MovieClip {
 			var advanceFrames = (__lastUpdate == __currentFrame) ? 1 : 0;
 			#end
 
-			__currentFrame += advanceFrames;
+			// __currentFrame += advanceFrames;
 
-			while (__currentFrame > __totalFrames) {
+			// while (__currentFrame > __totalFrames) {
 
-				__currentFrame -= __totalFrames;
+			// 	__currentFrame -= __totalFrames;
 
-			}
+			// }
 
-			__updateFrame ();
+			__updateFrame (advanceFrames);
 
 		}
 
@@ -545,8 +545,8 @@ class MovieClip extends flash.display.MovieClip {
 
 			do {
 				__playing = true;
-				__currentFrame = __targetFrame;
-				__updateFrame ();
+				// __currentFrame = __targetFrame;
+				__updateFrame (1);
 
 			} while (__targetFrame != __currentFrame);
 
@@ -1030,39 +1030,16 @@ class MovieClip extends flash.display.MovieClip {
 		displayObject.__isMask = true;
 	}
 
-	private function __updateFrame ():Void {
+	private function __updateFrame (advanceFrames:Int):Void {
 
-		if (__currentFrame != __lastUpdate) {
+		var frameIndex = __currentFrame - 1;
+		while(advanceFrames > 0) {
+			--advanceFrames;
+			frameIndex = (frameIndex + 1) % (__totalFrames);
 
-			var scriptHasChangedFlow : Bool = false;
-
-			if( __currentFrame < __lastUpdate ){
-				var cacheCurrentFrame = __currentFrame;
-				for( frameIndex in ( __lastUpdate ... __totalFrames ) ){
-					scriptHasChangedFlow = __renderFrame (frameIndex);
-					if (!__playing || scriptHasChangedFlow)
-					{
-						break;
-					}
-				}
-				if (__playing && !scriptHasChangedFlow){
-					for( frameIndex in ( 0 ... cacheCurrentFrame ) ){
-						scriptHasChangedFlow = __renderFrame (frameIndex);
-						if (!__playing || scriptHasChangedFlow)
-						{
-							break;
-						}
-					}
-				}
-			} else {
-
-				for( frameIndex in ( __lastUpdate ... __currentFrame ) ){
-					scriptHasChangedFlow = __renderFrame (frameIndex);
-					if (!__playing || scriptHasChangedFlow)
-					{
-						break;
-					}
-				}
+			var scriptHasChangedFlow = __renderFrame(frameIndex);
+			if (!__playing || scriptHasChangedFlow) {
+				break;
 			}
 		}
 
