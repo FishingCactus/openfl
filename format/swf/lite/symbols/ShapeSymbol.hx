@@ -117,11 +117,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		if (useBitmapCache) {
 
-			if (forbidCachedBitmapUpdate && cachedTable.length > 0) {
-				return cachedTable[0].bitmapData;
-			}
-
-            var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
+			var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
 
 			for (entry in cachedTable) {
 
@@ -133,13 +129,16 @@ class ShapeSymbol extends SWFSymbol {
 
 			}
 
-			#if profile
-                var missedCount = missedCountCachedMap[id];
-                missedCount = missedCount != null ? missedCount : 0;
-                ++missedCount;
-                missedCountCachedMap.set (id, missedCount);
-            #end
+			if (forbidCachedBitmapUpdate && cachedTable.length > 0) {
+				return cachedTable[0].bitmapData;
+			}
 
+			#if profile
+				var missedCount = missedCountCachedMap[id];
+				missedCount = missedCount != null ? missedCount : 0;
+				++missedCount;
+				missedCountCachedMap.set (id, missedCount);
+			#end
 		}
 
 		#if profile
@@ -374,26 +373,26 @@ class ShapeSymbol extends SWFSymbol {
 
 private class CacheEntry {
 
-    public var bitmapData:BitmapData;
-    public var hash:Int;
+	public var bitmapData:BitmapData;
+	public var hash:Int;
 
-    public function new (bitmapData:BitmapData, hash:Int) {
-        this.bitmapData = bitmapData;
-        this.hash = hash;
-    }
+	public function new (bitmapData:BitmapData, hash:Int) {
+		this.bitmapData = bitmapData;
+		this.hash = hash;
+	}
 
-    static private var __buffer = new Int32Array(6);
+	static private var __buffer = new Int32Array(6);
 
-    static public function getHash(matrix:Matrix, cachePrecision:Int, translationCachePrecision):Int {
-        var buffer = __buffer;
+	static public function getHash(matrix:Matrix, cachePrecision:Int, translationCachePrecision):Int {
+		var buffer = __buffer;
 
-        buffer[0] = Std.int(matrix.a * cachePrecision);
-        buffer[1] = Std.int(matrix.b * cachePrecision);
-        buffer[2] = Std.int(matrix.c * cachePrecision);
-        buffer[3] = Std.int(matrix.d * cachePrecision);
-        buffer[4] = Std.int((matrix.tx - Math.ffloor(matrix.tx)) * translationCachePrecision);
-        buffer[5] = Std.int((matrix.ty - Math.ffloor(matrix.ty)) * translationCachePrecision);
+		buffer[0] = Std.int(matrix.a * cachePrecision);
+		buffer[1] = Std.int(matrix.b * cachePrecision);
+		buffer[2] = Std.int(matrix.c * cachePrecision);
+		buffer[3] = Std.int(matrix.d * cachePrecision);
+		buffer[4] = Std.int((matrix.tx - Math.ffloor(matrix.tx)) * translationCachePrecision);
+		buffer[5] = Std.int((matrix.ty - Math.ffloor(matrix.ty)) * translationCachePrecision);
 
-        return haxe.crypto.Crc32.make(buffer.view.buffer);
-    }
+		return haxe.crypto.Crc32.make(buffer.view.buffer);
+	}
 }
