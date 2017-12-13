@@ -19,17 +19,21 @@ class MovieClipPreprocessor {
     static var currentJob:JobContext = null;
     public static var globalTimeSliceMillisecondCount = 10;
 
-    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, translationCachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0) {
+    static public function process(movieclip : MovieClip, cachePrecision:Int = 100, translationCachePrecision:Int = 100, timeSliceMillisecondCount:Null<Int> = null, priority:Int = 0):JobContext {
         var symbol = movieclip.getSymbol ();
+        var job:JobContext = null;
 
         if (symbol != null) {
             var swf = cast (Reflect.field (movieclip, "__swf"), SWFLite);
             @:privateAccess movieclip.__getWorldTransform ();
-            jobTable.push (new JobContext (cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, translationCachePrecision, priority) );
+            job = new JobContext (cast (symbol, SpriteSymbol), swf, movieclip.__renderTransform, timeSliceMillisecondCount != null, timeSliceMillisecondCount, cachePrecision, translationCachePrecision, priority);
+            jobTable.push (job);
             jobTable.sort (function (first:JobContext, second:JobContext) { return @:privateAccess second.priority - @:privateAccess first.priority; });
 
             processNextJob ();
         }
+
+        return job;
     }
 
     static private function processNextJob() {
@@ -76,7 +80,7 @@ class MovieClipPreprocessor {
         parent.removeChild(tempClip);
     }
 
-    static public function renderComplete(clipId:String, cachePrecision:Int = 100, translationCachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null)
+    static public function renderComplete(clipId:String, cachePrecision:Int = 100, translationCachePrecision:Int = 100, ?parent:DisplayObjectContainer = null, timeSliceMillisecondCount = null):JobContext
     {
         if ( timeSliceMillisecondCount == null ) {
             timeSliceMillisecondCount = globalTimeSliceMillisecondCount;
@@ -90,9 +94,11 @@ class MovieClipPreprocessor {
 
         parent.addChild(tempClip);
 
-        process(tempClip, cachePrecision, translationCachePrecision, timeSliceMillisecondCount);
+        var job = process(tempClip, cachePrecision, translationCachePrecision, timeSliceMillisecondCount);
 
         parent.removeChild(tempClip);
+
+        return job;
     }
 }
 
@@ -247,6 +253,7 @@ class JobContext {
     private var mainSprite:Sprite;
 
     public var done(default, null):Bool = false;
+    public var forbidCachedBitmapUpdate:Bool = false;
 
     public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, translationCachePrecision:Int, priority:Int) {
         this.symbol= symbol;
@@ -338,6 +345,12 @@ class JobContext {
         }
 
         if (mainSprite.frameIndex == symbol.frames.length && shapeToProcessIndex == shapeToProcessTable.length && simpleSpriteToProcessIndex == simpleSpritesToProcessTable.length && morphShapeToProcessIndex == morphShapeToProcessTable.length) {
+            if(forbidCachedBitmapUpdate) {
+                for (entry in shapeToProcessTable) {
+                    entry.symbol.forbidCachedBitmapUpdate = true;
+                }
+            }
+
             done = true;
             @:privateAccess MovieClipPreprocessor.processNextJob ();
         } else {
