@@ -16,6 +16,10 @@ class CurvedEdge extends StraightEdge
 		return new CurvedEdge(to, control, from, lineStyleIdx, newFillStyleIdx);
 	}
 
+	override public function clone() {
+		return new CurvedEdge(from, control, to, lineStyleIdx, fillStyleIdx);
+	}
+
 	override public function toString():String {
 		return "stroke:" + lineStyleIdx + ", fill:" + fillStyleIdx + ", start:" + from.toString() + ", control:" + control.toString() + ", end:" + to.toString();
 	}

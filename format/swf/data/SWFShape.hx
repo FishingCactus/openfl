@@ -26,11 +26,14 @@ class SWFShape implements hxbit.Serializable
 
 	public var fillStyles(default, null):Array<SWFFillStyle>;
 	public var lineStyles(default, null):Array<SWFLineStyle>;
+	public var subLineStyles(default, null):Array<SWFLineStyle>;
 
 	private var fillEdgeMaps:Array<Map<Int, Array<Edge>>>;
 	private var lineEdgeMaps:Array<Map<Int, Array<Edge>>>;
+	private var subLineEdgeMaps:Array<Map<Int, Array<Edge>>>;
 	private var currentFillEdgeMap:Map<Int, Array<Edge>>;
 	private var currentLineEdgeMap:Map<Int, Array<Edge>>;
+	private var currentSubLineEdgeMap:Map<Int, Array<Edge>>;
 	private var numGroups:Null<Int>;
 	private var coordMap:Map<String, Array<Edge>>;
 
@@ -42,6 +45,7 @@ class SWFShape implements hxbit.Serializable
 		records = new Array<SWFShapeRecord>();
 		fillStyles = new Array<SWFFillStyle>();
 		lineStyles = new Array<SWFLineStyle>();
+		subLineStyles = new Array<SWFLineStyle>();
 		this.unitDivisor = unitDivisor;
 		if (data != null) {
 			parse(data, level);
@@ -187,7 +191,9 @@ class SWFShape implements hxbit.Serializable
 		handler.beginShape();
 		// Export fills and strokes for each group separately
 		for (i in 0...numGroups) {
-			// Export fills first
+			// Export substrokes first
+			exportSubLinePath(handler, i);
+			// Export fills after
 			exportFillPath(handler, i);
 			// Export strokes last
 			exportLinePath(handler, i);
@@ -212,8 +218,10 @@ class SWFShape implements hxbit.Serializable
 			numGroups = 0;
 			fillEdgeMaps = new Array<Map<Int, Array<Edge>>>();
 			lineEdgeMaps = new Array<Map<Int, Array<Edge>>>();
+			subLineEdgeMaps = new Array<Map<Int, Array<Edge>>>();
 			currentFillEdgeMap = new Map<Int, Array<Edge>>();
 			currentLineEdgeMap = new Map<Int, Array<Edge>>();
+			currentSubLineEdgeMap = new Map<Int, Array<Edge>>();
 			for (i in 0...records.length) {
 				var shapeRecord:SWFShapeRecord = records[i];
 				switch(shapeRecord.type) {
@@ -236,10 +244,13 @@ class SWFShape implements hxbit.Serializable
 							styleChangeRecord.stateFillStyle1 && styleChangeRecord.fillStyle1 == 0) {
 								cleanEdgeMap(currentFillEdgeMap);
 								cleanEdgeMap(currentLineEdgeMap);
+								cleanEdgeMap(currentSubLineEdgeMap);
 								fillEdgeMaps.push(currentFillEdgeMap);
 								lineEdgeMaps.push(currentLineEdgeMap);
+								subLineEdgeMaps.push(currentSubLineEdgeMap);
 								currentFillEdgeMap = new Map<Int, Array<Edge>>();
 								currentLineEdgeMap = new Map<Int, Array<Edge>>();
+								currentSubLineEdgeMap = new Map<Int, Array<Edge>>();
 								currentLineStyleIdx = 0;
 								currentFillStyleIdx0 = 0;
 								currentFillStyleIdx1 = 0;
@@ -298,8 +309,10 @@ class SWFShape implements hxbit.Serializable
 						processSubPath(subPath, currentLineStyleIdx, currentFillStyleIdx0, currentFillStyleIdx1);
 						cleanEdgeMap(currentFillEdgeMap);
 						cleanEdgeMap(currentLineEdgeMap);
+						cleanEdgeMap(currentSubLineEdgeMap);
 						fillEdgeMaps.push(currentFillEdgeMap);
 						lineEdgeMaps.push(currentLineEdgeMap);
+						subLineEdgeMaps.push(currentSubLineEdgeMap);
 						numGroups++;
 				}
 			}
@@ -309,6 +322,33 @@ class SWFShape implements hxbit.Serializable
 
 	private function processSubPath(subPath:Array<Edge>, lineStyleIdx:Int, fillStyleIdx0:Int, fillStyleIdx1:Int):Void {
 		var path:Array<Edge>;
+
+		// :NOTE: Draw a stroke under the path when there
+		// are 2 fill styles to avoid transparent gaps between 2 shapes.
+		if (fillStyleIdx0 != 0 && fillStyleIdx1 != 0) {
+			var sub_line_style_idx = subLineStyles.length + 1;
+			currentSubLineEdgeMap.set (sub_line_style_idx, new Array<Edge>());
+			path = currentSubLineEdgeMap.get (sub_line_style_idx);
+			var active_fillStyle1 = fillStyles[fillStyleIdx1 - 1];
+			// :NOTE: Only supported for solid colors.
+			if ( active_fillStyle1.type == 0x00 ) {
+				var new_style = new SWFLineStyle();
+				new_style.color = active_fillStyle1.rgb;
+				new_style._level = @:privateAccess active_fillStyle1._level;
+				new_style.noClose = true;
+				new_style.width = 1;
+				subLineStyles.push(new_style);
+				var new_sub_path = new Array<Edge>();
+				for( edge in subPath ) {
+					var new_edge = edge.clone();
+					@:privateAccess new_edge.subLineStyleIdx = sub_line_style_idx;
+					new_sub_path.push(new_edge);
+				}
+				appendEdges(path, new_sub_path);
+			}
+
+		}
+
 		if (fillStyleIdx0 != 0) {
 			path = currentFillEdgeMap.get (fillStyleIdx0);
 			if (path == null) {
@@ -425,6 +465,41 @@ class SWFShape implements hxbit.Serializable
 		}
 	}
 
+	private function exportSubLinePath(handler:IShapeExporter, groupIndex:Int):Void {
+		var path:Array<Edge> = createPathFromEdgeMap(subLineEdgeMaps[groupIndex]);
+		var pos:Point = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
+		//var lineStyleIdx:Int = uint.MAX_VALUE;
+		var subLineStyleIdx:Int = Std.int (SWFData.MAX_FLOAT_VALUE);
+		var lineStyle:SWFLineStyle;
+		if(path.length > 0) {
+			handler.beginLines();
+			for (i in 0...path.length) {
+				var e:Edge = path[i];
+				if (subLineStyleIdx != e.subLineStyleIdx) {
+					subLineStyleIdx = e.subLineStyleIdx;
+					pos = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
+					try {
+						lineStyle = subLineStyles[subLineStyleIdx - 1];
+					} catch (e:Error) {
+						lineStyle = null;
+					}
+					addLineStyleToHandler(handler, lineStyle);
+				}
+				if (!e.from.equals(pos)) {
+					handler.moveTo(e.from.x, e.from.y);
+				}
+				if (Std.is (e, CurvedEdge)) {
+					var c:CurvedEdge = cast e;
+					handler.curveTo(c.control.x, c.control.y, c.to.x, c.to.y);
+				} else {
+					handler.lineTo(e.to.x, e.to.y);
+				}
+				pos = e.to;
+			}
+			handler.endLines();
+		}
+	}
+
 	private function exportLinePath(handler:IShapeExporter, groupIndex:Int):Void {
 		var path:Array<Edge> = createPathFromEdgeMap(lineEdgeMaps[groupIndex]);
 		var pos:Point = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
@@ -443,57 +518,7 @@ class SWFShape implements hxbit.Serializable
 					} catch (e:Error) {
 						lineStyle = null;
 					}
-					if (lineStyle != null) {
-						var scaleMode:LineScaleMode = LineScaleMode.NORMAL;
-						if (lineStyle.noHScaleFlag && lineStyle.noVScaleFlag) {
-							scaleMode = LineScaleMode.NONE;
-						} else if (lineStyle.noHScaleFlag) {
-							scaleMode = LineScaleMode.HORIZONTAL;
-						} else if (lineStyle.noVScaleFlag) {
-							scaleMode = LineScaleMode.VERTICAL;
-						}
-						handler.lineStyle(
-							lineStyle.width / 20,
-							ColorUtils.rgb(lineStyle.color),
-							ColorUtils.alpha(lineStyle.color),
-							lineStyle.pixelHintingFlag,
-							scaleMode,
-							LineCapsStyle.toEnum(lineStyle.startCapsStyle),
-							LineCapsStyle.toEnum(lineStyle.endCapsStyle),
-							LineJointStyle.toEnum(lineStyle.jointStyle),
-							lineStyle.miterLimitFactor);
-
-						if(lineStyle.hasFillFlag) {
-							var fillStyle:SWFFillStyle = lineStyle.fillType;
-							switch(fillStyle.type) {
-								case 0x10, 0x12, 0x13:
-									// Gradient fill
-									var colors:Array<Int> = [];
-									var alphas:Array<Float> = [];
-									var ratios:Array<Int> = [];
-									var gradientRecord:SWFGradientRecord;
-									var matrix:Matrix = fillStyle.gradientMatrix.matrix.clone();
-									matrix.tx /= 20;
-									matrix.ty /= 20;
-									for (gri in 0...fillStyle.gradient.records.length) {
-										gradientRecord = fillStyle.gradient.records[gri];
-										colors.push(ColorUtils.rgb(gradientRecord.color));
-										alphas.push(ColorUtils.alpha(gradientRecord.color));
-										ratios.push(gradientRecord.ratio);
-									}
-									handler.lineGradientStyle(
-										(fillStyle.type == 0x10) ? GradientType.LINEAR : GradientType.RADIAL,
-										colors, alphas, ratios, matrix,
-										GradientSpreadMode.toEnum(fillStyle.gradient.spreadMode),
-										GradientInterpolationMode.toEnum(fillStyle.gradient.interpolationMode),
-										fillStyle.gradient.focalPoint
-									);
-							}
-						}
-					} else {
-						// We should never get here
-						handler.lineStyle(0);
-					}
+					addLineStyleToHandler(handler, lineStyle);
 				}
 				if (!e.from.equals(pos)) {
 					handler.moveTo(e.from.x, e.from.y);
@@ -507,6 +532,60 @@ class SWFShape implements hxbit.Serializable
 				pos = e.to;
 			}
 			handler.endLines();
+		}
+	}
+
+	private function addLineStyleToHandler(handler:IShapeExporter, lineStyle:SWFLineStyle) {
+		if (lineStyle != null) {
+			var scaleMode:LineScaleMode = LineScaleMode.NORMAL;
+			if (lineStyle.noHScaleFlag && lineStyle.noVScaleFlag) {
+				scaleMode = LineScaleMode.NONE;
+			} else if (lineStyle.noHScaleFlag) {
+				scaleMode = LineScaleMode.HORIZONTAL;
+			} else if (lineStyle.noVScaleFlag) {
+				scaleMode = LineScaleMode.VERTICAL;
+			}
+			handler.lineStyle(
+				lineStyle.width / 20,
+				ColorUtils.rgb(lineStyle.color),
+				ColorUtils.alpha(lineStyle.color),
+				lineStyle.pixelHintingFlag,
+				scaleMode,
+				LineCapsStyle.toEnum(lineStyle.startCapsStyle),
+				LineCapsStyle.toEnum(lineStyle.endCapsStyle),
+				LineJointStyle.toEnum(lineStyle.jointStyle),
+				lineStyle.miterLimitFactor);
+
+			if(lineStyle.hasFillFlag) {
+				var fillStyle:SWFFillStyle = lineStyle.fillType;
+				switch(fillStyle.type) {
+					case 0x10, 0x12, 0x13:
+						// Gradient fill
+						var colors:Array<Int> = [];
+						var alphas:Array<Float> = [];
+						var ratios:Array<Int> = [];
+						var gradientRecord:SWFGradientRecord;
+						var matrix:Matrix = fillStyle.gradientMatrix.matrix.clone();
+						matrix.tx /= 20;
+						matrix.ty /= 20;
+						for (gri in 0...fillStyle.gradient.records.length) {
+							gradientRecord = fillStyle.gradient.records[gri];
+							colors.push(ColorUtils.rgb(gradientRecord.color));
+							alphas.push(ColorUtils.alpha(gradientRecord.color));
+							ratios.push(gradientRecord.ratio);
+						}
+						handler.lineGradientStyle(
+							(fillStyle.type == 0x10) ? GradientType.LINEAR : GradientType.RADIAL,
+							colors, alphas, ratios, matrix,
+							GradientSpreadMode.toEnum(fillStyle.gradient.spreadMode),
+							GradientInterpolationMode.toEnum(fillStyle.gradient.interpolationMode),
+							fillStyle.gradient.focalPoint
+						);
+				}
+			}
+		} else {
+			// We should never get here
+			handler.lineStyle(0);
 		}
 	}
 
