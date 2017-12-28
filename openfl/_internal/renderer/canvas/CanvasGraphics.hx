@@ -255,7 +255,7 @@ class CanvasGraphics {
 
 			}
 
-			if (canvasGraphics.hasFill) {
+			if (canvasGraphics.hasFill || canvasGraphics.hasStroke) {
 				context.save ();
 
 				var pending_matrix = canvasGraphics.pendingMatrix;
@@ -269,7 +269,19 @@ class CanvasGraphics {
 					canvasGraphics.pendingMatrix = null;
 				}
 
-				if (!canvasGraphics.hitTesting) context.fill (canvasGraphics.canvasWindingRule);
+				if (!canvasGraphics.hitTesting) {
+					if ( canvasGraphics.hasFill ) {
+						context.fill (canvasGraphics.canvasWindingRule);
+					}
+					if ( canvasGraphics.hasStroke ) {
+						// :NOTE: linewidth is scaled with the transform. Counteract this scaling.
+						// This does not work if the scale is non uniform!
+						if ( pending_matrix.a == pending_matrix.d ) {
+							context.lineWidth = context.lineWidth / pending_matrix.a;
+						}
+						context.stroke();
+					}
+				}
 
 				context.restore ();
 				context.closePath ();
@@ -1097,6 +1109,7 @@ class CanvasGraphics {
 			context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 		}
 
+		pendingMatrix = c.matrix;
 		hasStroke = true;
 	}
 
