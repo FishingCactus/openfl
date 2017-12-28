@@ -545,6 +545,54 @@ class SWFShape implements hxbit.Serializable
 			} else if (lineStyle.noVScaleFlag) {
 				scaleMode = LineScaleMode.VERTICAL;
 			}
+			if ( lineStyle.hasFillFlag ) {
+				var fillStyle = lineStyle.fillType;
+				switch ( fillStyle.type ) {
+					case 0x00:
+						// Solid fill
+						handler.lineStyle(
+							lineStyle.width / 20,
+							ColorUtils.rgb(fillStyle.rgb),
+							ColorUtils.alpha(fillStyle.rgb),
+							lineStyle.pixelHintingFlag,
+							scaleMode,
+							LineCapsStyle.toEnum(lineStyle.startCapsStyle),
+							LineCapsStyle.toEnum(lineStyle.endCapsStyle),
+							LineJointStyle.toEnum(lineStyle.jointStyle),
+							lineStyle.miterLimitFactor);
+					case 0x10, 0x12, 0x13:
+						// Gradient fill
+						var gradient = fillStyle.gradient;
+						var colors:Array<Int> = [];
+						var alphas:Array<Float> = [];
+						var ratios:Array<Int> = [];
+						var gradientRecord:SWFGradientRecord;
+						var matrix = fillStyle.gradientMatrix.matrix.clone();
+						matrix.tx /= 20;
+						matrix.ty /= 20;
+						for (gri in 0...fillStyle.gradient.records.length) {
+							gradientRecord = fillStyle.gradient.records[gri];
+							colors.push(ColorUtils.rgb(gradientRecord.color));
+							alphas.push(ColorUtils.alpha(gradientRecord.color));
+							ratios.push(gradientRecord.ratio);
+						}
+						handler.lineGradientStyle(
+							(fillStyle.type == 0x10) ? GradientType.LINEAR : GradientType.RADIAL,
+							colors, alphas, ratios, matrix,
+							GradientSpreadMode.toEnum(gradient.spreadMode),
+							GradientInterpolationMode.toEnum(gradient.interpolationMode),
+							gradient.focalPoint);
+					case 0x40, 0x41, 0x42, 0x43:
+						// Bitmap fill
+						var m:SWFMatrix = fillStyle.bitmapMatrix;
+						var matrix = new Matrix(m.scaleX / 20, m.rotateSkew0 / 20, m.rotateSkew1 / 20, m.scaleY / 20, m.translateX / 20, m.translateY / 20 );
+						handler.lineBitmapStyle(
+							fillStyle.bitmapId,
+							matrix,
+							(fillStyle.type == 0x40 || fillStyle.type == 0x42),
+							(fillStyle.type == 0x40 || fillStyle.type == 0x41));
+				}
+			}
 			handler.lineStyle(
 				lineStyle.width / 20,
 				ColorUtils.rgb(lineStyle.color),
