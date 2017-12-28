@@ -241,9 +241,46 @@ class CanvasGraphics {
 	{
 		#if (js && html5)
 		var canvasGraphics = CanvasGraphics;
+
+		inline function applyPendingMatrixAndCommit(fill:Bool) {
+			if ( ( fill && canvasGraphics.hasFill ) || ( !fill && canvasGraphics.hasStroke ) ) {
+				context.save ();
+
+				var pending_matrix = canvasGraphics.pendingMatrix;
+				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
+
+					if (snapCoordinates) {
+						context.setTransform (currentTransform.a, currentTransform.b, currentTransform.c, currentTransform.d, currentTransform.tx, currentTransform.ty);
+					}
+
+					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
+				}
+
+				// :NOTE: linewidth is scaled with the transform. Counteract this scaling.
+				// This does not work if the scale is non uniform!
+				if ( pending_matrix != null && pending_matrix.a == pending_matrix.d ) {
+					context.lineWidth = context.lineWidth / pending_matrix.a;
+				}
+
+				if (!canvasGraphics.hitTesting) {
+					if ( fill ) {
+						context.fill (canvasGraphics.canvasWindingRule);
+					} else {
+						context.stroke();
+					}
+				}
+
+				context.restore ();
+				context.closePath ();
+
+			}
+		}
+
+
 		if (canvasGraphics.hasStroke || canvasGraphics.hasFill) {
 
-			if (!canvasGraphics.hitTesting && canvasGraphics.hasStroke) context.stroke ();
+			// stroke
+			applyPendingMatrixAndCommit(false);
 
 			if (canvasGraphics.hasFill && closeGap) {
 
@@ -255,38 +292,11 @@ class CanvasGraphics {
 
 			}
 
-			if (canvasGraphics.hasFill || canvasGraphics.hasStroke) {
-				context.save ();
+			// fill
+			applyPendingMatrixAndCommit(true);
 
-				var pending_matrix = canvasGraphics.pendingMatrix;
-				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
+			canvasGraphics.pendingMatrix = null;
 
-					if (snapCoordinates) {
-						context.setTransform (currentTransform.a, currentTransform.b, currentTransform.c, currentTransform.d, currentTransform.tx, currentTransform.ty);
-					}
-
-					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
-					canvasGraphics.pendingMatrix = null;
-				}
-
-				if (!canvasGraphics.hitTesting) {
-					if ( canvasGraphics.hasFill ) {
-						context.fill (canvasGraphics.canvasWindingRule);
-					}
-					if ( canvasGraphics.hasStroke ) {
-						// :NOTE: linewidth is scaled with the transform. Counteract this scaling.
-						// This does not work if the scale is non uniform!
-						if ( pending_matrix.a == pending_matrix.d ) {
-							context.lineWidth = context.lineWidth / pending_matrix.a;
-						}
-						context.stroke();
-					}
-				}
-
-				context.restore ();
-				context.closePath ();
-
-			}
 		}
 		#end
 	}
