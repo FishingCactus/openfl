@@ -11,7 +11,7 @@ import flash.geom.Matrix;
 
 
 enum ShapeCommand {
-	
+
 	BeginBitmapFill (bitmap:Int, matrix:Matrix, repeat:Bool, smooth:Bool);
 	BeginFill (color:Int, alpha:Float);
 	BeginGradientFill (fillType:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float);
@@ -25,7 +25,9 @@ enum ShapeCommand {
 	//DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+	LineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Null<Matrix>, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>);
+	LineBitmapStyle (bitmap:Int, matrix:Matrix, repeat:Bool, smooth:Bool);
 	LineTo (x:Float, y:Float);
 	MoveTo (x:Float, y:Float);
-	
+
 }

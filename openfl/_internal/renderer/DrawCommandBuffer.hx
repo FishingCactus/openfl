@@ -43,12 +43,12 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		f = new UnshrinkableArray();
 		ff = new UnshrinkableArray();
 		ii = new UnshrinkableArray();
-		m = new UnshrinkableArray();	
-		vf = new UnshrinkableArray();	
-		vi = new UnshrinkableArray();	
+		m = new UnshrinkableArray();
+		vf = new UnshrinkableArray();
+		vi = new UnshrinkableArray();
 		bd_ids = new UnshrinkableArray();
 
-		bd = new UnshrinkableArray();	
+		bd = new UnshrinkableArray();
 	}
 
 
@@ -308,6 +308,16 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 	}
 
+	public function lineBitmapStyleWithId(bitmapId:Int, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+
+		types.push (LINE_BITMAP_STYLE);
+		bd_ids.push (bitmapId);
+		m.push (matrix);
+		b.push (repeat);
+		b.push (smooth);
+
+	}
+
 
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
 
@@ -430,7 +440,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 				m.ty = ctx.getFloat();
 				return m;
 			})
-			);	
+			);
 		bd_ids = new UnshrinkableArray(128, cast ctx.getDynamic());
     }
 }

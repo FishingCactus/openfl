@@ -81,6 +81,14 @@ class ShapeSymbol extends SWFSymbol {
 
 					}
 
+				case LineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+
+					graphics.lineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+
+				case LineBitmapStyle (bitmapID, matrix, repeat, smooth):
+
+					graphics.lineBitmapStyleWithId (bitmapID, matrix, repeat, smooth);
+
 				case LineTo (x, y):
 
 					graphics.lineTo (x, y);
@@ -358,7 +366,7 @@ class ShapeSymbol extends SWFSymbol {
 
 		return __translationCachePrecision = value;
 	}
-	
+
 	public function registerGraphics(graphics:Graphics) {
 		if(activeGraphicsTable.indexOf(graphics) != -1) {
 			return;
