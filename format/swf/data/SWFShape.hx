@@ -468,7 +468,6 @@ class SWFShape implements hxbit.Serializable
 	private function exportSubLinePath(handler:IShapeExporter, groupIndex:Int):Void {
 		var path:Array<Edge> = createPathFromEdgeMap(subLineEdgeMaps[groupIndex]);
 		var pos:Point = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
-		//var lineStyleIdx:Int = uint.MAX_VALUE;
 		var subLineStyleIdx:Int = Std.int (SWFData.MAX_FLOAT_VALUE);
 		var lineStyle:SWFLineStyle;
 		if(path.length > 0) {
@@ -478,9 +477,9 @@ class SWFShape implements hxbit.Serializable
 				if (subLineStyleIdx != e.subLineStyleIdx) {
 					subLineStyleIdx = e.subLineStyleIdx;
 					pos = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
-					try {
+					if ( subLineStyles.length > subLineStyleIdx - 1 ) {
 						lineStyle = subLineStyles[subLineStyleIdx - 1];
-					} catch (e:Error) {
+					} else {
 						lineStyle = null;
 					}
 					addLineStyleToHandler(handler, lineStyle);
@@ -503,7 +502,6 @@ class SWFShape implements hxbit.Serializable
 	private function exportLinePath(handler:IShapeExporter, groupIndex:Int):Void {
 		var path:Array<Edge> = createPathFromEdgeMap(lineEdgeMaps[groupIndex]);
 		var pos:Point = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
-		//var lineStyleIdx:Int = uint.MAX_VALUE;
 		var lineStyleIdx:Int = Std.int (SWFData.MAX_FLOAT_VALUE);
 		var lineStyle:SWFLineStyle;
 		if(path.length > 0) {
@@ -513,9 +511,9 @@ class SWFShape implements hxbit.Serializable
 				if (lineStyleIdx != e.lineStyleIdx) {
 					lineStyleIdx = e.lineStyleIdx;
 					pos = new Point(SWFData.MAX_FLOAT_VALUE, SWFData.MAX_FLOAT_VALUE);
-					try {
+					if ( lineStyles.length > lineStyleIdx - 1 ) {
 						lineStyle = lineStyles[lineStyleIdx - 1];
-					} catch (e:Error) {
+					} else {
 						lineStyle = null;
 					}
 					addLineStyleToHandler(handler, lineStyle);
@@ -592,17 +590,18 @@ class SWFShape implements hxbit.Serializable
 							(fillStyle.type == 0x40 || fillStyle.type == 0x42),
 							(fillStyle.type == 0x40 || fillStyle.type == 0x41));
 				}
+			} else {
+				handler.lineStyle(
+					lineStyle.width / 20,
+					ColorUtils.rgb(lineStyle.color),
+					ColorUtils.alpha(lineStyle.color),
+					lineStyle.pixelHintingFlag,
+					scaleMode,
+					LineCapsStyle.toEnum(lineStyle.startCapsStyle),
+					LineCapsStyle.toEnum(lineStyle.endCapsStyle),
+					LineJointStyle.toEnum(lineStyle.jointStyle),
+					lineStyle.miterLimitFactor);
 			}
-			handler.lineStyle(
-				lineStyle.width / 20,
-				ColorUtils.rgb(lineStyle.color),
-				ColorUtils.alpha(lineStyle.color),
-				lineStyle.pixelHintingFlag,
-				scaleMode,
-				LineCapsStyle.toEnum(lineStyle.startCapsStyle),
-				LineCapsStyle.toEnum(lineStyle.endCapsStyle),
-				LineJointStyle.toEnum(lineStyle.jointStyle),
-				lineStyle.miterLimitFactor);
 
 			if(lineStyle.hasFillFlag) {
 				var fillStyle:SWFFillStyle = lineStyle.fillType;
