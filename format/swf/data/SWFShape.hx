@@ -321,14 +321,14 @@ class SWFShape implements hxbit.Serializable
 	}
 
 	private function processSubPath(subPath:Array<Edge>, lineStyleIdx:Int, fillStyleIdx0:Int, fillStyleIdx1:Int):Void {
-		var path:Array<Edge>;
+		var path:Array<Edge> = new Array<Edge>();
 
 		// :NOTE: Draw a stroke under the path when there
 		// are 2 fill styles to avoid transparent gaps between 2 shapes.
-		if (fillStyleIdx0 != 0 && fillStyleIdx1 != 0) {
+		if (fillStyleIdx0 != 0 && !fillStyles[fillStyleIdx0 - 1].is_transparent()
+		 	&& fillStyleIdx1 != 0 && !fillStyles[fillStyleIdx1 - 1].is_transparent()) {
 			var sub_line_style_idx = subLineStyles.length + 1;
-			currentSubLineEdgeMap.set (sub_line_style_idx, new Array<Edge>());
-			path = currentSubLineEdgeMap.get (sub_line_style_idx);
+			currentSubLineEdgeMap.set (sub_line_style_idx, path);
 			var active_fillStyle1 = fillStyles[fillStyleIdx1 - 1];
 			// :NOTE: Only supported for solid colors.
 			if ( active_fillStyle1.type == 0x00 ) {

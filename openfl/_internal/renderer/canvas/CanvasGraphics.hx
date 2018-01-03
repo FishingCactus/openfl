@@ -261,6 +261,11 @@ class CanvasGraphics {
 				if ( pending_matrix != null && pending_matrix.a == pending_matrix.d ) {
 					context.lineWidth = context.lineWidth / pending_matrix.a;
 				}
+				#if dev
+				else {
+					throw "Trying to non uniformly scale a stroke. Not supported!";
+				}
+				#end
 
 				if (!canvasGraphics.hitTesting) {
 					if ( fill ) {

@@ -88,4 +88,12 @@ class SWFFillStyle implements hxbit.Serializable
 		}
 		return str;
 	}
+
+	public function is_transparent() {
+		if (_level <= 2) {
+			return false;
+		} else {
+			return rgb == null || ColorUtils.alpha(rgb) == 0;
+		}
+	}
 }
