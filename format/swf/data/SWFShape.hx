@@ -325,8 +325,8 @@ class SWFShape implements hxbit.Serializable
 
 		// :NOTE: Draw a stroke under the path when there
 		// are 2 fill styles to avoid transparent gaps between 2 shapes.
-		if (fillStyleIdx0 != 0 && !fillStyles[fillStyleIdx0 - 1].is_transparent()
-		 	&& fillStyleIdx1 != 0 && !fillStyles[fillStyleIdx1 - 1].is_transparent()) {
+		if (fillStyleIdx0 != 0 && fillStyles[fillStyleIdx0 - 1] != null && !fillStyles[fillStyleIdx0 - 1].is_transparent()
+		 	&& fillStyleIdx1 != 0 && fillStyles[fillStyleIdx1 - 1] != null && !fillStyles[fillStyleIdx1 - 1].is_transparent()) {
 			var sub_line_style_idx = subLineStyles.length + 1;
 			currentSubLineEdgeMap.set (sub_line_style_idx, path);
 			var active_fillStyle1 = fillStyles[fillStyleIdx1 - 1];
