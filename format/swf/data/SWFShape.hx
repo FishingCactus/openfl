@@ -333,8 +333,8 @@ class SWFShape implements hxbit.Serializable
 			// :NOTE: Only supported for solid colors.
 			if ( active_fillStyle1.type == 0x00 ) {
 				var new_style = new SWFLineStyle();
-				new_style.color = active_fillStyle1.rgb;
-				new_style._level = @:privateAccess active_fillStyle1._level;
+				new_style.hasFillFlag = true;
+				new_style.fillType = active_fillStyle1;
 				new_style.noClose = true;
 				new_style.width = 1;
 				subLineStyles.push(new_style);
