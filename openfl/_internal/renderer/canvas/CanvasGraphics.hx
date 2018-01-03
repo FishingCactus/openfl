@@ -258,11 +258,11 @@ class CanvasGraphics {
 
 				// :NOTE: linewidth is scaled with the transform. Counteract this scaling.
 				// This does not work if the scale is non uniform!
-				if ( pending_matrix != null && pending_matrix.a == pending_matrix.d ) {
+				if ( !fill && pending_matrix != null && pending_matrix.a == pending_matrix.d ) {
 					context.lineWidth = context.lineWidth / pending_matrix.a;
 				}
 				#if dev
-				else if ( pending_matrix != null ) {
+				else if ( !fill && pending_matrix != null ) {
 					throw "Trying to non uniformly scale a stroke. Not supported!";
 				}
 				#end
