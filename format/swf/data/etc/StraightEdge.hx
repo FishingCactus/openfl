@@ -17,6 +17,10 @@ class StraightEdge extends Edge
 		return new StraightEdge(to, from, lineStyleIdx, newFillStyleIdx);
 	}
 
+	public override function clone() {
+		return new StraightEdge(from, to, lineStyleIdx, fillStyleIdx);
+	}
+
 	public function toString():String {
 		return "stroke:" + lineStyleIdx + ", fill:" + fillStyleIdx + ", start:" + from.toString() + ", end:" + to.toString();
 	}

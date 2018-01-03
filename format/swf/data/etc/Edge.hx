@@ -8,6 +8,7 @@ class Edge implements IEdge implements hxbit.Serializable
 	@:s public var to(default, null):Point;
 	@:s public var lineStyleIdx(default, null):Int;
 	@:s public var fillStyleIdx(default, null):Int;
+	@:s public var subLineStyleIdx(default, null):Int;
 
 	public function new()
 	{
@@ -15,6 +16,11 @@ class Edge implements IEdge implements hxbit.Serializable
 	}
 
     public function reverseWithNewFillStyle(newFillStyleIdx:Int):Edge {
+		throw "Pure virtual baseclass. Should not be instantiated or called.";
+		return new Edge();
+	}
+
+	public function clone() {
 		throw "Pure virtual baseclass. Should not be instantiated or called.";
 		return new Edge();
 	}

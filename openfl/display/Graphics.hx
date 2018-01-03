@@ -582,6 +582,12 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
+	public function lineBitmapStyleWithId (bitmap_id:Int, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
+
+		__commands.lineBitmapStyleWithId (bitmap_id, matrix != null ? matrix.clone () : null, repeat, smooth);
+
+	}
+
 
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 

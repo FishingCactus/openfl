@@ -239,8 +239,7 @@ class StringUtils
 						// parse length (ignored)
 						///////////////////////////
 						switch(c) {
-							case "h":
-							case "l":
+							case "h", "l":
 								if(++i == format.length) { trace("ERR eof after length"); break; }
 								var c1:String = format.charAt(i);
 								if((c == "h" && c1 == "h") || (c == "l" && c1 == "l")) {
@@ -249,14 +248,9 @@ class StringUtils
 								} else {
 									c = c1;
 								}
-								break;
-							case "L":
-							case "z":
-							case "j":
-							case "t":
+							case "L", "z", "j", "t":
 								if(++i == format.length) { trace("ERR eof after length"); break; }
 								c = format.charAt(i);
-								break;
 						}
 
 						///////////////////////////
@@ -284,26 +278,16 @@ class StringUtils
 							case "s":
 								valueStr = Std.string (value);
 								if(precision != -1) { valueStr = valueStr.substr(0, precision); }
-								break;
 							case "c":
 								//valueStr = Std.string (value).getAt(0);
 								valueStr = Std.string (value).charAt(0);
-								break;
-							case "d":
-							case "i":
+							case "d", "i":
 								valueInt = ((Std.is (value, Float)) ? cast value : Std.parseInt(Std.string (value)));
 								valueStr = Std.string (Math.abs(valueInt));
 								sign = (valueInt < 0) ? SIGN_NEG : SIGN_POS;
-								break;
 							case "u":
 								valueStr = Std.string ((Std.is (value, Float)) ? cast value : Std.parseInt(Std.string (value)));
-								break;
-							case "f":
-							case "F":
-							case "e":
-							case "E":
-							case "g":
-							case "G":
+							case "f", "F", "e", "E", "g", "G":
 								if(precision == -1) { precision = 6; }
 								var exp10:Float = Math.pow(10, precision);
 								valueFloat = (Std.is (value, Float)) ? cast value : Std.parseFloat(Std.string (value));
@@ -320,16 +304,11 @@ class StringUtils
 									valueStr += repeat(numZerosToAppend, "0");
 								}
 								sign = (valueFloat < 0) ? SIGN_NEG : SIGN_POS;
-								break;
-							case "x":
-							case "X":
-							case "p":
-								valueStr = (Std.is (value, Float)) ? Std.string (Std.int(value)) : StringTools.hex (Std.parseInt(value));
+							case "x", "X", "p":
+								valueStr = (Std.is (value, Float)) ? StringTools.hex (Std.int(value)) : StringTools.hex (Std.parseInt(value));
 								if(type == "X") { valueStr = valueStr.toUpperCase(); }
-								break;
 							case "o":
 								valueStr = BaseCode.encode (Std.string (((Std.is (value, Float)) ? Std.int(value) : Std.int(value))), "01234567");
-								break;
 						}
 
 						var hasSign:Bool = ((sign == SIGN_NEG) || flagSign || flagLeftPad);

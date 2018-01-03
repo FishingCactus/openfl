@@ -241,9 +241,51 @@ class CanvasGraphics {
 	{
 		#if (js && html5)
 		var canvasGraphics = CanvasGraphics;
+
+		inline function applyPendingMatrixAndCommit(fill:Bool) {
+			if ( ( fill && canvasGraphics.hasFill ) || ( !fill && canvasGraphics.hasStroke ) ) {
+				context.save ();
+
+				var pending_matrix = canvasGraphics.pendingMatrix;
+				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
+
+					if (snapCoordinates) {
+						context.setTransform (currentTransform.a, currentTransform.b, currentTransform.c, currentTransform.d, currentTransform.tx, currentTransform.ty);
+					}
+
+					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
+				}
+
+				// :NOTE: linewidth is scaled with the transform. Counteract this scaling.
+				// This does not work if the scale is non uniform!
+				if ( pending_matrix != null && pending_matrix.a == pending_matrix.d ) {
+					context.lineWidth = context.lineWidth / pending_matrix.a;
+				}
+				#if dev
+				else {
+					throw "Trying to non uniformly scale a stroke. Not supported!";
+				}
+				#end
+
+				if (!canvasGraphics.hitTesting) {
+					if ( fill ) {
+						context.fill (canvasGraphics.canvasWindingRule);
+					} else {
+						context.stroke();
+					}
+				}
+
+				context.restore ();
+				context.closePath ();
+
+			}
+		}
+
+
 		if (canvasGraphics.hasStroke || canvasGraphics.hasFill) {
 
-			if (!canvasGraphics.hitTesting && canvasGraphics.hasStroke) context.stroke ();
+			// stroke
+			applyPendingMatrixAndCommit(false);
 
 			if (canvasGraphics.hasFill && closeGap) {
 
@@ -255,26 +297,11 @@ class CanvasGraphics {
 
 			}
 
-			if (canvasGraphics.hasFill) {
-				context.save ();
+			// fill
+			applyPendingMatrixAndCommit(true);
 
-				var pending_matrix = canvasGraphics.pendingMatrix;
-				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
+			canvasGraphics.pendingMatrix = null;
 
-					if (snapCoordinates) {
-						context.setTransform (currentTransform.a, currentTransform.b, currentTransform.c, currentTransform.d, currentTransform.tx, currentTransform.ty);
-					}
-
-					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
-					canvasGraphics.pendingMatrix = null;
-				}
-
-				if (!canvasGraphics.hitTesting) context.fill (canvasGraphics.canvasWindingRule);
-
-				context.restore ();
-				context.closePath ();
-
-			}
 		}
 		#end
 	}
@@ -1097,6 +1124,7 @@ class CanvasGraphics {
 			context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 		}
 
+		pendingMatrix = c.matrix;
 		hasStroke = true;
 	}
 
