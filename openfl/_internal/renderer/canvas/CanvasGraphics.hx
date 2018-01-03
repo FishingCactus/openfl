@@ -262,7 +262,7 @@ class CanvasGraphics {
 					context.lineWidth = context.lineWidth / pending_matrix.a;
 				}
 				#if dev
-				else {
+				else if ( pending_matrix != null ) {
 					throw "Trying to non uniformly scale a stroke. Not supported!";
 				}
 				#end
