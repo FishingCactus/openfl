@@ -77,8 +77,8 @@ class SimpleButton extends DisplayObjectContainer {
 
 			}
 		}
-		else if ( this.overState != null ) {
-			removeChild(this.overState);
+		else if ( this.downState != null ) {
+			removeChild(this.downState);
 		}
 
 		return this.downState = downState;
@@ -88,10 +88,10 @@ class SimpleButton extends DisplayObjectContainer {
 
 	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
 
-		if (downState != null) {
+		if (hitTestState != null) {
 			addChild( hitTestState );
 
-			hitTestState.visible = false;
+			hitTestState.alpha = 0;
 
 			if (this.hitTestState != null ) {
 
@@ -102,8 +102,8 @@ class SimpleButton extends DisplayObjectContainer {
 				}
 
 			}
-		} else if ( this.downState != null ) {
-			removeChild(this.overState);
+		} else if ( this.hitTestState != null ) {
+			removeChild(this.hitTestState);
 		}
 
 		return this.hitTestState = hitTestState;
