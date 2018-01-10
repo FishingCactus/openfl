@@ -831,6 +831,8 @@ class TextEngine {
 				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 			}
 
+			var previousTextIndex = textIndex;
+
 			// :NOTE: For justify, we have to account for a minimum space width here.
 			if ( nextBreakIndex - textIndex > 1 && wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 * OFFSET_START ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
@@ -851,6 +853,12 @@ class TextEngine {
 						}
 					}
 					widthValue = width - 2 * OFFSET_START;
+				}
+
+				// If rounding error makes the text slightly bigger than width
+				// it results in a never ending loop
+				if( textIndex == previousTextIndex ){
+					textIndex = nextBreakIndex;
 				}
 				pushNewLine(textIndex);
 				continue;
