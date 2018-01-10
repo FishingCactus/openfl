@@ -39,7 +39,9 @@ class MorphShapeSymbol extends SWFSymbol {
         var j:Int = 0;
         var exportShape:SWFShape = new SWFShape();
         var lastStartStyleChange:SWFShapeRecordStyleChange = null;
+        var lastEndStyleChange:SWFShapeRecordStyleChange = null;
         var numEdges:Int = startEdges.records.length;
+
         for(i in 0...numEdges) {
             var startRecord:SWFShapeRecord = startEdges.records[i];
             // Ignore start records that are style change records and don't have moveTo
@@ -83,16 +85,22 @@ class MorphShapeSymbol extends SWFSymbol {
                 case SWFShapeRecord.TYPE_STYLECHANGE:
                     lastStartStyleChange = cast startRecord;
                     var startStyleChange:SWFShapeRecordStyleChange = cast startRecord.clone();
-                    startStyleChange.stateMoveTo = true;
+
                     if (endRecord.type == SWFShapeRecord.TYPE_STYLECHANGE) {
                         var endStyleChange:SWFShapeRecordStyleChange = cast endRecord;
-                        startStyleChange.moveDeltaX += (endStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
-                        startStyleChange.moveDeltaY += (endStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+
+                        if( endStyleChange.stateMoveTo) {
+                            lastEndStyleChange = endStyleChange;
+                        }
                     } else {
-                        startStyleChange.moveDeltaX += (-startStyleChange.moveDeltaX) * ratio;
-                        startStyleChange.moveDeltaY += ( -startStyleChange.moveDeltaY) * ratio;
-                        j--;
+                        --j;
                     }
+
+                    if( startStyleChange.stateMoveTo ){
+                        startStyleChange.moveDeltaX += (lastEndStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
+                        startStyleChange.moveDeltaY += (lastEndStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+                    }
+
                     exportRecord = startStyleChange;
                 case SWFShapeRecord.TYPE_STRAIGHTEDGE:
                     var startStraightEdge:SWFShapeRecordStraightEdge = cast startRecord.clone();
@@ -123,6 +131,7 @@ class MorphShapeSymbol extends SWFSymbol {
             }
             exportShape.records.push(exportRecord);
         }
+
         for(i in 0...morphFillStyles.length) {
             exportShape.fillStyles.push(morphFillStyles[i].getMorphedFillStyle(ratio));
         }
