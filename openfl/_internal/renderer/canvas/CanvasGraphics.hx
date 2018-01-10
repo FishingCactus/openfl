@@ -413,6 +413,9 @@ class CanvasGraphics {
 					case DRAW_CIRCLE:
 						drawCircle(data);
 
+					case DRAW_ARC:
+						drawArc(data);
+
 					case DRAW_ELLIPSE:
 						drawEllipse(data);
 
@@ -691,6 +694,9 @@ class CanvasGraphics {
 							case DRAW_CIRCLE:
 								drawCircle(data);
 
+							case DRAW_ARC:
+								drawArc(data);
+
 							case DRAW_IMAGE:
 								drawImage(data);
 
@@ -894,8 +900,15 @@ class CanvasGraphics {
 	private inline static function drawCircle(data:DrawCommandReader)
 	{
 		var c = data.readDrawCircle();
-		context.moveTo (c.x + c.radius, c.y);
+		context.moveTo (c.x, c.y);
 		context.arc (c.x, c.y, c.radius, 0, Math.PI * 2, true);
+	}
+
+	private inline static function drawArc(data:DrawCommandReader)
+	{
+		var c = data.readDrawArc();
+		context.moveTo (c.x, c.y);
+		context.arc (c.x, c.y, c.radius, c.startAngle, c.endAngle, true);
 	}
 
 	private inline static function drawEllipse(data:DrawCommandReader)

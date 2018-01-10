@@ -2,13 +2,14 @@ package openfl._internal.renderer;
 
 
 enum DrawCommandType {
-	
+
 	BEGIN_BITMAP_FILL;
 	BEGIN_FILL;
 	BEGIN_GRADIENT_FILL;
 	CUBIC_CURVE_TO;
 	CURVE_TO;
 	DRAW_CIRCLE;
+	DRAW_ARC;
 	DRAW_ELLIPSE;
 	DRAW_IMAGE;
 	DRAW_PATH;
@@ -24,5 +25,5 @@ enum DrawCommandType {
 	MOVE_TO;
 	OVERRIDE_MATRIX;
 	UNKNOWN;
-	
+
 }

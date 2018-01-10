@@ -66,6 +66,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 				case CUBIC_CURVE_TO: var c = data.readCubicCurveTo (); cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
+				case DRAW_ARC: var c = data.readDrawArc (); drawArc (c.x, c.y, c.radius, c.startAngle, c.endAngle);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
 				case DRAW_IMAGE: var c = data.readDrawImage (); drawImage (c.bitmap, c.matrix, c.smooth);
 				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
@@ -210,6 +211,17 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		f.push (x);
 		f.push (y);
 		f.push (radius);
+
+	}
+
+	public function drawArc (x:Float, y:Float, radius:Float, startAngle:Float, endAngle:Float):Void {
+
+		types.push (DRAW_ARC);
+		f.push (x);
+		f.push (y);
+		f.push (radius);
+		f.push (startAngle);
+		f.push (endAngle);
 
 	}
 
