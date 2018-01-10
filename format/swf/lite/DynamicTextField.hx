@@ -127,9 +127,9 @@ class DynamicTextField extends TextField {
 			while ( local_parent != null ) {
 				if ( Reflect.hasField(local_parent, _variableName) ) {
 					if(symbol != null && symbol.html){
-						htmlText = Reflect.field(local_parent,_variableName);
+						htmlText = Std.string(Reflect.field(local_parent,_variableName));
 					} else {
-						text = Reflect.field(local_parent,_variableName);
+						text = Std.string(Reflect.field(local_parent,_variableName));
 					}
 					break;
 				}
