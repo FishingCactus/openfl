@@ -62,6 +62,7 @@ class MovieClip extends flash.display.MovieClip {
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
 	private var __maskDataKeys:Array<DisplayObject>;
+	private var __childrenHaveClippedAtProperty:Bool;
 
 	private var __childrenCache:Map<FrameObject, DisplayObject>;
 
@@ -75,6 +76,7 @@ class MovieClip extends flash.display.MovieClip {
 		__lastUpdate = 1;
 		__objects = new Map ();
 		__zeroSymbol = -1;
+		__childrenHaveClippedAtProperty = false;
 
 		__currentFrame = 1;
 
@@ -825,11 +827,6 @@ class MovieClip extends flash.display.MovieClip {
 
 		if (!isRenderable() || __worldAlpha <= 0) return;
 
-		if ( __maskDataDirty ) {
-			__updateSwfMaskData();
-			__maskDataDirty = false;
-		}
-
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
 
 			drawScale9Bitmap(renderSession);
@@ -994,6 +991,8 @@ class MovieClip extends flash.display.MovieClip {
 			__currentLabel = label;
 		}
 
+		__updateSwfMaskData();
+
 		if (__frameScripts != null) {
 
 			if (__frameScripts.exists (index)) {
@@ -1070,33 +1069,46 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function __updateSwfMaskData(){
 
-		var children_length = __children.length;
+		if ( __maskDataDirty ) {
 
-		for( child in __children ){
-			child.__clippedAt = null;
-		}
+			var children_length = __children.length;
 
-		for( mask in __maskDataKeys ){
-			var maskIndex = getChildIndex( mask );
+			if ( __childrenHaveClippedAtProperty ) {
+				for( child in __children ){
+					child.__clippedAt = null;
+				}
+				__childrenHaveClippedAtProperty = false;
+			}
 
-			var depthValue = __maskData.get(mask);
+			if ( __maskDataKeys.length > 0 ) {
+				__childrenHaveClippedAtProperty = true;
 
-			var result = children_length;
+				for( mask in __maskDataKeys ){
+					var maskIndex = getChildIndex( mask );
 
-			for( i in maskIndex + 1 ... children_length ){
-				var sibling = getChildAt(i);
-				if ( sibling != null ) {
-					if( __SWFDepthData.get(sibling) > depthValue){
-						result = i;
-						break;
-					} else {
-						sibling.__clippedAt = maskIndex;
+					var depthValue = __maskData.get(mask);
+
+					var result = children_length;
+
+					for( i in maskIndex + 1 ... children_length ){
+						var sibling = getChildAt(i);
+						if ( sibling != null ) {
+							if( __SWFDepthData.get(sibling) > depthValue){
+								result = i;
+								break;
+							} else {
+								sibling.__clippedAt = maskIndex;
+							}
+						}
 					}
+
+					mask.__clipDepth = result - maskIndex - 1;
 				}
 			}
 
-			mask.__clipDepth = result - maskIndex - 1;
+
 		}
+		__maskDataDirty = false;
 	}
 
 #if as2_depth_accessors
