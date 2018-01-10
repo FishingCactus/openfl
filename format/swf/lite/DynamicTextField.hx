@@ -126,8 +126,11 @@ class DynamicTextField extends TextField {
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
 				if ( Reflect.hasField(local_parent, _variableName) ) {
-					// :TODO: Support html text in this case
-					text = Reflect.field(local_parent,_variableName);
+					if(symbol != null && symbol.html){
+						htmlText = Reflect.field(local_parent,_variableName);
+					} else {
+						text = Reflect.field(local_parent,_variableName);
+					}
 					break;
 				}
 				local_parent = local_parent.parent;
