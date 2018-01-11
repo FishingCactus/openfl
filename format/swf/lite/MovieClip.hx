@@ -827,6 +827,8 @@ class MovieClip extends flash.display.MovieClip {
 
 		if (!isRenderable() || __worldAlpha <= 0) return;
 
+		__updateSwfMaskData();
+
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
 
 			drawScale9Bitmap(renderSession);
