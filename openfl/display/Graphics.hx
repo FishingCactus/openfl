@@ -351,6 +351,20 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
+	public function drawArc (x:Float, y:Float, radius:Float, startAngleRads:Float, endAngleRads:Float):Void {
+
+		if (radius <= 0) return;
+
+		__inflateBounds (x - radius - __strokePadding, y - radius - __strokePadding);
+		__inflateBounds (x + radius + __strokePadding, y + radius + __strokePadding);
+
+		__commands.moveTo (x, y );
+		__commands.drawArc (x, y, radius, startAngleRads, endAngleRads);
+
+		dirty = true;
+
+	}
+
 
 	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void {
 
