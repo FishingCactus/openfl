@@ -33,6 +33,11 @@ class DynamicTextField extends TextField {
 
 		_variableName = symbol.variableName;
 
+		if( _variableName.indexOf( '_parent.' ) != -1 )
+		{
+			_variableName = _variableName.substr( 8 );
+		}
+
 		width = symbol.width;
 		height = symbol.height;
 
