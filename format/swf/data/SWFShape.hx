@@ -712,7 +712,17 @@ class SWFShape implements hxbit.Serializable
 		var key:String = getCoordMapKey (edge.from);
 		var coordMapArray = coordMap.get (key);
 		if (coordMapArray != null) {
-			coordMap.remove (key);
+			if( coordMapArray.length == 1 ){
+				coordMap.remove (key);
+			} else {
+				var i = coordMapArray.length;
+				while (--i >= 0) {
+					if (coordMapArray[i] == edge) {
+						coordMapArray.splice( i, 1 );
+						break;
+					}
+				}
+			}
 		}
 	}
 
