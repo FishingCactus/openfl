@@ -96,9 +96,10 @@ class MorphShapeSymbol extends SWFSymbol {
                         --j;
                     }
 
-                    if( startStyleChange.stateMoveTo ){
+                    if( startStyleChange.stateMoveTo || lastEndStyleChange.stateMoveTo ){
                         startStyleChange.moveDeltaX += (lastEndStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
                         startStyleChange.moveDeltaY += (lastEndStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+                        startStyleChange.stateMoveTo = true;
                     }
 
                     exportRecord = startStyleChange;
