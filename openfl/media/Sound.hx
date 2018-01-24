@@ -137,6 +137,7 @@ class Sound extends EventDispatcher {
 			}
 
 			__sound = new Howl(data);
+			__sound.volume(0);
 
 			__registeredSounds[soundName] = __sound;
 		}
