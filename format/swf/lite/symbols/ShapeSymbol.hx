@@ -121,7 +121,7 @@ class ShapeSymbol extends SWFSymbol {
 		return this.useBitmapCache = useBitmapCache;
 	}
 
-	public inline function getCacheEntry(renderTransform:Matrix):CacheEntry{
+	public function getCacheEntry(renderTransform:Matrix):CacheEntry{
 
 		var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
 		for (entry in cachedTable) {
