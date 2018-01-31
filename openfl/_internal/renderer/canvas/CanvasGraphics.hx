@@ -510,7 +510,7 @@ class CanvasGraphics {
 	}
 
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask : Bool = false):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask:Bool = false, disableCache = false):Void {
 
 		#if (js && html5)
 
@@ -535,7 +535,7 @@ class CanvasGraphics {
 				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
 				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
 
-				if (graphics.__symbol != null) {
+				if (!disableCache && graphics.__symbol != null) {
 
 					var cachedBitmapData:BitmapData = null;
 
@@ -853,7 +853,7 @@ class CanvasGraphics {
 				Matrix.pool.put (renderToLocalMatrix);
 				Matrix.pool.put (transform);
 
-				if (graphics.__symbol != null) {
+				if (!disableCache && graphics.__symbol != null) {
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) )
 						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap, renderTransform);

@@ -121,20 +121,25 @@ class ShapeSymbol extends SWFSymbol {
 		return this.useBitmapCache = useBitmapCache;
 	}
 
+	public function getCacheEntry(renderTransform:Matrix):CacheEntry{
+
+		var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
+		for (entry in cachedTable) {
+			if (entry.hash == hash) {
+				return entry;
+			}
+		}
+
+		return null;
+	}
+
 	public function getCachedBitmapData (renderTransform:Matrix):BitmapData {
 
 		if (useBitmapCache) {
 
-			var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
-
-			for (entry in cachedTable) {
-
-				if (entry.hash == hash) {
-
-					return entry.bitmapData;
-
-				}
-
+			var entry = getCacheEntry(renderTransform);
+			if(entry != null) {
+				return entry.bitmapData;
 			}
 
 			if (forbidCachedBitmapUpdate && cachedTable.length > 0) {

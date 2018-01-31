@@ -285,22 +285,29 @@ class JobContext {
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
             var entry = shapeToProcessTable [shapeToProcessIndex];
             var graphics = entry.symbol.graphics;
-            graphics.dirty = true;
-            openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
+            var shapeSymbol = cast(@:privateAccess graphics.__symbol, ShapeSymbol);
 
-            if(@:privateAccess graphics.__bitmap != null) {
-                #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
-                #end
+            if(shapeSymbol.getCacheEntry(entry.transform) == null) {
+                shapeSymbol.registerGraphics(graphics);
+                graphics.dirty = true;
+                openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false, true);
 
-                @:privateAccess graphics.__bitmap.getTexture (gl);
+                if(@:privateAccess graphics.__bitmap != null) {
+                    #if(js && profile)
+                        untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
+                    #end
 
-                #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
-                #end
+                    @:privateAccess graphics.__bitmap.getTexture (gl);
+
+                    #if(js && profile)
+                        untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                    #end
+                }
+
+                graphics.dirty = true;
+                shapeSymbol.setCachedBitmapData (@:privateAccess graphics.__bitmap, entry.transform);
             }
 
-            graphics.dirty = true;
             ++shapeToProcessIndex;
         }
 
