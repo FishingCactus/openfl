@@ -413,7 +413,7 @@ class SpriteBatch {
 			shader.uniform1i(shader.getUniformLocation (DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
 			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorMultiplier),
-						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, 1);
+						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier);
 			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorOffset),
 						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
 		} else {

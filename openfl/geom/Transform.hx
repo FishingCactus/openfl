@@ -46,7 +46,6 @@ class Transform {
 
 	public function resetColorTransform() {
 		if( __colorTransform.reset() ) {
-			__displayObject.alpha = __colorTransform.alphaMultiplier;
 			__displayObject.__setRenderDirtyNoCachedBitmap ();
 		}
 	}
@@ -71,13 +70,6 @@ class Transform {
 		if (!__colorTransform.__equals (value)) {
 
 			__colorTransform.copyFrom(value);
-
-			if (value != null) {
-
-				__displayObject.alpha = value.alphaMultiplier;
-
-			}
-
 			__displayObject.__setRenderDirtyNoCachedBitmap ();
 
 		}
