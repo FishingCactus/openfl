@@ -922,7 +922,6 @@ class MovieClip extends flash.display.MovieClip {
 						var oldObject : DisplayObject = displayObject;
 
 						var clipDepth = __maskData.get(displayObject);
-						removeChild(displayObject);
 
 						displayObject = __createObject (frameObject);
 
@@ -934,6 +933,8 @@ class MovieClip extends flash.display.MovieClip {
 						if ( oldObject.__filters != null ) {
 							displayObject.filters = oldObject.__filters.map(function(bitmapFilter){ return bitmapFilter.clone(); });
 						}
+
+						removeChild(oldObject);
 
 						if( clipDepth != null ) {
 							__addObjectToMaskData(displayObject, clipDepth);
