@@ -80,7 +80,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var __worldOffset:Point;
 	public var __worldTransform:Matrix;
 
-	private var __alpha:Float;
+	private var __colorTransform:ColorTransform;
 	private var __blendMode:BlendMode;
 	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __branchDepth:Int;
@@ -154,7 +154,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		super ();
 
-		__alpha = 1;
+		__colorTransform = new ColorTransform();
 		__transform = new Matrix ();
 		__visible = true;
 
@@ -1265,7 +1265,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_alpha ():Float {
 
-		return __alpha;
+		return __colorTransform.alphaMultiplier;
 
 	}
 
@@ -1273,10 +1273,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_alpha (value:Float):Float {
 
 		if (value > 1.0) value = 1.0;
-		if (value != __alpha) {
+		if (value != __colorTransform.alphaMultiplier) {
 			__setRenderDirtyNoCachedBitmap();
 		}
-		return __alpha = value;
+		return __colorTransform.alphaMultiplier = value;
 
 	}
 
