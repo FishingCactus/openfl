@@ -19,7 +19,6 @@ class Transform {
 	public var matrix3D (get, set):Matrix3D;
 	public var pixelBounds (default, null):Rectangle;
 
-	private var __colorTransform:ColorTransform;
 	private var __displayObject:DisplayObject;
 	private var __hasMatrix:Bool;
 	private var __hasMatrix3D:Bool;
@@ -27,7 +26,6 @@ class Transform {
 
 	public function new (displayObject:DisplayObject) {
 
-		__colorTransform = new ColorTransform ();
 		concatenatedColorTransform = new ColorTransform ();
 		pixelBounds = new Rectangle ();
 
@@ -37,44 +35,31 @@ class Transform {
 	}
 
 	public function reset(displayObject:DisplayObject) {
-		__colorTransform.reset();
 		concatenatedColorTransform.reset();
 		pixelBounds.setEmpty();
 		__displayObject = displayObject;
 		__hasMatrix = true;
 	}
 
-	public function resetColorTransform() {
-		if( __colorTransform.reset() ) {
-			__displayObject.__setRenderDirtyNoCachedBitmap ();
-		}
-	}
-
-
-
-
 	// Get & Set Methods
-
-
-
 
 	private function get_colorTransform ():ColorTransform {
 
-		return __colorTransform;
+		return __displayObject.__colorTransform;
 
 	}
 
 
 	private function set_colorTransform (value:ColorTransform):ColorTransform {
 
-		if (!__colorTransform.__equals (value)) {
+		if (!__displayObject.__colorTransform.__equals (value)) {
 
-			__colorTransform.copyFrom(value);
+			__displayObject.__colorTransform.copyFrom(value);
 			__displayObject.__setRenderDirtyNoCachedBitmap ();
 
 		}
 
-		return __colorTransform;
+		return value;
 
 	}
 

@@ -875,7 +875,7 @@ class MovieClip extends flash.display.MovieClip {
 				__objects.remove (object_id);
 			} else {
 				if(resetColorTransform) {
-					__objects.get (object_id).transform.resetColorTransform();
+					__objects.get (object_id).__colorTransform.reset();
 				}
 			}
 		}
@@ -926,9 +926,7 @@ class MovieClip extends flash.display.MovieClip {
 						displayObject = __createObject (frameObject);
 
 						displayObject.name = oldObject.name;
-						displayObject.transform.matrix = oldObject.transform.getMatrixNoClone();
-						displayObject.transform.colorTransform = oldObject.transform.colorTransform;
-						displayObject.alpha = oldObject.alpha;
+						displayObject.transform = oldObject.transform;
 
 						if ( oldObject.__filters != null ) {
 							displayObject.filters = oldObject.__filters.map(function(bitmapFilter){ return bitmapFilter.clone(); });

@@ -584,8 +584,7 @@ private class State {
 				maskTexture == other.maskTexture && /* :TRICKY: if masks are equal, we expect on matrices being equal as well */
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
-				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
-				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, true)))
+				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform)))
 
 		);
 	}

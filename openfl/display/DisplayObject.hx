@@ -73,14 +73,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 
-	public var __renderAlpha:Float;
 	public var __renderColorTransform:ColorTransform;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
 	public var __worldTransform:Matrix;
 
-	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __branchDepth:Int;
@@ -100,16 +98,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __scrollRect:Rectangle;
 	private var __shader:Shader;
 	private var __transform:Matrix;
+	private var __colorTransform:ColorTransform;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
-	private var __worldAlphaChanged:Bool;
-	private var __worldClip:Rectangle;
-	private var __worldClipChanged:Bool;
-	private var __worldTransformCache:Matrix;
-	private var __worldTransformChanged:Bool;
-	private var __worldVisible:Bool;
-	private var __worldVisibleChanged:Bool;
-	private var __worldZ:Int;
 	private var __cacheAsBitmap:Bool = false;
 	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
@@ -154,7 +145,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		super ();
 
-		__alpha = 1;
 		__transform = new Matrix ();
 		__visible = true;
 
@@ -170,7 +160,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldOffset = new Point ();
 
 		__worldAlpha = 1;
-		__renderAlpha = 1;
+		__colorTransform = new ColorTransform();
 		__worldColorTransform = new ColorTransform ();
 		__renderColorTransform = new ColorTransform ();
 
@@ -926,7 +916,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__setRenderDirty();
 		}
 
-		if ( __objectTransform != null) {
+		if ( __objectTransform != null ) {
 			Transform.pool.put(__objectTransform);
 			__objectTransform = null;
 		}
@@ -998,30 +988,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	{
 		if (parent != null) {
 
-			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
+			__worldColorTransform.setFromCombination (__colorTransform, parent.__worldColorTransform);
+
+			var alpha = this.alpha;
 
 			if (mustResetRenderColorTransform()) {
-				__renderAlpha = 1.0;
-				__worldAlpha = alpha * parent.__renderAlpha;
+				__worldAlpha = alpha * parent.__renderColorTransform.alphaMultiplier;
 				__renderColorTransform.reset ();
 			} else {
-				__renderAlpha = alpha * parent.__renderAlpha;
 				__worldAlpha = alpha * parent.__worldAlpha;
-				__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
+				__renderColorTransform.setFromCombination (__colorTransform, parent.__renderColorTransform);
 			}
 
 		} else {
 
 
-			__worldColorTransform.copyFrom(transform.colorTransform);
+			__worldColorTransform.copyFrom(__colorTransform);
 			__worldAlpha = alpha;
 
 			if (mustResetRenderColorTransform()) {
-				__renderAlpha = 1.0;
 				__renderColorTransform.reset ();
 			} else {
-				__renderAlpha = alpha;
-				__renderColorTransform.copyFrom(transform.colorTransform);
+				__renderColorTransform.copyFrom(__colorTransform);
 			}
 		}
 
@@ -1264,19 +1252,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 
 	private function get_alpha ():Float {
-
-		return __alpha;
-
+		return __colorTransform.alphaMultiplier;
 	}
 
 
 	private function set_alpha (value:Float):Float {
 
 		if (value > 1.0) value = 1.0;
-		if (value != __alpha) {
+		if (value != alpha) {
 			__setRenderDirtyNoCachedBitmap();
 		}
-		return __alpha = value;
+		return __colorTransform.alphaMultiplier = value;
 
 	}
 
@@ -1711,7 +1697,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
-		__objectTransform.colorTransform = value.colorTransform.__clone();
+		__objectTransform.colorTransform = value.colorTransform;
 
 		return __objectTransform;
 

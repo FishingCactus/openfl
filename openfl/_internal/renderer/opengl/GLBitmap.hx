@@ -57,7 +57,7 @@ class GLBitmap {
 		var renderTransform = Matrix.pool.get ();
 		renderTransform.copyFrom (bitmap.__renderTransform);
 
-		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, bitmap.__renderAlpha, bitmap.__blendMode, bitmap.__shader, bitmap.pixelSnapping);
+		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, 1, bitmap.__blendMode, bitmap.__shader, bitmap.pixelSnapping);
 
 		Matrix.pool.put (renderTransform);
 	}
