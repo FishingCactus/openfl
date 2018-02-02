@@ -1,7 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
@@ -113,14 +112,10 @@ class Bitmap extends DisplayObject {
 
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 
-		CanvasBitmap.render (this, renderSession);
-
 	}
 
 
 	public override function __renderCanvasMask (renderSession:RenderSession):Void {
-
-		renderSession.context.rect (0, 0, width, height);
 
 	}
 
