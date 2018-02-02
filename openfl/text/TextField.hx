@@ -1275,6 +1275,10 @@ class TextField extends InteractiveObject {
 							}
 
 						}
+					case "li":
+						copied_format.bullet = true;
+					case "indent":
+						copied_format.leftMargin += TextFormat.getBulletIndentLeftMargin();
 					default:
 						#if dev
 							trace ('trying to parse unsupported tag ( $tag ) from html text');
@@ -1314,6 +1318,9 @@ class TextField extends InteractiveObject {
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
 			value = new EReg ("</br>", "g").replace (value, "\n");
+
+			value = new EReg ("<li>", "g").replace (value, "<indent>" + TextFormat.getBulletText() + "<li>");
+			value = new EReg ("</li>", "g").replace (value, "</li></indent>\n");
 
 			var data;
 			try {

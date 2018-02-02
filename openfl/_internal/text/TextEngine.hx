@@ -634,12 +634,16 @@ class TextEngine {
 
 		var textLength = text.length;
 
-		inline function getAdvance (text:String, startIndex:Int, endIndex:Int):Float {
+		inline function getAdvance (text:String, startIndex:Null<Int> = null, endIndex:Null<Int> = null):Float {
 
 			var width:Float = 0;
 			#if (js && html5)
 
-			width = __context.measureText (text.substring(startIndex, endIndex)).width;
+			if ( startIndex == null && endIndex == null ) {
+				width = __context.measureText (text).width;
+			} else {
+				width = __context.measureText (text.substring(startIndex, endIndex)).width;
+			}
 
 			#else
 
@@ -755,7 +759,15 @@ class TextEngine {
 
 		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
 			layoutGroup = new TextLayoutGroup (format, startIndex, -1);
-			layoutGroup.offsetX = offsetX;
+			var local_offset_x = offsetX;
+			var it_is_new_line = offsetX == OFFSET_START;
+			if ( it_is_new_line && format.leftMargin > 0 ) {
+				local_offset_x += format.leftMargin;
+			}
+			if ( it_is_new_line && format.bullet ) {
+				local_offset_x += getAdvance( TextFormat.getBulletText() );
+			}
+			layoutGroup.offsetX = local_offset_x;
 			layoutGroup.ascent = ascent;
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
