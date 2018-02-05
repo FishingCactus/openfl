@@ -875,7 +875,7 @@ class MovieClip extends flash.display.MovieClip {
 				__objects.remove (object_id);
 			} else {
 				if(resetColorTransform) {
-					__objects.get (object_id).transform.resetColorTransform();
+					__objects.get (object_id).__colorTransform.reset();
 				}
 			}
 		}
