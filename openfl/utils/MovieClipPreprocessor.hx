@@ -287,7 +287,7 @@ class JobContext {
             var graphics = entry.symbol.graphics;
             var shapeSymbol = cast(@:privateAccess graphics.__symbol, ShapeSymbol);
 
-            if(shapeSymbol.getCacheEntry(entry.transform) == null) {
+            if(shapeSymbol.getCacheEntry(entry.transform) == null && (shapeSymbol.forbidCachedBitmapUpdate == false || @:privateAccess shapeSymbol.cachedTable.length == 0 )) {
                 shapeSymbol.registerGraphics(graphics);
                 graphics.dirty = true;
                 openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false, true);
