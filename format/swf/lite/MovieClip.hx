@@ -1077,7 +1077,7 @@ class MovieClip extends flash.display.MovieClip {
 
 			if ( __childrenHaveClippedAtProperty ) {
 				for( child in __children ){
-					child.__clippedAt = null;
+					child.__clippedAt = -1;
 				}
 				__childrenHaveClippedAtProperty = false;
 			}

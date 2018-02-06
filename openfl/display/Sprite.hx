@@ -62,7 +62,8 @@ class Sprite extends DisplayObjectContainer {
 
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
-		shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+		var symbol = getSymbol();
+		shapeFlag = shapeFlag && ( symbol != null ? symbol.pixelPerfectHitTest : true );
 		if (hitArea != null) {
 
 			if (!hitArea.mouseEnabled)

@@ -13,7 +13,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	@:s public var bounds:Rectangle;
 	@:s public var graphics:Graphics;
-	private var activeGraphicsTable:Array<Graphics> = new Array<Graphics>();
+	private var activeGraphicsTable:Map<Graphics, Bool> = new Map<Graphics, Bool>();
 
 	private var __cachePrecision:Null<Int> = null;
 	private var __translationCachePrecision:Null<Int> = null;
@@ -307,7 +307,7 @@ class ShapeSymbol extends SWFSymbol {
 
 
 	private function __clearCachedTable() {
-		for( g in activeGraphicsTable ) {
+		for( g in activeGraphicsTable.keys() ) {
 			g.dispose(false);
 		}
 
@@ -373,10 +373,7 @@ class ShapeSymbol extends SWFSymbol {
 	}
 
 	public function registerGraphics(graphics:Graphics) {
-		if(activeGraphicsTable.indexOf(graphics) != -1) {
-			return;
-		}
-		activeGraphicsTable.push(graphics);
+        activeGraphicsTable.set(graphics, true);
 	}
 
 	public function unregisterGraphics(graphics:Graphics) {
