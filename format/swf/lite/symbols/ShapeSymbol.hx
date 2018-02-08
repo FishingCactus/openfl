@@ -312,7 +312,7 @@ class ShapeSymbol extends SWFSymbol {
 		}
 
 		for ( cache in cachedTable ) {
-			if ( cache.bitmapData ) {
+			if ( cache.bitmapData != null ) {
 				cache.bitmapData.dispose();
 			}
 		}
