@@ -311,7 +311,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
 			var hit_point = Point.pool.get();
-			hit_point.setTo (x, y);
+			hit_point.setTo (x * stage.scaleX, y * stage.scaleY);
 			var result = bounds.containsPoint (hit_point);
 			Point.pool.put(hit_point);
 			openfl.geom.Rectangle.pool.put (bounds);
