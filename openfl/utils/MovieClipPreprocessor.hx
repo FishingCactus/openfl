@@ -288,11 +288,11 @@ class JobContext {
             var shapeSymbol = cast(@:privateAccess graphics.__symbol, ShapeSymbol);
 
             if(shapeSymbol.getCacheEntry(entry.transform) == null && (shapeSymbol.forbidCachedBitmapUpdate == false || @:privateAccess shapeSymbol.cachedTable.length == 0 )) {
-                shapeSymbol.registerGraphics(graphics);
                 graphics.dirty = true;
                 openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false, true);
 
                 if(@:privateAccess graphics.__bitmap != null) {
+                    shapeSymbol.registerGraphics(graphics);
                     #if(js && profile)
                         untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
                     #end
@@ -302,10 +302,10 @@ class JobContext {
                     #if(js && profile)
                         untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
                     #end
+                    shapeSymbol.setCachedBitmapData (@:privateAccess graphics.__bitmap, entry.transform);
                 }
 
                 graphics.dirty = true;
-                shapeSymbol.setCachedBitmapData (@:privateAccess graphics.__bitmap, entry.transform);
             }
 
             ++shapeToProcessIndex;
