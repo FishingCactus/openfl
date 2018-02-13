@@ -162,7 +162,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			if (continuousLogEnabled) {
 
-				trace ('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
+				untyped console.log('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
 
 			}
 		#end
@@ -235,7 +235,7 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Create count: ${value}');
+				untyped console.log('Shape id:$id; Create count: ${value}');
 			}
 
 		}
@@ -247,14 +247,14 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Cache Miss count: ${value}');
+				untyped console.log('Shape id:$id; Cache Miss count: ${value}');
 			}
 
 		}
 
 		private static inline function _logCachedSymbolInfo (symbol:ShapeSymbol) {
 
-			trace ('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
+			untyped console.log('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
 
 			#if js
 				var console =  untyped __js__("window.console");
@@ -292,7 +292,7 @@ class ShapeSymbol extends SWFSymbol {
 				}
 			}
 
-			trace ('Total cached: $totalCached ; Approximate memory used: $approximateSize');
+			untyped console.log('Total cached: $totalCached ; Approximate memory used: $approximateSize');
 
 		}
 

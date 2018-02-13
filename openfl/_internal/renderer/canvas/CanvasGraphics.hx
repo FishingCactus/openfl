@@ -76,13 +76,13 @@ class CanvasGraphics {
 		#end
 
 		public static function logStatistics (threshold:Int = 0) {
-			trace ('Generated graphics:');
-			trace ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
+			untyped console.log ('Generated graphics:');
+			untyped console.log ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
 
-			trace ('entries: ');
+			untyped console.log ('entries: ');
 			for (entry in fromCanvasTable.keys()) {
 				if (fromCanvasTable.get(entry) >= threshold)
-					trace('  $entry, ${fromCanvasTable.get(entry)}');
+					untyped console.log('  $entry, ${fromCanvasTable.get(entry)}');
 			}
 		}
 

@@ -89,7 +89,7 @@ class MorphShape extends Shape {
 				if(value < threshold) {
 					continue;
 				}
-				trace (' ${id} => created x${value}');
+				untyped console.log(' ${id} => created x${value}');
 			}
 		}
 	#end

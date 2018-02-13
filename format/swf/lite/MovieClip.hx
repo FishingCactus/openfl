@@ -306,7 +306,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace (' ${id} => created children x${value}');
+				untyped console.log(' ${id} => created children x${value}');
 			}
 
 			for( id in __createCount.keys () ) {
@@ -314,7 +314,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace (' ${id} => created x${value}');
+				untyped console.log(' ${id} => created x${value}');
 			}
 		}
 	#end

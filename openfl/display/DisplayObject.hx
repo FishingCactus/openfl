@@ -710,7 +710,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if(value < threshold) {
 					continue;
 				}
-				trace ('${id} => applyFilters x${value}');
+				untyped console.log('${id} => applyFilters x${value}');
 			}
 		}
 	#end
