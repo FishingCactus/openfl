@@ -285,10 +285,9 @@ class MovieClip extends flash.display.MovieClip {
 		public static function __init__ () {
 
 			#if js
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.CacheInfo = {};
-				untyped $global.Profile.CacheInfo.resetStatistics = resetStatistics;
-				untyped $global.Profile.CacheInfo.logStatistics = logStatistics;
+				var childrenCreateTool = new lime.utils.ProfileTool("ChildrenCreate");
+				childrenCreateTool.reset = resetStatistics;
+				childrenCreateTool.log = logStatistics;
 			#end
 
 		}
@@ -307,7 +306,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace (' ${id} => created children x${value}');
+				untyped console.log(' ${id} => created children x${value}');
 			}
 
 			for( id in __createCount.keys () ) {
@@ -315,7 +314,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(value < threshold) {
 					continue;
 				}
-				trace (' ${id} => created x${value}');
+				untyped console.log(' ${id} => created x${value}');
 			}
 		}
 	#end
@@ -343,8 +342,8 @@ class MovieClip extends flash.display.MovieClip {
 				skipChildrenCache = true;
 
 				if(symbol.pool.size > 0) {
-                    var obj = symbol.pool.get();
-                    obj.__reset();
+					var obj = symbol.pool.get();
+					obj.__reset();
 					return obj;
 				}
 			}
@@ -408,7 +407,7 @@ class MovieClip extends flash.display.MovieClip {
 					displayObject = new DisplayObject();
 				}
 
-                displayObject.forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
+				displayObject.forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 			}
 
 			Reflect.setField( displayObject, "symbolId", symbol.id );
@@ -1161,10 +1160,10 @@ class MovieClip extends flash.display.MovieClip {
 			swf_parent.removeChild(object_to_swap);
 			swf_parent.__addChildAtSwfDepth(object_to_swap, my_depth);
 		}
-        swf_parent.removeChild(this);
-        swf_parent.__addChildAtSwfDepth(this, target_depth);
+		swf_parent.removeChild(this);
+		swf_parent.__addChildAtSwfDepth(this, target_depth);
 		__maskDataDirty = true;
-    }
+	}
 #end
 
 	private function __addChildAtSwfDepth(displayObject: DisplayObject, targetDepth:Int):Void{
@@ -1235,7 +1234,7 @@ class MovieClip extends flash.display.MovieClip {
 				switch (isMask) {
 
 					case true:
-						trace("parent (" + __symbol.id + ")\t\t\t | " + "mask   \t " + objectName + "\t\t\t | depth = " + __SWFDepthData.get(object) + "\t | mask = " + __maskData.get(object));
+						trace("parent (" + __symbol.id + ")\t\t\t | " + "mask	\t " + objectName + "\t\t\t | depth = " + __SWFDepthData.get(object) + "\t | mask = " + __maskData.get(object));
 					case false:
 						trace("parent (" + __symbol.id + ")\t\t\t | " + "object \t " + objectName + "\t\t\t | depth = " + __SWFDepthData.get(object) + "\t |");
 				}

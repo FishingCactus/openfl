@@ -49,10 +49,9 @@ class RenderSession {
 		pushRenderTargetBaseTransform (null, null);
 
 		#if (profile && js)
-		untyped $global.Profile = $global.Profile || {};
-		untyped $global.Profile.RenderInfo = {};
-		untyped $global.Profile.RenderInfo.logStatistics = logStatistics;
-		untyped $global.Profile.RenderInfo.resetStatistics = resetStatistics;
+		var tool = new lime.utils.ProfileTool("Render");
+		tool.log = logStatistics;
+		tool.reset = resetStatistics;
 		#end
 	}
 
@@ -115,9 +114,9 @@ class RenderSession {
 	}
 
 	static private function logStatistics() {
-		trace("RenderInfo:");
-		trace("  last:    " + lastDrawCount);
-		trace("  highest: " + highestDrawCount);
+		untyped console.log("RenderInfo:");
+		untyped console.log("  last:	  " + lastDrawCount);
+		untyped console.log("  highest: " + highestDrawCount);
 	}
 
 	static public function onDrawCount(drawCount:Int) {
