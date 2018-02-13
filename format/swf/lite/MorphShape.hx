@@ -17,7 +17,7 @@ class MorphShape extends Shape {
 
 	public var ratio(default, set) : Float;
 
-    private var mustCache:Bool = false;
+	private var mustCache:Bool = false;
 
 
 	public function new (swf:SWFLite, symbol:MorphShapeSymbol) {
@@ -27,9 +27,9 @@ class MorphShape extends Shape {
 		__symbol = symbol;
 		@:privateAccess this.graphics.__symbol = symbol;
 
-        if(symbol.useBitmapCache) {
-            graphics.keepBitmapData = true;
-        }
+		if(symbol.useBitmapCache) {
+			graphics.keepBitmapData = true;
+		}
 
 		__swf = swf;
 
@@ -40,9 +40,9 @@ class MorphShape extends Shape {
 
 	}
 
-    private override function __reset() {
-        ratio = 0;
-    }
+	private override function __reset() {
+		ratio = 0;
+	}
 
 
 	private override function __getBounds (rect:Rectangle):Void {
@@ -72,10 +72,9 @@ class MorphShape extends Shape {
 
 		public static function __init__ () {
 			#if js
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.MorphShapeInfo = {};
-				untyped $global.Profile.MorphShapeInfo.resetStatistics = resetStatistics;
-				untyped $global.Profile.MorphShapeInfo.logStatistics = logStatistics;
+				var tool = new lime.utils.ProfileTool("MorphShape");
+				tool.reset = resetStatistics;
+				tool.log = logStatistics;
 			#end
 		}
 
@@ -97,7 +96,7 @@ class MorphShape extends Shape {
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
-        __updateTransforms();
+		__updateTransforms();
 
 		if(__renderDirty){
 			var result = __updateMorphShape(__symbol, ratio, __renderTransform, graphics);
@@ -111,10 +110,10 @@ class MorphShape extends Shape {
 				__updateCount.set(profileId, value + 1);
 			#end
 			}
-	    }
+		}
 
 		super.__update(transformOnly, updateChildren);
-    }
+	}
 
 	private static function __updateMorphShape(symbol:MorphShapeSymbol, ratio:Float, renderTransform:Matrix, graphics:Graphics) {
 		var cacheEntry = symbol.getCacheEntry(renderTransform, ratio);
@@ -146,14 +145,14 @@ class MorphShape extends Shape {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
-        super.__renderGL(renderSession);
+		super.__renderGL(renderSession);
 
-        if(mustCache) {
-            if(@:privateAccess graphics.__bitmap != null) {
-                __symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, __renderTransform, ratio);
-            }
-            mustCache = false;
-        }
+		if(mustCache) {
+			if(@:privateAccess graphics.__bitmap != null) {
+				__symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, __renderTransform, ratio);
+			}
+			mustCache = false;
+		}
 	}
 
 }

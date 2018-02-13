@@ -136,13 +136,13 @@ class Bitmap extends DisplayObject {
 		__preRenderGL (renderSession);
 
         #if(js && profile)
-            untyped $global.Profile.BitmapDataUpload.currentProfileId = getProfileId();
+            untyped $global.Profile.TextureUpload.currentProfileId = getProfileId();
         #end
 
 		GLBitmap.render (this, renderSession);
 
         #if(js && profile)
-            untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+            untyped $global.Profile.TextureUpload.currentProfileId = null;
         #end
 
 		__postRenderGL (renderSession);

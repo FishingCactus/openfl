@@ -101,8 +101,8 @@ class GLRenderer extends AbstractRenderer {
 		projectionMatrix = new Matrix();
 
 		projection = new Point ();
-		projection.x =  this.width / 2;
-		projection.y =  -this.height / 2;
+		projection.x =	this.width / 2;
+		projection.y =	-this.height / 2;
 
 		offset = new Point (0, 0);
 
@@ -321,14 +321,14 @@ class GLRenderer extends AbstractRenderer {
 		var bitmap = shape.__graphics.__bitmap;
 		matrix.copyFrom (shape.__renderTransform);
 
-        #if(js && profile)
-            untyped $global.Profile.BitmapDataUpload.currentProfileId = shape.getProfileId();
-        #end
+		#if(js && profile)
+			untyped $global.Profile.TextureUpload.currentProfileId = shape.getProfileId();
+		#end
 
 		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode);
-        #if(js && profile)
-            untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
-        #end
+		#if(js && profile)
+			untyped $global.Profile.TextureUpload.currentProfileId = null;
+		#end
 	}
 
 
@@ -363,8 +363,8 @@ class GLRenderer extends AbstractRenderer {
 
 		setViewport (0, 0, width, height);
 
-		projection.x =  width / 2;
-		projection.y =  -height / 2;
+		projection.x =	width / 2;
+		projection.y =	-height / 2;
 
 	}
 

@@ -712,23 +712,23 @@ class BitmapData implements IBitmapDrawable {
 
 				#if(profile)
 					@:privateAccess lime._backend.html5.HTML5Application.__uploadCount++;
-                    var currentProfileId = untyped $global.Profile.BitmapDataUpload.currentProfileId;
-                    var map = lime._backend.html5.HTML5Application.__uploadMap;
-                    var value = map.get(currentProfileId);
-                    value = (value != null ? value : 0);
-                    map.set(currentProfileId, value + 1);
+					var currentProfileId = untyped $global.Profile.TextureUpload.currentProfileId;
+					var map = lime._backend.html5.HTML5Application.__uploadMap;
+					var value = map.get(currentProfileId);
+					value = (value != null ? value : 0);
+					map.set(currentProfileId, value + 1);
 				#end
 			#end
 
 			__image.dirty = false;
 
 
-            #if(js && dev)
-            if(untyped $global.Tools.viewUploadedTextures) {
-                var currentProfileId = untyped $global.Profile.BitmapDataUpload.currentProfileId;
-                BitmapData.viewBitmapData(this, currentProfileId);
-            }
-            #end
+			#if(js && dev)
+			if(untyped $global.Tools.viewUploadedTextures) {
+				var currentProfileId = untyped $global.Profile.TextureUpload.currentProfileId;
+				BitmapData.viewBitmapData(this, currentProfileId);
+			}
+			#end
 		}
 
 		return __texture;
@@ -790,13 +790,13 @@ class BitmapData implements IBitmapDrawable {
 			throw ":TODO: compute rect";
 			// if (rect.contains (x, y)) {
 
-			// 	var pixel = getPixel32 (x, y);
+			//	var pixel = getPixel32 (x, y);
 
-			// 	if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+			//	if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
 
-			// 		return true;
+			//		return true;
 
-			// 	}
+			//	}
 
 			// }
 
@@ -820,31 +820,31 @@ class BitmapData implements IBitmapDrawable {
 			throw ":TODO: compute rect";
 			// if (rect.contains (x, y)) {
 
-			// 	var hitRect = Rectangle.__temp;
-			// 	hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
+			//	var hitRect = Rectangle.__temp;
+			//	hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 
-			// 	var pixels = getPixels (hitRect);
+			//	var pixels = getPixels (hitRect);
 
-			// 	hitRect.offset (-x, -y);
-			// 	var testPixels = secondBitmapData.getPixels (hitRect);
+			//	hitRect.offset (-x, -y);
+			//	var testPixels = secondBitmapData.getPixels (hitRect);
 
-			// 	var length = Std.int (hitRect.width * hitRect.height);
-			// 	var pixel, testPixel;
+			//	var length = Std.int (hitRect.width * hitRect.height);
+			//	var pixel, testPixel;
 
-			// 	for (i in 0...length) {
+			//	for (i in 0...length) {
 
-			// 		pixel = pixels.readUnsignedInt ();
-			// 		testPixel = testPixels.readUnsignedInt ();
+			//		pixel = pixels.readUnsignedInt ();
+			//		testPixel = testPixels.readUnsignedInt ();
 
-			// 		if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+			//		if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
 
-			// 			return true;
+			//			return true;
 
-			// 		}
+			//		}
 
-			// 	}
+			//	}
 
-			// 	return false;
+			//	return false;
 
 			// }
 
@@ -1359,14 +1359,14 @@ class BitmapData implements IBitmapDrawable {
 	private static function viewGLTexture(texture:GLTexture, width:Int, height:Int, ?extraTitle:String = "") {
 		var gl = @:privateAccess Lib.current.stage.__renderer.renderSession.gl;
 
-        var currentFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+		var currentFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 		var framebuffer = gl.createFramebuffer();
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 		var data = new js.html.Uint8Array(width * height * 4);
 		gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 		gl.deleteFramebuffer(framebuffer);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, currentFrameBuffer);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, currentFrameBuffer);
 
 		var canvas = untyped $global.document.createElement('canvas');
 		canvas.width = width;
@@ -1389,7 +1389,7 @@ class BitmapData implements IBitmapDrawable {
 				title: theTitle,
 				width: width + 30,
 				resizable: false,
-                position: { my:"right bottom", at:"right bottom", of:window }
+				position: { my:"right bottom", at:"right bottom", of:window }
 				})
 			.children().first().css({width: "" + width + "px", height: "" + height + "px", "min-width": 0, "min-height": 0})
 			.parent()
@@ -1421,7 +1421,7 @@ class BitmapData implements IBitmapDrawable {
 
 class TextureUvs {
 
-	public static var pool: ObjectPool<TextureUvs>  = new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
+	public static var pool: ObjectPool<TextureUvs>	= new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
 
 	public var x0:Float = 0;
 	public var x1:Float = 0;

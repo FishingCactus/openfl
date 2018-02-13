@@ -202,17 +202,16 @@ class ShapeSymbol extends SWFSymbol {
 		public static function __init__ () {
 
 			#if js
-				untyped __js__ ("$global.Profile = $global.Profile || {}");
-				untyped __js__ ("$global.Profile.ShapeInfo = []");
-				untyped __js__ ("$global.Profile.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
-				untyped __js__ ("$global.Profile.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
-				untyped __js__ ("$global.Profile.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+				var tool = new lime.utils.ProfileTool("Shape");
+				tool.reset = resetStatistics;
+				tool.log = logStatistics;
+				tool.count = enableContinuousLog;
 
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached = $global.Profile.ShapeInfo.Cached || {}" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatisticsCached" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatisticsCached" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logCachedSymbolInfo" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logAllCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logAllCachedSymbolInfo" );
+				tool = new lime.utils.ProfileTool("ShapeCache");
+				tool.reset = resetStatisticsCached;
+				tool.log = logStatisticsCached;
+				untyped tool.logCachedSymbolInfo = logCachedSymbolInfo;
+				untyped tool.logAllCachedSymbolInfo = logAllCachedSymbolInfo;
 			#end
 
 		}
@@ -236,7 +235,7 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Missed count: ${value}');
+				trace ('Shape id:$id; Create count: ${value}');
 			}
 
 		}
@@ -248,7 +247,7 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Missed count: ${value}');
+				trace ('Shape id:$id; Cache Miss count: ${value}');
 			}
 
 		}

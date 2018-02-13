@@ -181,9 +181,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransformDirty++;
 	}
 
-    private function __reset() {
+	private function __reset() {
 
-    }
+	}
 
 	public function resolve (fieldName:String):DisplayObject {
 
@@ -206,7 +206,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				var currentParent = forcedParent != null ? forcedParent : parent;
 				while(currentParent != null) {
 					symbolId += "*";
-				 	var parentSymbol = currentParent.getSymbol();
+					var parentSymbol = currentParent.getSymbol();
 					if(parentSymbol != null) {
 						symbolId = Std.string(parentSymbol.id) + symbolId;
 						break;
@@ -691,10 +691,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		public static function __init__ () {
 
 			#if js
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.Filters = {};
-				untyped $global.Profile.Filters.resetStatistics = resetStatistics;
-				untyped $global.Profile.Filters.logStatistics= logStatistics;
+				var tool = new lime.utils.ProfileTool("Filters");
+				tool.reset = resetStatistics;
+				tool.log = logStatistics;
 			#end
 
 		}

@@ -294,13 +294,13 @@ class JobContext {
                 if(@:privateAccess graphics.__bitmap != null) {
                     shapeSymbol.registerGraphics(graphics);
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
+                        untyped $global.Profile.TextureUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
                     #end
 
                     @:privateAccess graphics.__bitmap.getTexture (gl);
 
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                        untyped $global.Profile.TextureUpload.currentProfileId = null;
                     #end
                     shapeSymbol.setCachedBitmapData (@:privateAccess graphics.__bitmap, entry.transform);
                 }
@@ -317,13 +317,13 @@ class JobContext {
 
             if(bitmapData != null) {
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
+                    untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed)";
                 #end
 
                 @:privateAccess bitmapData.getTexture (gl);
 
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                    untyped $global.Profile.TextureUpload.currentProfileId = null;
                 #end
             }
 
@@ -338,11 +338,11 @@ class JobContext {
                 openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
                 if ( @:privateAccess graphics.__bitmap != null ) {
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
+                        untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed)";
                     #end
                     @:privateAccess graphics.__bitmap.getTexture (gl);
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                        untyped $global.Profile.TextureUpload.currentProfileId = null;
                     #end
 
                     entry.symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, entry.transform, entry.ratio);

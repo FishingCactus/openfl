@@ -69,10 +69,9 @@ class CanvasGraphics {
 	#if profile
 		#if js
 			public static function __init__ () {
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.CanvasGraphics = {};
-				untyped $global.Profile.CanvasGraphics.logStatistics = logStatistics;
-				untyped $global.Profile.CanvasGraphics.clear = clear;
+				var tool = new lime.utils.ProfileTool("CanvasGraphics");
+				tool.reset = clear;
+				tool.log = logStatistics;
 			}
 		#end
 
@@ -94,7 +93,7 @@ class CanvasGraphics {
 
 	#end
 
-	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
+	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>	= new ObjectPool<DrawCommandReader>(
 		function()
 		{
 			return new DrawCommandReader(null);
@@ -922,10 +921,10 @@ class CanvasGraphics {
 		var kappa = .5522848,
 			ox = (width / 2) * kappa, // control point offset horizontal
 			oy = (height / 2) * kappa, // control point offset vertical
-			xe = x + width,           // x-end
-			ye = y + height,           // y-end
-			xm = x + width / 2,       // x-middle
-			ym = y + height / 2;       // y-middle
+			xe = x + width,			  // x-end
+			ye = y + height,		   // y-end
+			xm = x + width / 2,		  // x-middle
+			ym = y + height / 2;	   // y-middle
 
 		context.moveTo (x, ym);
 		context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
