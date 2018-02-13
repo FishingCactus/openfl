@@ -401,7 +401,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			Point.pool.put(point);
 		}
 
-		shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+		var symbol = getSymbol();
+		shapeFlag = shapeFlag && ( symbol != null ? symbol.pixelPerfectHitTest : true );
 
 		var itHasMouseListener = __hasMouseListener ();
 
@@ -418,7 +419,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					var child = __children[i];
 					var clippedAt = child.__clippedAt;
 
-					if (clippedAt != null) {
+					if (clippedAt != -1) {
 						// :TODO: Do not recheck the mask several times.
 						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
@@ -454,7 +455,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					var child = __children[i];
 					var clippedAt = child.__clippedAt;
 
-					if (clippedAt != null) {
+					if (clippedAt != -1) {
 						// :TODO: Do not recheck the mask several times.
 						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
