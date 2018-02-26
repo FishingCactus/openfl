@@ -636,8 +636,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			Matrix.pool.put (localMatrix);
 			#end
 
-			GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0);
-
+			GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0 || forbidCachedBitmapUpdate);
 		}
 
 	}

@@ -348,7 +348,7 @@ class ShapeSymbol extends SWFSymbol {
 	public function set_cachePrecision (value:Int):Int {
 		#if dev
 			if (__cachePrecision != null && __cachePrecision != value) {
-				trace (':WARNING: ignoring cache precision change for symbol($id) from $__cachePrecision to $value');
+				trace (':WARNING: cache precision change for symbol($id) from $__cachePrecision to $value');
 			}
 		#end
 
