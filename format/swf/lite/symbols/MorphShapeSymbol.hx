@@ -27,7 +27,28 @@ class MorphShapeSymbol extends SWFSymbol {
 
     public var useBitmapCache(default, set):Bool = false;
     private var cachedTable:Array<CacheEntry>;
-    public var cachePrecision:Int = 100;
+    private var __cachePrecision:Null<Int> = null;
+    public var cachePrecision(get, set):Int;
+
+    static private var defaultCachePrecision:Int = 100;
+
+    public function get_cachePrecision ():Int {
+        if (__cachePrecision == null) {
+            __cachePrecision = defaultCachePrecision;
+        }
+
+        return __cachePrecision;
+    }
+
+    public function set_cachePrecision (value:Int):Int {
+        #if dev
+            if (__cachePrecision != null && __cachePrecision != value) {
+                trace (':WARNING: cache precision change for symbol($id) from $__cachePrecision to $value');
+            }
+        #end
+
+        return __cachePrecision = value;
+    }
 
     public function new () {
 
@@ -172,15 +193,10 @@ class MorphShapeSymbol extends SWFSymbol {
             var hash = CacheEntry.getHash(renderTransform, ratio, cachePrecision);
 
             for (entry in cachedTable) {
-
                 if (entry.hash == hash) {
-
                     return entry;
-
                 }
-
             }
-
         }
 
         return null;
@@ -198,7 +214,6 @@ class MorphShapeSymbol extends SWFSymbol {
 
         var hash = CacheEntry.getHash(renderTransform, ratio, cachePrecision);
         cachedTable.push (new CacheEntry (bitmapData, bounds, hash));
-
     }
 }
 

@@ -294,7 +294,7 @@ class JobContext {
                 if(@:privateAccess graphics.__bitmap != null) {
                     shapeSymbol.registerGraphics(graphics);
                     #if(js && profile)
-                        untyped $global.Profile.TextureUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
+                        untyped $global.Profile.TextureUpload.currentProfileId = entry.symbol.id + " (preprocessed shape)";
                     #end
 
                     @:privateAccess graphics.__bitmap.getTexture (gl);
@@ -317,7 +317,7 @@ class JobContext {
 
             if(bitmapData != null) {
                 #if(js && profile)
-                    untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed)";
+                    untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed morphshape)";
                 #end
 
                 @:privateAccess bitmapData.getTexture (gl);
@@ -381,13 +381,19 @@ class JobContext {
             #end
             for (entry in shapeTable) {
                 var shapeSymbol = entry.symbol;
-                shapeSymbol.cachePrecision = cachePrecision;
-                shapeSymbol.translationCachePrecision = translationCachePrecision;
+                if(@:privateAccess shapeSymbol.__cachePrecision == null) {
+                    shapeSymbol.cachePrecision = cachePrecision;
+                }
+                if(@:privateAccess shapeSymbol.__translationCachePrecision == null) {
+                    shapeSymbol.translationCachePrecision = translationCachePrecision;
+                }
                 shapeSymbol.useBitmapCache = true;
             }
             for (entry in morphShapeToProcessTable) {
                 var symbol = entry.symbol;
-                symbol.cachePrecision = cachePrecision;
+                if(@:privateAccess symbol.__cachePrecision == null) {
+                    symbol.cachePrecision = cachePrecision;
+                }
                 symbol.useBitmapCache = true;
             }
         }
