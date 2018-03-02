@@ -1376,7 +1376,7 @@
     seek: function() {
       var self = this;
       var args = arguments;
-      var seek, id;
+      var seek, id, internal;
 
       // Determine the values based on arguments.
       if (args.length === 0) {
@@ -1395,11 +1395,19 @@
       } else if (args.length === 2) {
         seek = parseFloat(args[0]);
         id = parseInt(args[1], 10);
+      } else if (args.length === 3) {
+        seek = parseFloat(args[0]);
+        id = parseInt(args[1], 10);
+        internal = args[2];
       }
 
       // If there is no ID, bail out.
       if (typeof id === 'undefined') {
         return self;
+      }
+
+      if (typeof internal == 'undefined') {
+        internal = false;
       }
 
       // If the sound hasn't loaded, add it to the load queue to seek when capable.
@@ -1440,7 +1448,9 @@
             sound._node.currentTime = seek;
           }
 
-          self._emit('seek', id);
+          if(!internal) {
+            self._emit('seek', id);
+          }
         } else {
           if (self._webAudio) {
             var realTime = self.playing(id) ? Howler.ctx.currentTime - sound._playStart : 0;
@@ -1726,7 +1736,8 @@
 
       // Restart the playback for HTML5 Audio loop.
       if (!self._webAudio && loop) {
-        self.stop(sound._id, true).play(sound._id);
+        sound._node.currentTime = sound._start;
+        self._emit('play', sound._id);
       }
 
       // Restart this timer if on a Web Audio loop.
@@ -2264,7 +2275,9 @@
     global.Sound = Sound;
   }
 })();
-\n\n/*!
+
+
+/*!
  *  Spatial Plugin - Adds support for stereo and 3D audio where Web Audio is supported.
  *  
  *  howler.js v2.0.8
