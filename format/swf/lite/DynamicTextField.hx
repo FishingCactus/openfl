@@ -126,8 +126,10 @@ class DynamicTextField extends TextField {
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		var hasVariableName = _variableName != null && _variableName.length > 0;
+
 		if ( hasVariableName ) {
 
+			var variableName = StringTools.replace( _variableName, "_parent.", "" );
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
 				if ( Reflect.hasField(local_parent, _variableName) ) {
