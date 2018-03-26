@@ -132,11 +132,11 @@ class DynamicTextField extends TextField {
 			var variableName = StringTools.replace( _variableName, "_parent.", "" );
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
-				if ( Reflect.hasField(local_parent, _variableName) ) {
+				if ( Reflect.hasField(local_parent, variableName) ) {
 					if(symbol != null && symbol.html){
-						htmlText = Std.string(Reflect.field(local_parent,_variableName));
+						htmlText = Std.string(Reflect.field(local_parent, variableName));
 					} else {
-						text = Std.string(Reflect.field(local_parent,_variableName));
+						text = Std.string(Reflect.field(local_parent, variableName));
 					}
 					break;
 				}
