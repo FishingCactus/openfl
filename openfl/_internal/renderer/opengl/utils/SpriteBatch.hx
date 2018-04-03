@@ -461,7 +461,7 @@ class SpriteBatch {
 			state = states[index] = new State();
 		}
 		state.texture = texture;
-		if (maskBitmap != null) {
+		if (maskBitmap != null && @:privateAccess maskBitmap.__uvData != null) {
 			state.maskTexture = maskBitmap.getTexture(gl);
 			var uvData = @:privateAccess maskBitmap.__uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
