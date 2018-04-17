@@ -1,6 +1,6 @@
 package openfl._internal.renderer;
 
-
+import openfl.display.api.ISpritesheet;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
@@ -396,11 +396,15 @@ class DrawCommandBuffer implements hxbit.Serializable {
 
 	}
 
-	public function resolveBitmapDatas(swflite:format.swf.lite.SWFLite) {
+	public function resolveBitmapDatas(swflite:format.swf.lite.SWFLite, spritesheet:ISpritesheet = null) {
 		bd = new UnshrinkableArray();
 		for(i in 0...bd_ids.length) {
 			var symbol:format.swf.lite.symbols.BitmapSymbol = cast swflite.symbols.get (bd_ids[i]);
-			bd.push(BitmapData.getFromSymbol(symbol));
+			if (spritesheet != null) {
+				bd.push(BitmapData.getFromSritesheet(symbol, spritesheet));
+			} else {
+				bd.push(BitmapData.getFromSymbol(symbol));
+			}
 		}
 	}
 

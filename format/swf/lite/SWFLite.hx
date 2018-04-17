@@ -1,6 +1,6 @@
 package format.swf.lite;
 
-
+import openfl.display.api.ISpritesheet;
 import flash.display.BitmapData;
 import flash.display.SimpleButton;
 import format.swf.lite.symbols.BitmapSymbol;
@@ -15,6 +15,8 @@ import openfl.Assets;
 
 @:keep class SWFLite implements hxbit.Serializable {
 
+
+	public static var spritesheet:ISpritesheet;
 
 	public static var instances = new Map<String, SWFLite> ();
 	public static var fontAliases = new Map<String, String>();
@@ -147,7 +149,7 @@ import openfl.Assets;
 
 		for (symbol in symbols) {
 			if(Std.is(symbol, format.swf.lite.symbols.ShapeSymbol)) {
-				@:privateAccess cast(symbol, format.swf.lite.symbols.ShapeSymbol).graphics.__commands.resolveBitmapDatas(this);
+				@:privateAccess cast(symbol, format.swf.lite.symbols.ShapeSymbol).graphics.__commands.resolveBitmapDatas(this, spritesheet);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
-
+import openfl.display.api.ISpritesheet;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
@@ -1324,6 +1324,20 @@ class BitmapData implements IBitmapDrawable {
 			return bitmapData;
 		}
 
+	}
+
+	public static function getFromSritesheet(symbol:BitmapSymbol, spritesheet:ISpritesheet):BitmapData {
+		if (Assets.cache.hasBitmapData (symbol.path)) {
+
+			return Assets.cache.getBitmapData (symbol.path);
+
+		} else {
+
+			var bitmapData = spritesheet.getBitmapDataByFrameName(Std.string(symbol.id));
+			Assets.cache.setBitmapData (symbol.path, bitmapData);
+			return bitmapData;
+
+		}
 	}
 
 	public function getLocalTransform (matrix:Matrix):Void {

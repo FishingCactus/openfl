@@ -1,5 +1,6 @@
 package format.swf.lite;
 
+import openfl.display.api.ISpritesheet;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
 import openfl.Assets;
@@ -11,6 +12,8 @@ class SimpleSprite extends flash.display.MovieClip
 {
     private var _symbol:SimpleSpriteSymbol;
 
+    public static var spritesheet: ISpritesheet;
+
     public function new(swf:SWFLite, symbol:SimpleSpriteSymbol)
     {
         _symbol = symbol;
@@ -20,11 +23,26 @@ class SimpleSprite extends flash.display.MovieClip
         __totalFrames = 1;
         __currentFrame = 1;
 
-        var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
-        addChild(bitmap);
-        bitmap.smoothing = symbol.smooth;
-        bitmap.pixelSnapping = NEVER;
-        bitmap.__transform.copyFrom(symbol.matrix);
+
+        if (spritesheet == null) {
+            var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
+            bitmap.smoothing = symbol.smooth;
+            bitmap.pixelSnapping = NEVER;
+            addDisplayObject(bitmap, symbol);
+        } else {
+            // for reducing draw calls usePerFrameBitmapData should be set to false
+            var frameName:String = Std.string(symbol.bitmapID);
+            var displayObject:DisplayObject = spritesheet.getDisplayObjectByFrameName(frameName);
+            addDisplayObject(displayObject, symbol);
+        }
+
+
+    }
+
+    private function addDisplayObject(displayObject:DisplayObject, symbol:SimpleSpriteSymbol):Void
+    {
+        displayObject.__transform.copyFrom(symbol.matrix);
+        addChild(displayObject);
     }
 
     private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
