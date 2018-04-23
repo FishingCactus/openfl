@@ -405,11 +405,14 @@ class Tools {
 
 				if (targetDirectory != null) {
 
+					LogHelper.info ("", " - \x1b[1mTargetDirectory:\x1b[0m " + targetDirectory + " [SWFLite]");
+
 					cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
 					var cacheFile = cacheDirectory + "/" + library.name + ".dat";
 
 					if (FileSystem.exists (cacheFile)) {
-
+						LogHelper.info ("", " - \x1b[1mdat-file exists:\x1b[0m " + cacheFile + " [SWFLite]");
+						LogHelper.info ("", " - \x1b[1mdlibrary-sourcePath:\x1b[0m " + library.sourcePath + " [SWFLite]");
 						var cacheDate = FileSystem.stat (cacheFile).mtime;
 						var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
 						var sourceDate = FileSystem.stat (library.sourcePath).mtime;
@@ -425,6 +428,8 @@ class Tools {
 				}
 
 				if (cacheAvailable) {
+
+					LogHelper.info ("cache is available");
 
 					for (file in FileSystem.readDirectory (cacheDirectory)) {
 
@@ -483,12 +488,16 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						if (cacheDirectory != null) {
+						if (Sys.getEnv("swflite-spritesheet") == "true")
+						{
+							asset.markedForSpritesheet = true;
+						}
 
+						if (cacheDirectory != null) {
 							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
 							asset.format = type;
-							File.saveBytes (asset.sourcePath, assetData);
-
+							LogHelper.info ("", " - \x1b[1masset-source:\x1b[0m " + asset.sourcePath + " [SWFLite]");
+							File.saveBytes (asset.sourcePath, assetData); // write into graphics folder
 						} else {
 
 							asset.data = StringHelper.base64Encode (cast assetData);
@@ -503,6 +512,7 @@ class Tools {
 
 						}
 
+						LogHelper.info ("", " - \x1b[1masset-ignored:\x1b[0m " + asset.sourcePath + " [SWFLite]");
 						output.assets.push (asset);
 
 						if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
