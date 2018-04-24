@@ -488,7 +488,7 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						if (Sys.getEnv("swflite-spritesheet") == "true")
+						if (Sys.getEnv("swfSpritesheet") == "true")
 						{
 							asset.markedForSpritesheet = true;
 						}
