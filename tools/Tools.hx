@@ -443,6 +443,11 @@ class Tools {
 
 							}
 
+							if (Sys.getEnv("swfSpritesheet") == "true")
+							{
+								asset.markedForSpritesheet = true;
+							}
+
 							output.assets.push (asset);
 
 						}
