@@ -429,6 +429,7 @@ class Tools {
 
 				if (cacheAvailable) {
 
+					output.haxedefs.set("preventSwfTextureBuild", true);
 					LogHelper.info ("cache is available");
 
 					for (file in FileSystem.readDirectory (cacheDirectory)) {
