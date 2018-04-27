@@ -1,6 +1,6 @@
 package;
 
-
+import lime.project.SwfSpritesheet;
 import format.swf.exporters.SWFLiteExporter;
 import format.swf.lite.symbols.BitmapSymbol;
 import format.swf.lite.symbols.ButtonSymbol;
@@ -444,10 +444,7 @@ class Tools {
 
 							}
 
-							if (Sys.getEnv("swfSpritesheet") == "true")
-							{
-								asset.markedForSpritesheet = true;
-							}
+							markForSpritesheet(asset, project.swfSpritesheet.excludeList.copy());
 
 							output.assets.push (asset);
 
@@ -494,15 +491,11 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						if (Sys.getEnv("swfSpritesheet") == "true")
-						{
-							asset.markedForSpritesheet = true;
-						}
+						markForSpritesheet(asset, project.swfSpritesheet.excludeList.copy());
 
 						if (cacheDirectory != null) {
 							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
 							asset.format = type;
-							LogHelper.info ("", " - \x1b[1masset-source:\x1b[0m " + asset.sourcePath + " [SWFLite]");
 							File.saveBytes (asset.sourcePath, assetData); // write into graphics folder
 						} else {
 
@@ -518,7 +511,6 @@ class Tools {
 
 						}
 
-						LogHelper.info ("", " - \x1b[1masset-ignored:\x1b[0m " + asset.sourcePath + " [SWFLite]");
 						output.assets.push (asset);
 
 						if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
@@ -634,6 +626,18 @@ class Tools {
 
 		return null;
 
+	}
+
+	private static function markForSpritesheet(asset:Asset, excludeList:Array<Int>):Void {
+		if (Sys.getEnv("swfSpritesheet") == "true")
+		{
+			var assetId:Int = Std.parseInt(Path.withoutExtension(Path.withoutDirectory(asset.id)));
+			if (excludeList.indexOf(assetId) == -1) {
+				asset.markedForSpritesheet = true;
+			} else {
+				LogHelper.info("excluded asset from swfSpritesheet:" + asset.id);
+			}
+		}
 	}
 
 

@@ -4,4 +4,5 @@ interface ISpritesheet
 {
     function getBitmapDataByFrameName(frameName:String): BitmapData;
     function getDisplayObjectByFrameName(frameName:String) : DisplayObject;
+    function isBitmapExcluded(bitmapId:Int) : Bool;
 }

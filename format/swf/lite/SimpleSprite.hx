@@ -24,16 +24,17 @@ class SimpleSprite extends flash.display.MovieClip
         __currentFrame = 1;
 
 
-        if (spritesheet == null) {
-            var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
-            bitmap.smoothing = symbol.smooth;
-            bitmap.pixelSnapping = NEVER;
-            addDisplayObject(bitmap, symbol);
-        } else {
+
+        if (spritesheet != null && !spritesheet.isBitmapExcluded(symbol.bitmapID)) {
             // for reducing draw calls usePerFrameBitmapData should be set to false
             var frameName:String = Std.string(symbol.bitmapID);
             var displayObject:DisplayObject = spritesheet.getDisplayObjectByFrameName(frameName);
             addDisplayObject(displayObject, symbol);
+        } else {
+            var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
+            bitmap.smoothing = symbol.smooth;
+            bitmap.pixelSnapping = NEVER;
+            addDisplayObject(bitmap, symbol);
         }
 
 

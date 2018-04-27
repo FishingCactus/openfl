@@ -400,7 +400,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 		bd = new UnshrinkableArray();
 		for(i in 0...bd_ids.length) {
 			var symbol:format.swf.lite.symbols.BitmapSymbol = cast swflite.symbols.get (bd_ids[i]);
-			if (spritesheet != null) {
+			if (spritesheet != null && !spritesheet.isBitmapExcluded(symbol.id)) {
 				bd.push(BitmapData.getFromSritesheet(symbol, spritesheet));
 			} else {
 				bd.push(BitmapData.getFromSymbol(symbol));
