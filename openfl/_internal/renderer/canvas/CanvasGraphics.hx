@@ -579,7 +579,6 @@ class CanvasGraphics {
 
 				if (snapCoordinates) {
 
-					throw ":TODO:";
 					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				} else {
@@ -632,6 +631,9 @@ class CanvasGraphics {
 
 							case DRAW_IMAGE:
 								snappedDrawImage(data);
+
+							case LINE_STYLE:
+								lineStyle(data, isMask);
 
 							default:
 

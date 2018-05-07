@@ -508,10 +508,6 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromGraphics (graphics:Graphics, transparent:Bool = true, renderToLocalMatrix:Matrix):BitmapData {
 
 		#if (js && html5)
-			if (graphics.snapCoordinates) {
-				throw ":TODO: handle snapCoordinates";
-			}
-
 			var bounds = graphics.__bounds;
 			var bitmap = BitmapData.fromCanvas (graphics.__canvas, bounds.width, bounds.height, renderToLocalMatrix);
 
