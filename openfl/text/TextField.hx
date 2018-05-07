@@ -1312,6 +1312,14 @@ class TextField extends InteractiveObject {
 		__cachedHtmlText = value;
 
 		if (#if (js && html5) __div == null #else true #end) {
+			var last = value.lastIndexOf("</p>");
+			if(last > 0) {
+				var part1 = value.substr(0, last);
+				var part2 = value.substr(last);
+
+				part1 = new EReg ("</p>", "g").replace (part1, "</p>\n");
+				value = part1 + part2;
+			}
 
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
