@@ -536,21 +536,23 @@ class CanvasGraphics {
 					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
 						var shapeSymbol = cast(graphics.__symbol, ShapeSymbol);
 						shapeSymbol.registerGraphics(graphics);
-						cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
-	
-						if (!disableCache && cachedBitmapData != null) {
+						if (!disableCache) {
+							cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
+		
+							if ( cachedBitmapData != null) {
 
-							graphics.__bitmap = cachedBitmapData;
-							graphics.dirty = false;
+								graphics.__bitmap = cachedBitmapData;
+								graphics.dirty = false;
 
-							return;
-						} else {
-							var renderScale = shapeSymbol.renderScale;
+								return;
+							} 
+                        }
 
-							if(renderScale != 1) {
-								renderTransform = renderTransform.clone();
-								renderTransform.scale(renderScale, renderScale);
-							}
+						var renderScale = shapeSymbol.renderScale;
+
+						if(renderScale != 1) {
+							renderTransform = renderTransform.clone();
+							renderTransform.scale(renderScale, renderScale);
 						}
 
 					}
