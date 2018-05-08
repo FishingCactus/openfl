@@ -529,7 +529,7 @@ class CanvasGraphics {
 
 				var renderTransform = renderTransform;
 
-				if (!disableCache && graphics.__symbol != null) {
+				if (graphics.__symbol != null) {
 
 					var cachedBitmapData:BitmapData = null;
 
@@ -538,7 +538,7 @@ class CanvasGraphics {
 						shapeSymbol.registerGraphics(graphics);
 						cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
 	
-						if (cachedBitmapData != null) {
+						if (!disableCache && cachedBitmapData != null) {
 
 							graphics.__bitmap = cachedBitmapData;
 							graphics.dirty = false;
