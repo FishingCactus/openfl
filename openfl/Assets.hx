@@ -1,7 +1,7 @@
 package openfl; #if (!openfl_legacy || (openfl_legacy && lime_hybrid))
 #if !macro
 
-
+import format.swf.lite.symbols.BitmapSymbol;
 import haxe.Unserializer;
 import lime.app.Future;
 import lime.app.Promise;
@@ -129,6 +129,15 @@ class Assets {
 		
 		return null;
 		
+	}
+
+	public static function getBitmapDataFromSymbol(symbol:BitmapSymbol, useCache:Bool = true):BitmapData {
+
+		if (BitmapData.isSpritesheetImage(symbol.id)) {
+			return BitmapData.getFromSritesheet(symbol.id, symbol.path);
+		} else {
+			return getBitmapData(symbol.path, useCache);
+		}
 	}
 	
 	

@@ -44,7 +44,7 @@ import js.html.CanvasElement;
 
 class BitmapData implements IBitmapDrawable {
 
-
+	public static var spritesheet:ISpritesheet;
 	private static var __isGLES:Null<Bool> = null;
 
 	public var height (default, null):Float;
@@ -1303,38 +1303,49 @@ class BitmapData implements IBitmapDrawable {
 
 		} else {
 
-			var source = LimeAssets.getImage (symbol.path, false);
+			if (isSpritesheetImage(symbol.id)) {
+				return getFromSritesheet(symbol.id, symbol.path);
 
-			if (source != null && symbol.alpha != null && symbol.alpha != "") {
+			} else {
+				var source = LimeAssets.getImage (symbol.path, false);
 
-				var alpha = LimeAssets.getImage (symbol.alpha, false);
-				source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+				if (source != null && symbol.alpha != null && symbol.alpha != "") {
 
-				source.buffer.premultiplied = true;
+					var alpha = LimeAssets.getImage (symbol.alpha, false);
+					source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
 
-				#if !sys
-				source.premultiplied = false;
-				#end
+					source.buffer.premultiplied = true;
 
+					#if !sys
+					source.premultiplied = false;
+					#end
+
+				}
+
+				var bitmapData = BitmapData.fromImage (source);
+
+				Assets.cache.setBitmapData (symbol.path, bitmapData);
+				return bitmapData;
 			}
 
-			var bitmapData = BitmapData.fromImage (source);
 
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
-			return bitmapData;
 		}
 
 	}
 
-	public static function getFromSritesheet(symbol:BitmapSymbol, spritesheet:ISpritesheet):BitmapData {
-		if (Assets.cache.hasBitmapData (symbol.path)) {
+	public static function isSpritesheetImage(id:Int):Bool {
+		return (spritesheet!= null && !spritesheet.isBitmapExcluded(id));
+	}
 
-			return Assets.cache.getBitmapData (symbol.path);
+	public static function getFromSritesheet(id:Int, path:String):BitmapData {
+		if (Assets.cache.hasBitmapData (path)) {
+
+			return Assets.cache.getBitmapData (path);
 
 		} else {
 
-			var bitmapData = spritesheet.getBitmapDataByFrameName(Std.string(symbol.id));
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
+			var bitmapData = spritesheet.getBitmapDataByFrameName(Std.string(id));
+			Assets.cache.setBitmapData (path, bitmapData);
 			return bitmapData;
 
 		}

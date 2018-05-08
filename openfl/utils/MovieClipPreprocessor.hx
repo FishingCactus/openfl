@@ -1,7 +1,5 @@
 package openfl.utils;
 
-import openfl.display.api.ISpritesheet;
-import openfl.display.BitmapData;
 import format.swf.exporters.ShapeCommandExporter;
 import openfl.display.Graphics;
 import format.swf.lite.MorphShape;
@@ -257,8 +255,6 @@ class JobContext {
     public var done(default, null):Bool = false;
     public var forbidCachedBitmapUpdate:Bool = false;
 
-    public static var spritesheet:ISpritesheet;
-
     public function new (symbol:SpriteSymbol, swf:SWFLite, baseTransform:Matrix, useDelay:Bool, timeSliceMillisecondCount:Int, cachePrecision:Int, translationCachePrecision:Int, priority:Int) {
         this.symbol= symbol;
         this.swf= swf;
@@ -317,14 +313,7 @@ class JobContext {
 
         while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && !timedOut ()) {
             var symbol = simpleSpritesToProcessTable[simpleSpriteToProcessIndex];
-
-            var bitmapData:BitmapData;
-            if (spritesheet != null && !spritesheet.isBitmapExcluded(symbol.id)) {
-                bitmapData = BitmapData.getFromSritesheet(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol), spritesheet);
-            } else {
-                bitmapData = Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
-            }
-
+            var bitmapData = Assets.getBitmapDataFromSymbol(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol));
 
             if(bitmapData != null) {
                 #if(js && profile)

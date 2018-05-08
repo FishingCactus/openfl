@@ -11,7 +11,6 @@ import openfl.utils.UnshrinkableArray;
 class SimpleSprite extends flash.display.MovieClip
 {
     private var _symbol:SimpleSpriteSymbol;
-
     public static var spritesheet: ISpritesheet;
 
     public function new(swf:SWFLite, symbol:SimpleSpriteSymbol)
@@ -23,21 +22,22 @@ class SimpleSprite extends flash.display.MovieClip
         __totalFrames = 1;
         __currentFrame = 1;
 
-
-
-        if (spritesheet != null && !spritesheet.isBitmapExcluded(symbol.bitmapID)) {
+        if (isSpritesheetImage(symbol.bitmapID)) {
             // for reducing draw calls usePerFrameBitmapData should be set to false
             var frameName:String = Std.string(symbol.bitmapID);
             var displayObject:DisplayObject = spritesheet.getDisplayObjectByFrameName(frameName);
             addDisplayObject(displayObject, symbol);
         } else {
-            var bitmap = new Bitmap(Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path));
+            var bitmap = new Bitmap(Assets.getBitmapDataFromSymbol(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol)));
             bitmap.smoothing = symbol.smooth;
             bitmap.pixelSnapping = NEVER;
             addDisplayObject(bitmap, symbol);
         }
 
+    }
 
+    private function isSpritesheetImage(id:Int):Bool {
+        return (spritesheet!= null && !spritesheet.isBitmapExcluded(id));
     }
 
     private function addDisplayObject(displayObject:DisplayObject, symbol:SimpleSpriteSymbol):Void
