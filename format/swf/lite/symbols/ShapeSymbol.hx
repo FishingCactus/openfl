@@ -26,6 +26,8 @@ class ShapeSymbol extends SWFSymbol {
 
 	public var snapCoordinates:Bool = false;
 
+	public var renderScale:Float = 1;
+
 	static private var defaultCachePrecision:Int = 100;
 	static private var defaultTranslationCachePrecision:Int = 100;
 	static private var lastStageWidth:Float;

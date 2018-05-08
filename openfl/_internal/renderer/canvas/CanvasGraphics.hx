@@ -527,33 +527,35 @@ class CanvasGraphics {
 
 			} else {
 
-				var renderBounds = Rectangle.pool.get ();
-				bounds.transform (renderBounds, renderTransform);
-				var flooredRenderPositionX = Math.ffloor(renderBounds.x);
-				var flooredRenderPositionY = Math.ffloor(renderBounds.y);
-				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
-				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
+				var renderTransform = renderTransform;
 
-				if (!disableCache && graphics.__symbol != null) {
+				if (graphics.__symbol != null) {
 
 					var cachedBitmapData:BitmapData = null;
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
 						var shapeSymbol = cast(graphics.__symbol, ShapeSymbol);
 						shapeSymbol.registerGraphics(graphics);
-						cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
+						if (!disableCache) {
+							cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
+		
+							if ( cachedBitmapData != null) {
+
+								graphics.__bitmap = cachedBitmapData;
+								graphics.dirty = false;
+
+								return;
+							} 
+                        }
+
+						var renderScale = shapeSymbol.renderScale;
+
+						if(renderScale != 1) {
+							renderTransform = renderTransform.clone();
+							renderTransform.scale(renderScale, renderScale);
+						}
+
 					}
-
-					if (cachedBitmapData != null) {
-
-						graphics.__bitmap = cachedBitmapData;
-						graphics.dirty = false;
-						Rectangle.pool.put (renderBounds);
-
-						return;
-
-					}
-
 				}
 
 				if (graphics.__canvas == null) {
@@ -565,7 +567,14 @@ class CanvasGraphics {
 
 				context = graphics.__context;
 
+
 				var context = context;
+				var renderBounds = Rectangle.pool.get ();
+				bounds.transform (renderBounds, renderTransform);
+				var flooredRenderPositionX = Math.ffloor(renderBounds.x);
+				var flooredRenderPositionY = Math.ffloor(renderBounds.y);
+				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
+				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
 
 				graphics.__canvas.width = width;
 				graphics.__canvas.height = height;
