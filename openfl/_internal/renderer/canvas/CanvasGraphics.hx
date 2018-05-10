@@ -588,7 +588,7 @@ class CanvasGraphics {
 
 				if (snapCoordinates) {
 
-					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, Math.round(transform.tx), Math.round(transform.ty));
 
 				} else {
 
