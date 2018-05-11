@@ -72,6 +72,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var width (get, set):Float;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
+	public var delayScaleRotationGraphicsRefresh:Bool = false;
 
 	public var __renderAlpha:Float;
 	public var __renderColorTransform:ColorTransform;
@@ -1205,12 +1206,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
 		if ( __graphics != null ) {
-			if ( scaleRotationChanged ) {
-				if ( __graphics != null ) {
+			if ( translationChanged ) {
+				__graphics.resetGraphicsCounter();
+			} 
+			
+			if( scaleRotationChanged ) {
+				if( delayScaleRotationGraphicsRefresh ) {
+					__graphics.resetGraphicsCounter();
+				} else {
 					__graphics.dirty = true;
 				}
-			} else if ( translationChanged ) {
-				__graphics.resetGraphicsCounter();
 			}
 		}
 	}
