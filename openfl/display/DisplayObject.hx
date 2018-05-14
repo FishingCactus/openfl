@@ -1206,17 +1206,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
 		if ( __graphics != null ) {
-			if ( translationChanged ) {
-				__graphics.resetGraphicsCounter();
-			} 
-			
 			if( scaleRotationChanged ) {
 				if( delayScaleRotationGraphicsRefresh ) {
 					__graphics.resetGraphicsCounter();
 				} else {
 					__graphics.dirty = true;
 				}
-			}
+			} else if ( translationChanged ) {
+				__graphics.resetGraphicsCounter();
+			} 
 		}
 	}
 
