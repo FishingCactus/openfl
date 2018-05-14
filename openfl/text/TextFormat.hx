@@ -87,11 +87,11 @@ class TextFormat {
 
 	}
 
-	public static function getBulletText() : String {
+	public static inline function getBulletText() : String {
 		return "●\t\t";
 	}
 
-	public static function getBulletIndentLeftMargin() : Int {
+	public static inline function getBulletIndentLeftMargin() : Int {
 		return 20;
 	}
 }
