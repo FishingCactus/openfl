@@ -134,7 +134,7 @@ class Assets {
 	public static function getBitmapDataFromSymbol(symbol:BitmapSymbol, useCache:Bool = true):BitmapData {
 
 		if (BitmapData.isSpritesheetImage(symbol.id)) {
-			return BitmapData.getFromSritesheet(symbol.id, symbol.path);
+			return BitmapData.getFromSpritesheet(symbol.id, symbol.path);
 		} else {
 			return getBitmapData(symbol.path, useCache);
 		}

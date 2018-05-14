@@ -1304,7 +1304,7 @@ class BitmapData implements IBitmapDrawable {
 		} else {
 
 			if (isSpritesheetImage(symbol.id)) {
-				return getFromSritesheet(symbol.id, symbol.path);
+				return getFromSpritesheet(symbol.id, symbol.path);
 
 			} else {
 				var source = LimeAssets.getImage (symbol.path, false);
@@ -1337,7 +1337,7 @@ class BitmapData implements IBitmapDrawable {
 		return (spritesheet!= null && !spritesheet.isBitmapExcluded(id));
 	}
 
-	public static function getFromSritesheet(id:Int, path:String):BitmapData {
+	public static function getFromSpritesheet(id:Int, path:String):BitmapData {
 		if (Assets.cache.hasBitmapData (path)) {
 
 			return Assets.cache.getBitmapData (path);
