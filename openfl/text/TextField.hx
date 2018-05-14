@@ -1346,6 +1346,7 @@ class TextField extends InteractiveObject {
 			// :NOTE: needs to be reset because in html we can only check if it should bold, not unbold
 			__textFormat.bold = false;
 			__textFormat.italic = false;
+			__textFormat.leftMargin = null;
 
 			var result_data = parseTags(data, __textFormat.clone(), 0);
 
