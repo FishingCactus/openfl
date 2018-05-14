@@ -13,7 +13,7 @@ class ShapeSymbol extends SWFSymbol {
 
 	@:s public var bounds:Rectangle;
 	@:s public var graphics:Graphics;
-	private var activeGraphicsTable:Array<Graphics> = new Array<Graphics>();
+	private var activeGraphicsTable:Map<Graphics, Bool> = new Map<Graphics, Bool>();
 
 	private var __cachePrecision:Null<Int> = null;
 	private var __translationCachePrecision:Null<Int> = null;
@@ -25,6 +25,8 @@ class ShapeSymbol extends SWFSymbol {
 	public var forbidClearCacheOnResize:Bool = false;
 
 	public var snapCoordinates:Bool = false;
+
+	public var renderScale:Float = 1;
 
 	static private var defaultCachePrecision:Int = 100;
 	static private var defaultTranslationCachePrecision:Int = 100;
@@ -121,20 +123,25 @@ class ShapeSymbol extends SWFSymbol {
 		return this.useBitmapCache = useBitmapCache;
 	}
 
+	public function getCacheEntry(renderTransform:Matrix):CacheEntry{
+
+		var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
+		for (entry in cachedTable) {
+			if (entry.hash == hash) {
+				return entry;
+			}
+		}
+
+		return null;
+	}
+
 	public function getCachedBitmapData (renderTransform:Matrix):BitmapData {
 
 		if (useBitmapCache) {
 
-			var hash = CacheEntry.getHash(renderTransform, cachePrecision, translationCachePrecision);
-
-			for (entry in cachedTable) {
-
-				if (entry.hash == hash) {
-
-					return entry.bitmapData;
-
-				}
-
+			var entry = getCacheEntry(renderTransform);
+			if(entry != null) {
+				return entry.bitmapData;
 			}
 
 			if (forbidCachedBitmapUpdate && cachedTable.length > 0) {
@@ -157,7 +164,7 @@ class ShapeSymbol extends SWFSymbol {
 
 			if (continuousLogEnabled) {
 
-				trace ('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
+				untyped console.log('Shape id:$id; useBitmapCache: $useBitmapCache; Missed count: $missedCount;');
 
 			}
 		#end
@@ -197,17 +204,16 @@ class ShapeSymbol extends SWFSymbol {
 		public static function __init__ () {
 
 			#if js
-				untyped __js__ ("$global.Profile = $global.Profile || {}");
-				untyped __js__ ("$global.Profile.ShapeInfo = []");
-				untyped __js__ ("$global.Profile.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
-				untyped __js__ ("$global.Profile.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
-				untyped __js__ ("$global.Profile.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+				var tool = new lime.utils.ProfileTool("Shape");
+				tool.reset = resetStatistics;
+				tool.log = logStatistics;
+				tool.count = enableContinuousLog;
 
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached = $global.Profile.ShapeInfo.Cached || {}" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatisticsCached" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatisticsCached" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logCachedSymbolInfo" );
-				untyped __js__ ("$global.Profile.ShapeInfo.Cached.logAllCachedSymbolInfo = format_swf_lite_symbols_ShapeSymbol.logAllCachedSymbolInfo" );
+				tool = new lime.utils.ProfileTool("ShapeCache");
+				tool.reset = resetStatisticsCached;
+				tool.log = logStatisticsCached;
+				untyped tool.logCachedSymbolInfo = logCachedSymbolInfo;
+				untyped tool.logAllCachedSymbolInfo = logAllCachedSymbolInfo;
 			#end
 
 		}
@@ -231,7 +237,7 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Missed count: ${value}');
+				untyped console.log('Shape id:$id; Create count: ${value}');
 			}
 
 		}
@@ -243,14 +249,14 @@ class ShapeSymbol extends SWFSymbol {
 				if(value < threshold) {
 					continue;
 				}
-				trace ('Shape id:$id; Missed count: ${value}');
+				untyped console.log('Shape id:$id; Cache Miss count: ${value}');
 			}
 
 		}
 
 		private static inline function _logCachedSymbolInfo (symbol:ShapeSymbol) {
 
-			trace ('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
+			untyped console.log('Shape id:${symbol.id} (cached count:${symbol.cachedTable.length})');
 
 			#if js
 				var console =  untyped __js__("window.console");
@@ -288,7 +294,7 @@ class ShapeSymbol extends SWFSymbol {
 				}
 			}
 
-			trace ('Total cached: $totalCached ; Approximate memory used: $approximateSize');
+			untyped console.log('Total cached: $totalCached ; Approximate memory used: $approximateSize');
 
 		}
 
@@ -302,12 +308,14 @@ class ShapeSymbol extends SWFSymbol {
 
 
 	private function __clearCachedTable() {
-		for( g in activeGraphicsTable ) {
+		for( g in activeGraphicsTable.keys() ) {
 			g.dispose(false);
 		}
 
 		for ( cache in cachedTable ) {
-			cache.bitmapData.dispose();
+			if ( cache.bitmapData != null ) {
+				cache.bitmapData.dispose();
+			}
 		}
 
 		if ( cachedTable.length > 0 ) {
@@ -342,7 +350,7 @@ class ShapeSymbol extends SWFSymbol {
 	public function set_cachePrecision (value:Int):Int {
 		#if dev
 			if (__cachePrecision != null && __cachePrecision != value) {
-				trace (':WARNING: ignoring cache precision change for symbol($id) from $__cachePrecision to $value');
+				trace (':WARNING: cache precision change for symbol($id) from $__cachePrecision to $value');
 			}
 		#end
 
@@ -368,10 +376,7 @@ class ShapeSymbol extends SWFSymbol {
 	}
 
 	public function registerGraphics(graphics:Graphics) {
-		if(activeGraphicsTable.indexOf(graphics) != -1) {
-			return;
-		}
-		activeGraphicsTable.push(graphics);
+        activeGraphicsTable.set(graphics, true);
 	}
 
 	public function unregisterGraphics(graphics:Graphics) {

@@ -31,12 +31,7 @@ class DynamicTextField extends TextField {
 		this.swf = swf;
 		this.symbol = symbol;
 
-		_variableName = symbol.variableName;
-
-		if( _variableName.indexOf( '_parent.' ) != -1 )
-		{
-			_variableName = _variableName.substr( 8 );
-		}
+		_variableName = StringTools.replace( symbol.variableName, "_parent.", "" );
 
 		width = symbol.width;
 		height = symbol.height;
@@ -126,15 +121,16 @@ class DynamicTextField extends TextField {
 
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		var hasVariableName = _variableName != null && _variableName.length > 0;
+
 		if ( hasVariableName ) {
 
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
 				if ( Reflect.hasField(local_parent, _variableName) ) {
 					if(symbol != null && symbol.html){
-						htmlText = Std.string(Reflect.field(local_parent,_variableName));
+						htmlText = Std.string(Reflect.field(local_parent, _variableName));
 					} else {
-						text = Std.string(Reflect.field(local_parent,_variableName));
+						text = Std.string(Reflect.field(local_parent, _variableName));
 					}
 					break;
 				}

@@ -78,6 +78,7 @@ class TextField extends InteractiveObject {
 	private var __dirty:Bool;
 	private var __bounds:Rectangle;
 	private var __caretIndex:Int;
+	private var __cachedHtmlText:String;
 	private var __cursorTimer:Timer;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
@@ -1304,7 +1305,7 @@ class TextField extends InteractiveObject {
 
 	private function set_htmlText (value:String):String {
 
-		if (!__isHTML || __textEngine.text != value) {
+		if (!__isHTML || __cachedHtmlText != value) {
 
 			dirty = true;
 			__layoutDirty = true;
@@ -1312,8 +1313,17 @@ class TextField extends InteractiveObject {
 		}
 
 		__isHTML = true;
+		__cachedHtmlText = value;
 
 		if (#if (js && html5) __div == null #else true #end) {
+			var last = value.lastIndexOf("</p>");
+			if(last > 0) {
+				var part1 = value.substr(0, last);
+				var part2 = value.substr(last);
+
+				part1 = new EReg ("</p>", "g").replace (part1, "</p>\n");
+				value = part1 + part2;
+			}
 
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
@@ -1588,6 +1598,7 @@ class TextField extends InteractiveObject {
 		range.end = value.length;
 
 		__isHTML = false;
+		__cachedHtmlText = null;
 
 		return __textEngine.text = value;
 

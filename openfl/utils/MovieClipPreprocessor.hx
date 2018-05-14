@@ -285,22 +285,29 @@ class JobContext {
         while (shapeToProcessIndex < shapeToProcessTable.length && !timedOut ()) {
             var entry = shapeToProcessTable [shapeToProcessIndex];
             var graphics = entry.symbol.graphics;
-            graphics.dirty = true;
-            openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
+            var shapeSymbol = cast(@:privateAccess graphics.__symbol, ShapeSymbol);
 
-            if(@:privateAccess graphics.__bitmap != null) {
-                #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = entry.symbol.id + " (preprocessed)";
-                #end
+            if(shapeSymbol.getCacheEntry(entry.transform) == null && (shapeSymbol.forbidCachedBitmapUpdate == false || @:privateAccess shapeSymbol.cachedTable.length == 0 )) {
+                graphics.dirty = true;
+                openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false, true);
 
-                @:privateAccess graphics.__bitmap.getTexture (gl);
+                if(@:privateAccess graphics.__bitmap != null) {
+                    shapeSymbol.registerGraphics(graphics);
+                    #if(js && profile)
+                        untyped $global.Profile.TextureUpload.currentProfileId = entry.symbol.id + " (preprocessed shape)";
+                    #end
 
-                #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
-                #end
+                    @:privateAccess graphics.__bitmap.getTexture (gl);
+
+                    #if(js && profile)
+                        untyped $global.Profile.TextureUpload.currentProfileId = null;
+                    #end
+                    shapeSymbol.setCachedBitmapData (@:privateAccess graphics.__bitmap, entry.transform);
+                }
+
+                graphics.dirty = true;
             }
 
-            graphics.dirty = true;
             ++shapeToProcessIndex;
         }
 
@@ -310,13 +317,13 @@ class JobContext {
 
             if(bitmapData != null) {
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
+                    untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed morphshape)";
                 #end
 
                 @:privateAccess bitmapData.getTexture (gl);
 
                 #if(js && profile)
-                    untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                    untyped $global.Profile.TextureUpload.currentProfileId = null;
                 #end
             }
 
@@ -331,11 +338,11 @@ class JobContext {
                 openfl._internal.renderer.canvas.CanvasGraphics.render (graphics, renderSession, entry.transform, false);
                 if ( @:privateAccess graphics.__bitmap != null ) {
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = symbol.id + " (preprocessed)";
+                        untyped $global.Profile.TextureUpload.currentProfileId = symbol.id + " (preprocessed)";
                     #end
                     @:privateAccess graphics.__bitmap.getTexture (gl);
                     #if(js && profile)
-                        untyped $global.Profile.BitmapDataUpload.currentProfileId = null;
+                        untyped $global.Profile.TextureUpload.currentProfileId = null;
                     #end
 
                     entry.symbol.addCacheEntry(@:privateAccess graphics.__bitmap, @:privateAccess graphics.__bounds, entry.transform, entry.ratio);
@@ -374,13 +381,19 @@ class JobContext {
             #end
             for (entry in shapeTable) {
                 var shapeSymbol = entry.symbol;
-                shapeSymbol.cachePrecision = cachePrecision;
-                shapeSymbol.translationCachePrecision = translationCachePrecision;
+                if(@:privateAccess shapeSymbol.__cachePrecision == null) {
+                    shapeSymbol.cachePrecision = cachePrecision;
+                }
+                if(@:privateAccess shapeSymbol.__translationCachePrecision == null) {
+                    shapeSymbol.translationCachePrecision = translationCachePrecision;
+                }
                 shapeSymbol.useBitmapCache = true;
             }
             for (entry in morphShapeToProcessTable) {
                 var symbol = entry.symbol;
-                symbol.cachePrecision = cachePrecision;
+                if(@:privateAccess symbol.__cachePrecision == null) {
+                    symbol.cachePrecision = cachePrecision;
+                }
                 symbol.useBitmapCache = true;
             }
         }

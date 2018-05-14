@@ -69,21 +69,20 @@ class CanvasGraphics {
 	#if profile
 		#if js
 			public static function __init__ () {
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.CanvasGraphics = {};
-				untyped $global.Profile.CanvasGraphics.logStatistics = logStatistics;
-				untyped $global.Profile.CanvasGraphics.clear = clear;
+				var tool = new lime.utils.ProfileTool("CanvasGraphics");
+				tool.reset = clear;
+				tool.log = logStatistics;
 			}
 		#end
 
 		public static function logStatistics (threshold:Int = 0) {
-			trace ('Generated graphics:');
-			trace ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
+			untyped console.log ('Generated graphics:');
+			untyped console.log ('  current count: $currentFromCanvasCount,  total since beginning: ${totalFromCanvasCount}');
 
-			trace ('entries: ');
+			untyped console.log ('entries: ');
 			for (entry in fromCanvasTable.keys()) {
 				if (fromCanvasTable.get(entry) >= threshold)
-					trace('  $entry, ${fromCanvasTable.get(entry)}');
+					untyped console.log('  $entry, ${fromCanvasTable.get(entry)}');
 			}
 		}
 
@@ -94,7 +93,7 @@ class CanvasGraphics {
 
 	#end
 
-	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
+	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>	= new ObjectPool<DrawCommandReader>(
 		function()
 		{
 			return new DrawCommandReader(null);
@@ -510,7 +509,7 @@ class CanvasGraphics {
 	}
 
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask : Bool = false):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, renderTransform:Matrix, isMask:Bool = false, disableCache = false):Void {
 
 		#if (js && html5)
 
@@ -528,12 +527,7 @@ class CanvasGraphics {
 
 			} else {
 
-				var renderBounds = Rectangle.pool.get ();
-				bounds.transform (renderBounds, renderTransform);
-				var flooredRenderPositionX = Math.ffloor(renderBounds.x);
-				var flooredRenderPositionY = Math.ffloor(renderBounds.y);
-				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
-				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
+				var renderTransform = renderTransform;
 
 				if (graphics.__symbol != null) {
 
@@ -542,19 +536,26 @@ class CanvasGraphics {
 					if ( Std.is(graphics.__symbol, ShapeSymbol) ) {
 						var shapeSymbol = cast(graphics.__symbol, ShapeSymbol);
 						shapeSymbol.registerGraphics(graphics);
-						cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
+						if (!disableCache) {
+							cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
+		
+							if ( cachedBitmapData != null) {
+
+								graphics.__bitmap = cachedBitmapData;
+								graphics.dirty = false;
+
+								return;
+							} 
+                        }
+
+						var renderScale = shapeSymbol.renderScale;
+
+						if(renderScale != 1) {
+							renderTransform = renderTransform.clone();
+							renderTransform.scale(renderScale, renderScale);
+						}
+
 					}
-
-					if (cachedBitmapData != null) {
-
-						graphics.__bitmap = cachedBitmapData;
-						graphics.dirty = false;
-						Rectangle.pool.put (renderBounds);
-
-						return;
-
-					}
-
 				}
 
 				if (graphics.__canvas == null) {
@@ -566,7 +567,14 @@ class CanvasGraphics {
 
 				context = graphics.__context;
 
+
 				var context = context;
+				var renderBounds = Rectangle.pool.get ();
+				bounds.transform (renderBounds, renderTransform);
+				var flooredRenderPositionX = Math.ffloor(renderBounds.x);
+				var flooredRenderPositionY = Math.ffloor(renderBounds.y);
+				var width = Math.ceil (renderBounds.width + renderBounds.x - flooredRenderPositionX) + 2 * padding;
+				var height = Math.ceil (renderBounds.height + renderBounds.y - flooredRenderPositionY) + 2 * padding;
 
 				graphics.__canvas.width = width;
 				graphics.__canvas.height = height;
@@ -580,8 +588,7 @@ class CanvasGraphics {
 
 				if (snapCoordinates) {
 
-					throw ":TODO:";
-					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					currentTransform.setTo (transform.a, transform.b, transform.c, transform.d, Math.round(transform.tx), Math.round(transform.ty));
 
 				} else {
 
@@ -633,6 +640,9 @@ class CanvasGraphics {
 
 							case DRAW_IMAGE:
 								snappedDrawImage(data);
+
+							case LINE_STYLE:
+								lineStyle(data, isMask);
 
 							default:
 
@@ -853,7 +863,7 @@ class CanvasGraphics {
 				Matrix.pool.put (renderToLocalMatrix);
 				Matrix.pool.put (transform);
 
-				if (graphics.__symbol != null) {
+				if (!disableCache && graphics.__symbol != null) {
 
 					if ( Std.is(graphics.__symbol, ShapeSymbol) )
 						cast(graphics.__symbol, ShapeSymbol).setCachedBitmapData (graphics.__bitmap, renderTransform);
@@ -922,10 +932,10 @@ class CanvasGraphics {
 		var kappa = .5522848,
 			ox = (width / 2) * kappa, // control point offset horizontal
 			oy = (height / 2) * kappa, // control point offset vertical
-			xe = x + width,           // x-end
-			ye = y + height,           // y-end
-			xm = x + width / 2,       // x-middle
-			ym = y + height / 2;       // y-middle
+			xe = x + width,			  // x-end
+			ye = y + height,		   // y-end
+			xm = x + width / 2,		  // x-middle
+			ym = y + height / 2;	   // y-middle
 
 		context.moveTo (x, ym);
 		context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);

@@ -72,6 +72,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var width (get, set):Float;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
+	public var delayScaleRotationGraphicsRefresh:Bool = false;
 
 	public var __renderAlpha:Float;
 	public var __renderColorTransform:ColorTransform;
@@ -80,7 +81,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var __worldOffset:Point;
 	public var __worldTransform:Matrix;
 
-	private var __alpha:Float;
+	private var __colorTransform:ColorTransform;
 	private var __blendMode:BlendMode;
 	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __branchDepth:Int;
@@ -121,7 +122,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
-	private var __clippedAt : Null<Int>;
+	private var __clippedAt : Int = -1;
 	private var __useSeparateRenderScaleTransform = true;
 	private var __mouseListenerCount:Int = 0;
 	private var __recursiveMouseListenerCount:Int = 0;
@@ -154,7 +155,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		super ();
 
-		__alpha = 1;
+		__colorTransform = new ColorTransform();
 		__transform = new Matrix ();
 		__visible = true;
 
@@ -181,9 +182,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransformDirty++;
 	}
 
-    private function __reset() {
+	private function __reset() {
 
-    }
+	}
 
 	public function resolve (fieldName:String):DisplayObject {
 
@@ -206,7 +207,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				var currentParent = forcedParent != null ? forcedParent : parent;
 				while(currentParent != null) {
 					symbolId += "*";
-				 	var parentSymbol = currentParent.getSymbol();
+					var parentSymbol = currentParent.getSymbol();
 					if(parentSymbol != null) {
 						symbolId = Std.string(parentSymbol.id) + symbolId;
 						break;
@@ -311,7 +312,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
 			var hit_point = Point.pool.get();
-			hit_point.setTo (x, y);
+			hit_point.setTo (x * stage.scaleX, y * stage.scaleY);
 			var result = bounds.containsPoint (hit_point);
 			Point.pool.put(hit_point);
 			openfl.geom.Rectangle.pool.put (bounds);
@@ -552,7 +553,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			if (!__mustEvaluateHitTest() || !hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 
-			shapeFlag = shapeFlag && ( getSymbol() != null ? getSymbol().pixelPerfectHitTest : true );
+			var symbol = getSymbol();
+
+			shapeFlag = shapeFlag && ( symbol != null ? symbol.pixelPerfectHitTest : true );
 
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 
@@ -634,8 +637,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			Matrix.pool.put (localMatrix);
 			#end
 
-			GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0);
-
+			GLRenderer.renderBitmap (this, renderSession, __graphics.mustRefreshGraphicsCounter > 0 || forbidCachedBitmapUpdate);
 		}
 
 	}
@@ -691,10 +693,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		public static function __init__ () {
 
 			#if js
-				untyped $global.Profile = $global.Profile || {};
-				untyped $global.Profile.Filters = {};
-				untyped $global.Profile.Filters.resetStatistics = resetStatistics;
-				untyped $global.Profile.Filters.logStatistics= logStatistics;
+				var tool = new lime.utils.ProfileTool("Filters");
+				tool.reset = resetStatistics;
+				tool.log = logStatistics;
 			#end
 
 		}
@@ -711,7 +712,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if(value < threshold) {
 					continue;
 				}
-				trace ('${id} => applyFilters x${value}');
+				untyped console.log('${id} => applyFilters x${value}');
 			}
 		}
 	#end
@@ -1205,13 +1206,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
 		if ( __graphics != null ) {
-			if ( scaleRotationChanged ) {
-				if ( __graphics != null ) {
+			if( scaleRotationChanged ) {
+				if( delayScaleRotationGraphicsRefresh ) {
+					__graphics.resetGraphicsCounter();
+				} else {
 					__graphics.dirty = true;
 				}
 			} else if ( translationChanged ) {
 				__graphics.resetGraphicsCounter();
-			}
+			} 
 		}
 	}
 
@@ -1263,9 +1266,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 
 
-	private function get_alpha ():Float {
+	private inline function get_alpha ():Float {
 
-		return __alpha;
+		return __colorTransform.alphaMultiplier;
 
 	}
 
@@ -1273,10 +1276,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_alpha (value:Float):Float {
 
 		if (value > 1.0) value = 1.0;
-		if (value != __alpha) {
+		if (value != __colorTransform.alphaMultiplier) {
 			__setRenderDirtyNoCachedBitmap();
 		}
-		return __alpha = value;
+		return __colorTransform.alphaMultiplier = value;
 
 	}
 
@@ -1307,7 +1310,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_cacheAsBitmap ():Bool {
+	private inline function get_cacheAsBitmap ():Bool {
 
 		return __cacheAsBitmap;
 
@@ -1339,7 +1342,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function get_cacheAsBitmapMatrix ():Matrix {
+	private inline function get_cacheAsBitmapMatrix ():Matrix {
 
 		return __cacheAsBitmapMatrix;
 
@@ -1359,7 +1362,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_cacheAsBitmapSmooth ():Bool {
+	private inline function get_cacheAsBitmapSmooth ():Bool {
 
 		return __cacheAsBitmapSmooth;
 
@@ -1470,7 +1473,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return loaderInfo;
 	}
 
-	private function get_mask ():DisplayObject {
+	private inline function get_mask ():DisplayObject {
 
 		return __mask;
 
@@ -1525,7 +1528,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_name ():String {
+	private inline function get_name ():String {
 
 		return __name;
 
@@ -1552,7 +1555,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_rotation ():Float {
+	private inline function get_rotation ():Float {
 
 		return __rotation;
 
@@ -1718,7 +1721,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_visible ():Bool {
+	private inline function get_visible ():Bool {
 
 		return __visible;
 
@@ -1767,7 +1770,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_x ():Float {
+	private inline function get_x ():Float {
 
 		return __transform.tx;
 
@@ -1782,7 +1785,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function get_y ():Float {
+	private inline function get_y ():Float {
 
 		return __transform.ty;
 

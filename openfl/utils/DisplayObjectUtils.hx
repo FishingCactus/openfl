@@ -75,7 +75,7 @@ class DisplayObjectUtils {
         }
     }
 
-    public static function takeScreenshot(displayObject:DisplayObject):Bitmap {
+    public static function takeScreenshot(displayObject:DisplayObject, snap = false):Bitmap {
         var renderSession:RenderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
         var bitmapData = @:privateAccess BitmapData.__asRenderTexture ();
         var renderBounds = Rectangle.pool.get ();
@@ -84,8 +84,8 @@ class DisplayObjectUtils {
         Rectangle.pool.put (renderBounds);
 
         var screenshotBitmap:Bitmap = new Bitmap(bitmapData);
-        screenshotBitmap.smoothing = true;
-        screenshotBitmap.pixelSnapping = PixelSnapping.NEVER;
+        screenshotBitmap.smoothing = !snap;
+        screenshotBitmap.pixelSnapping = snap ? PixelSnapping.ALWAYS : PixelSnapping.NEVER;
 
         return screenshotBitmap;
     }

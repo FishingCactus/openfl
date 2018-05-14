@@ -930,7 +930,7 @@ class SWFLiteExporter {
 		// :TODO: detect other tags (texts, ...)
 		if (symbol.scalingGridRect != null && hasSprite) {
 			if (hasShape) {
-				throw ":TODO: support 9 slice on sprites containing both shapes and sprites (symbol " + symbol.id + ")";
+                throw ":TODO: support 9 slice on sprites containing both shapes and sprites (symbol " + symbol.id + ")";
 			} else {
 				symbol.scalingGridRect = null;
 			}
