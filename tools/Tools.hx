@@ -444,7 +444,7 @@ class Tools {
 
 							}
 
-							markForSpritesheet(asset, project.swfSpritesheet.excludeList.copy());
+							markForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
 							output.assets.push (asset);
 
@@ -491,7 +491,7 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						markForSpritesheet(asset, project.swfSpritesheet.excludeList.copy());
+						markForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
 						if (cacheDirectory != null) {
 							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
@@ -628,16 +628,27 @@ class Tools {
 
 	}
 
-	private static function markForSpritesheet(asset:Asset, excludeList:Array<Int>):Void {
+	private static function markForSpritesheet(asset:Asset, excludeList:List<ExcludeItem>):Void {
 		if (Sys.getEnv("swfSpritesheet") == "true")
 		{
-			var assetId:Int = Std.parseInt(Path.withoutExtension(Path.withoutDirectory(asset.id)));
-			if (excludeList.indexOf(assetId) == -1) {
+			if (!isAssetExcluded(asset.id, excludeList)) {
 				asset.markedForSpritesheet = true;
 			} else {
 				LogHelper.info("excluded asset from swfSpritesheet:" + asset.id);
 			}
 		}
+	}
+
+	private static function isAssetExcluded(assetId:String, excludeList:List<ExcludeItem>):Bool {
+		LogHelper.info("item to check" + assetId);
+		for (excludeItem in excludeList) {
+			if (assetId == excludeItem.path) {
+				LogHelper.info("excluded item:" + excludeItem.path);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 

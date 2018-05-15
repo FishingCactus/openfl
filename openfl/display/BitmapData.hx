@@ -1303,7 +1303,7 @@ class BitmapData implements IBitmapDrawable {
 
 		} else {
 
-			if (isSpritesheetImage(symbol.id)) {
+			if (isSpritesheetImage(symbol.path)) {
 				return getFromSpritesheet(symbol.id, symbol.path);
 
 			} else {
@@ -1333,8 +1333,8 @@ class BitmapData implements IBitmapDrawable {
 
 	}
 
-	public static function isSpritesheetImage(id:Int):Bool {
-		return (spritesheet!= null && !spritesheet.isBitmapExcluded(id));
+	public static function isSpritesheetImage(frameName:String):Bool {
+		return (spritesheet!= null && !spritesheet.isBitmapExcluded(frameName));
 	}
 
 	public static function getFromSpritesheet(id:Int, path:String):BitmapData {
@@ -1344,7 +1344,7 @@ class BitmapData implements IBitmapDrawable {
 
 		} else {
 
-			var bitmapData = spritesheet.getBitmapDataByFrameName(Std.string(id));
+			var bitmapData = spritesheet.getBitmapDataByFrameName(path);
 			Assets.cache.setBitmapData (path, bitmapData);
 			return bitmapData;
 

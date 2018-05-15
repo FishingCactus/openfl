@@ -1,5 +1,6 @@
 package format.swf.lite;
 
+import format.swf.lite.symbols.BitmapSymbol;
 import openfl.display.api.ISpritesheet;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
@@ -22,13 +23,14 @@ class SimpleSprite extends flash.display.MovieClip
         __totalFrames = 1;
         __currentFrame = 1;
 
-        if (isSpritesheetImage(symbol.bitmapID)) {
+        var bitmapSymbol:BitmapSymbol = cast(swf.symbols.get(symbol.bitmapID),BitmapSymbol);
+
+        if (isSpritesheetImage(bitmapSymbol.path)) {
             // for reducing draw calls usePerFrameBitmapData should be set to false
-            var frameName:String = Std.string(symbol.bitmapID);
-            var displayObject:DisplayObject = spritesheet.getDisplayObjectByFrameName(frameName);
+            var displayObject:DisplayObject = spritesheet.getDisplayObjectByFrameName(bitmapSymbol.path);
             addDisplayObject(displayObject, symbol);
         } else {
-            var bitmap = new Bitmap(Assets.getBitmapDataFromSymbol(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol)));
+            var bitmap = new Bitmap(Assets.getBitmapDataFromSymbol(bitmapSymbol));
             bitmap.smoothing = symbol.smooth;
             bitmap.pixelSnapping = NEVER;
             addDisplayObject(bitmap, symbol);
@@ -36,8 +38,8 @@ class SimpleSprite extends flash.display.MovieClip
 
     }
 
-    private function isSpritesheetImage(id:Int):Bool {
-        return (spritesheet!= null && !spritesheet.isBitmapExcluded(id));
+    private function isSpritesheetImage(frameName:String):Bool {
+        return (spritesheet!= null && !spritesheet.isBitmapExcluded(frameName));
     }
 
     private function addDisplayObject(displayObject:DisplayObject, symbol:SimpleSpriteSymbol):Void
