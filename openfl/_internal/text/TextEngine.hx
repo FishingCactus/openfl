@@ -774,7 +774,7 @@ class TextEngine {
 			advances = null;
 			layoutGroups.push (layoutGroup);
 
-			if ( lineLayoutGroups.length == lineIndex ) {
+			while ( lineLayoutGroups.length <= lineIndex ) {
 				lineLayoutGroups.push([]);
 			}
 
