@@ -2,8 +2,8 @@ package openfl.text; #if !openfl_legacy
 
 
 class TextFormat {
-	
-	
+
+
 	public var align:TextFormatAlign;
 	public var blockIndent:Null<Int>;
 	public var bold:Null<Bool>;
@@ -84,10 +84,16 @@ class TextFormat {
 		if (format.kerning != null) kerning = format.kerning;
 		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) tabStops = format.tabStops;
-		
+
 	}
-	
-	
+
+	public static inline function getBulletText() : String {
+		return "●\t\t";
+	}
+
+	public static inline function getBulletIndentLeftMargin() : Int {
+		return 20;
+	}
 }
 
 
