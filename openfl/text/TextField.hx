@@ -1329,8 +1329,20 @@ class TextField extends InteractiveObject {
 			value = new EReg ("<br/>", "g").replace (value, "\n");
 			value = new EReg ("</br>", "g").replace (value, "\n");
 
-			value = new EReg ("<li>", "g").replace (value, "<indent>" + TextFormat.getBulletText() + "<li>");
-			value = new EReg ("</li>", "g").replace (value, "</li></indent>\n");
+			value = new EReg ("</li>", "g").replace (value, "</indent>\n");
+
+			var position = 1;
+			while((position = value.indexOf("<li>", position)) > 0) {
+				if(value.charAt(position - 1) != '\n') {
+					var part1 = value.substr(0, position);
+					var part2 = value.substr(position);
+					value = part1 + '\n' + part2;
+					++position;
+				}
+				++position;
+			}
+
+			value = new EReg ("<li>", "g").replace (value, "<indent>" + TextFormat.getBulletText());
 
 			var data;
 			try {
