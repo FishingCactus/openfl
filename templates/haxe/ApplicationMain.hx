@@ -1,5 +1,9 @@
 #if !macro
 
+import spritesheet.wrapper.SpritesheetConfig;
+import spritesheet.wrapper.GdxLibSpritesheetWrapper;
+import format.swf.lite.SimpleSprite;
+import openfl.display.api.ISpritesheet;
 
 @:access(lime.app.Application)
 @:access(lime.Assets)
@@ -66,7 +70,9 @@ class ApplicationMain {
 	
 	
 	public static function init ():Void {
-		
+
+		createTextureAtlases();
+
 		var loaded = 0;
 		var total = 0;
 		var library_onLoad = function (__) {
@@ -95,8 +101,42 @@ class ApplicationMain {
 		}
 		
 	}
-	
-	
+
+	private static function createTextureAtlases():Void
+	{
+		::if (swfSpritesheet.enabled)::
+
+		var metaFilePath:String = "::swfSpritesheet.targetDir::/::swfSpritesheet.fileName::.atlas";
+		var textureFilePath:String = "::swfSpritesheet.targetDir::/::swfSpritesheet.fileName::.::swfSpritesheet.outputFormat::";
+		var excludeList:Array<String> = new Array<String>();
+
+		::foreach swfSpritesheet.excludeList::
+		excludeList.push("::path::");
+		::end::
+
+		var spritesheetForShapeBitmpas:ISpritesheet = new GdxLibSpritesheetWrapper(getSpritesheetConfig(true, metaFilePath, textureFilePath), excludeList); // bitmapData per frame
+		var spritesheetForSimpleSprite:ISpritesheet = new GdxLibSpritesheetWrapper(getSpritesheetConfig(false, metaFilePath, textureFilePath), excludeList); //optimized for draw calls
+			//inject atlases into BitmapData, SimpleSprite;
+		SimpleSprite.spritesheet = spritesheetForSimpleSprite;
+		BitmapData.spritesheet = spritesheetForShapeBitmpas;
+
+		::end::
+	}
+
+	private static function getSpritesheetConfig(usePerFrameBitmapData : Bool, metaFilePath:String, textureFilePath:String):SpritesheetConfig
+	{
+		var spritesheetConfig:SpritesheetConfig = {
+			metaFilePath : metaFilePath,
+			textureFilePath : textureFilePath,
+			usePerFrameBitmapData : usePerFrameBitmapData,
+			smoothing : true
+		}
+
+		return spritesheetConfig;
+	}
+
+
+
 	public static function main () {
 		
 		config = {

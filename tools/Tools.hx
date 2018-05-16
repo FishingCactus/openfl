@@ -444,7 +444,7 @@ class Tools {
 
 							}
 
-							markForSpritesheet(asset, project.swfSpritesheet.excludeList);
+							tryMarkForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
 							output.assets.push (asset);
 
@@ -491,7 +491,7 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						markForSpritesheet(asset, project.swfSpritesheet.excludeList);
+						tryMarkForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
 						if (cacheDirectory != null) {
 							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
@@ -628,7 +628,7 @@ class Tools {
 
 	}
 
-	private static function markForSpritesheet(asset:Asset, excludeList:List<ExcludeItem>):Void {
+	private static function tryMarkForSpritesheet(asset:Asset, excludeList:List<ExcludeItem>):Void {
 		if (Sys.getEnv("swfSpritesheet") == "true")
 		{
 			if (!isAssetExcluded(asset.id, excludeList)) {
