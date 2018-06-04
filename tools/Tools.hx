@@ -1,6 +1,6 @@
 package;
 
-
+import lime.project.SwfSpritesheet;
 import format.swf.exporters.SWFLiteExporter;
 import format.swf.lite.symbols.BitmapSymbol;
 import format.swf.lite.symbols.ButtonSymbol;
@@ -405,11 +405,14 @@ class Tools {
 
 				if (targetDirectory != null) {
 
+					LogHelper.info ("", " - \x1b[1mTargetDirectory:\x1b[0m " + targetDirectory + " [SWFLite]");
+
 					cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
 					var cacheFile = cacheDirectory + "/" + library.name + ".dat";
 
 					if (FileSystem.exists (cacheFile)) {
-
+						LogHelper.info ("", " - \x1b[1mdat-file exists:\x1b[0m " + cacheFile + " [SWFLite]");
+						LogHelper.info ("", " - \x1b[1mdlibrary-sourcePath:\x1b[0m " + library.sourcePath + " [SWFLite]");
 						var cacheDate = FileSystem.stat (cacheFile).mtime;
 						var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
 						var sourceDate = FileSystem.stat (library.sourcePath).mtime;
@@ -426,6 +429,9 @@ class Tools {
 
 				if (cacheAvailable) {
 
+					output.haxedefs.set("preventSwfTextureBuild", true);
+					LogHelper.info ("cache is available");
+
 					for (file in FileSystem.readDirectory (cacheDirectory)) {
 
 						if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
@@ -437,6 +443,8 @@ class Tools {
 								asset.embed = library.embed;
 
 							}
+
+							tryMarkForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
 							output.assets.push (asset);
 
@@ -483,12 +491,12 @@ class Tools {
 						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
 						var assetData = exporter.bitmaps.get (id);
 
-						if (cacheDirectory != null) {
+						tryMarkForSpritesheet(asset, project.swfSpritesheet.excludeList);
 
+						if (cacheDirectory != null) {
 							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
 							asset.format = type;
-							File.saveBytes (asset.sourcePath, assetData);
-
+							File.saveBytes (asset.sourcePath, assetData); // write into graphics folder
 						} else {
 
 							asset.data = StringHelper.base64Encode (cast assetData);
@@ -618,6 +626,29 @@ class Tools {
 
 		return null;
 
+	}
+
+	private static function tryMarkForSpritesheet(asset:Asset, excludeList:List<ExcludeItem>):Void {
+		if (Sys.getEnv("swfSpritesheet") == "true")
+		{
+			if (!isAssetExcluded(asset.id, excludeList)) {
+				asset.markedForSpritesheet = true;
+			} else {
+				LogHelper.info("excluded asset from swfSpritesheet:" + asset.id);
+			}
+		}
+	}
+
+	private static function isAssetExcluded(assetId:String, excludeList:List<ExcludeItem>):Bool {
+		LogHelper.info("item to check" + assetId);
+		for (excludeItem in excludeList) {
+			if (assetId == excludeItem.path) {
+				LogHelper.info("excluded item:" + excludeItem.path);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 

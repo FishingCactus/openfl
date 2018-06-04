@@ -53,7 +53,7 @@ class SpriteSymbol extends SWFSymbol {
 		}
 
 		for(s in simpleSprites) {
-			var bitmapData = Assets.getBitmapData(cast(swflite.symbols.get(s.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+			var bitmapData = Assets.getBitmapDataFromSymbol(cast(swflite.symbols.get(s.bitmapID),format.swf.lite.symbols.BitmapSymbol));
 			bitmapData.getTexture(gl);
 		}
 	}
