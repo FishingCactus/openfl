@@ -313,7 +313,7 @@ class JobContext {
 
         while (simpleSpriteToProcessIndex < simpleSpritesToProcessTable.length && !timedOut ()) {
             var symbol = simpleSpritesToProcessTable[simpleSpriteToProcessIndex];
-            var bitmapData = Assets.getBitmapData(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol).path);
+            var bitmapData = Assets.getBitmapDataFromSymbol(cast(swf.symbols.get(symbol.bitmapID),format.swf.lite.symbols.BitmapSymbol));
 
             if(bitmapData != null) {
                 #if(js && profile)

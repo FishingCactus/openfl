@@ -1,6 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
-
+import openfl.display.api.ISpritesheet;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
@@ -44,7 +44,7 @@ import js.html.CanvasElement;
 
 class BitmapData implements IBitmapDrawable {
 
-
+	public static var spritesheet:ISpritesheet;
 	private static var __isGLES:Null<Bool> = null;
 
 	public var height (default, null):Float;
@@ -1299,27 +1299,52 @@ class BitmapData implements IBitmapDrawable {
 
 		} else {
 
-			var source = LimeAssets.getImage (symbol.path, false);
+			if (isSpritesheetImage(symbol.path)) {
+				return getFromSpritesheet(symbol.id, symbol.path);
 
-			if (source != null && symbol.alpha != null && symbol.alpha != "") {
+			} else {
+				var source = LimeAssets.getImage (symbol.path, false);
 
-				var alpha = LimeAssets.getImage (symbol.alpha, false);
-				source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+				if (source != null && symbol.alpha != null && symbol.alpha != "") {
 
-				source.buffer.premultiplied = true;
+					var alpha = LimeAssets.getImage (symbol.alpha, false);
+					source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
 
-				#if !sys
-				source.premultiplied = false;
-				#end
+					source.buffer.premultiplied = true;
 
+					#if !sys
+					source.premultiplied = false;
+					#end
+
+				}
+
+				var bitmapData = BitmapData.fromImage (source);
+
+				Assets.cache.setBitmapData (symbol.path, bitmapData);
+				return bitmapData;
 			}
 
-			var bitmapData = BitmapData.fromImage (source);
 
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
-			return bitmapData;
 		}
 
+	}
+
+	public static function isSpritesheetImage(frameName:String):Bool {
+		return (spritesheet!= null && !spritesheet.isBitmapExcluded(frameName));
+	}
+
+	public static function getFromSpritesheet(id:Int, path:String):BitmapData {
+		if (Assets.cache.hasBitmapData (path)) {
+
+			return Assets.cache.getBitmapData (path);
+
+		} else {
+
+			var bitmapData = spritesheet.getBitmapDataByFrameName(path);
+			Assets.cache.setBitmapData (path, bitmapData);
+			return bitmapData;
+
+		}
 	}
 
 	public function getLocalTransform (matrix:Matrix):Void {
