@@ -640,10 +640,8 @@ class Tools {
 	}
 
 	private static function isAssetExcluded(assetId:String, excludeList:List<ExcludeItem>):Bool {
-		LogHelper.info("item to check" + assetId);
 		for (excludeItem in excludeList) {
 			if (assetId == excludeItem.path) {
-				LogHelper.info("excluded item:" + excludeItem.path);
 				return true;
 			}
 		}
