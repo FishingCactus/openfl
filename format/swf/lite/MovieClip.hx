@@ -820,11 +820,11 @@ class MovieClip extends flash.display.MovieClip {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
+		if (!isRenderable() || __worldAlpha <= 0) return;
+
 		if (!__updating9SliceBitmap && __symbol != null && __symbol.scalingGridRect != null) {
 			__update9SliceBitmap ();
 		}
-
-		if (!isRenderable() || __worldAlpha <= 0) return;
 
 		__updateSwfMaskData();
 
