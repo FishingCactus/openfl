@@ -92,10 +92,17 @@ class MorphShapeSymbol extends SWFSymbol {
 
                 var startStyleChange:SWFShapeRecordStyleChange = cast lastStartStyleChange.clone();
                 var endStyleChange:SWFShapeRecordStyleChange = cast endRecord;
+                var x = 0.0;
+                var y = 0.0;
+
+                if( endStyleChange != null ){
+                    x = endStyleChange.moveDeltaX;
+                    y = endStyleChange.moveDeltaY;
+                }
 
                 startStyleChange.stateMoveTo = true;
-                startStyleChange.moveDeltaX += (endStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
-                startStyleChange.moveDeltaY += (endStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+                startStyleChange.moveDeltaX += (x - startStyleChange.moveDeltaX) * ratio;
+                startStyleChange.moveDeltaY += (y - startStyleChange.moveDeltaY) * ratio;
                 ++j;
 
                 exportShape.records.push(startStyleChange);
@@ -118,10 +125,17 @@ class MorphShapeSymbol extends SWFSymbol {
                     } else {
                         --j;
                     }
+                    var x = 0.0;
+                    var y = 0.0;
+
+                    if( lastEndStyleChange != null ){
+                        x = lastEndStyleChange.moveDeltaX;
+                        y = lastEndStyleChange.moveDeltaY;
+                    }
 
                     if( startStyleChange.stateMoveTo || ( endStyleChangeIsCurrent && lastEndStyleChange.stateMoveTo ) ){
-                        startStyleChange.moveDeltaX += (lastEndStyleChange.moveDeltaX - startStyleChange.moveDeltaX) * ratio;
-                        startStyleChange.moveDeltaY += (lastEndStyleChange.moveDeltaY - startStyleChange.moveDeltaY) * ratio;
+                        startStyleChange.moveDeltaX += (x - startStyleChange.moveDeltaX) * ratio;
+                        startStyleChange.moveDeltaY += (y - startStyleChange.moveDeltaY) * ratio;
                         startStyleChange.stateMoveTo = true;
                     }
 
