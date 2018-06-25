@@ -8,7 +8,6 @@ class MovieClip extends Sprite {
 	public var currentFrameLabel (get, null):String;
 	public var currentLabel (get, null):String;
 	public var currentLabels (get, null):Array<FrameLabel>;
-	public var enabled:Bool;
 	public var framesLoaded (get, null):Int;
 	public var totalFrames (get, null):Int;
 	
@@ -28,7 +27,6 @@ class MovieClip extends Sprite {
 		__currentFrame = 0;
 		__currentLabels = [];
 		__totalFrames = 0;
-		enabled = true;
 		
 	}
 	
