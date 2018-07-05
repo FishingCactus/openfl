@@ -937,7 +937,7 @@ class TextField extends InteractiveObject {
 
 	private override function delayGraphicsRefresh(translationChanged:Bool, scaleRotationChanged:Bool) {
 		super.delayGraphicsRefresh(translationChanged, scaleRotationChanged);
-		if ( scaleRotationChanged ) {
+		if ( scaleRotationChanged && !delayScaleRotationGraphicsRefresh) {
 			// :TODO: add a rotation threshold if necessary
 
 			if ( Math.abs(__graphicsSavedScale.x - this.renderScaleX) > __maxScaleDifferenceBetweenRefreshGraphics
