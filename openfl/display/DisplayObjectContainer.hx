@@ -355,7 +355,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+			if (!child.isRenderable()) continue;
 			child.__getLocalBounds (childRect);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
@@ -377,7 +377,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		for (child in __children) {
 
-			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+			if (!child.isRenderable()) continue;
 			child.__getRenderBounds (childRect);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 

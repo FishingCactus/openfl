@@ -809,6 +809,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		@:privateAccess cachedBitmapData.__renderToLocalMatrix.copyFrom (renderToLocalMatrix);
 		Matrix.pool.put (renderToLocalMatrix);
 		Matrix.pool.put (transform);
+
+#if dev
+		var tools = untyped $global.Tools;
+		if(tools.viewUploadedCachedBitmap ) {
+			tools.viewBitmapData(__cachedBitmap);
+		}
+#end
 	}
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {

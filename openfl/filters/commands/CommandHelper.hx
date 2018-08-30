@@ -127,6 +127,14 @@ class CommandHelper {
 		if (drawSelf) {
 			target.__pingPongTexture.useOldTexture = false;
 		}
+
+#if dev
+		var tools = untyped $global.Tools;
+		if(tools.viewUploadedFilterTextures) {
+			var texture = target.__pingPongTexture.texture;
+			tools.viewGLTexture(texture, target.physicalWidth, target.physicalHeight, "filter");
+		}
+#end
 	}
 
 	inline static function prepareShader(gl:GLRenderContext, flashShader:Shader, ?bd:BitmapData) {

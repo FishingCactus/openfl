@@ -1362,6 +1362,8 @@ class BitmapData implements IBitmapDrawable {
 	public static function __init__ () {
 		untyped $global.Tools = $global.Tools || {};
 		untyped $global.Tools.viewUploadedTextures = false;
+		untyped $global.Tools.viewUploadedFilterTextures = false;
+		untyped $global.Tools.viewUploadedCachedBitmap = false;
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
 		untyped $global.Tools.viewGLTexture = viewGLTexture;
 		#if profile
