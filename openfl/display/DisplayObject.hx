@@ -126,6 +126,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __useSeparateRenderScaleTransform = true;
 	private var __mouseListenerCount:Int = 0;
 	private var __recursiveMouseListenerCount:Int = 0;
+	private var __cacheAsBitmapCounter:Int;
+
 	static private inline var NO_MOUSE_LISTENER_BRANCH_DEPTH = 9999;
 	static private var __lastMouseListenerBranchDepth:Int = NO_MOUSE_LISTENER_BRANCH_DEPTH;
 
@@ -402,6 +404,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null ) {
 			__graphics.__enterFrame();
+		}
+
+		if ( __cacheAsBitmapCounter > 0 ) {
+			if( --__cacheAsBitmapCounter < 0 ){
+				__updateCachedBitmap = true;
+				__updateFilters = __filters != null && __filters.length > 0;
+			}
 		}
 
 	}
@@ -1227,8 +1236,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function _onWorldTransformScaleRotationChanged():Void {
 
-		__updateCachedBitmap = true;
-		__updateFilters = __filters != null && __filters.length > 0;
+		if( !delayScaleRotationGraphicsRefresh ) {
+			__updateCachedBitmap = true;
+			__updateFilters = __filters != null && __filters.length > 0;
+		} else {
+			// :TRICKY: delayScaleRotationGraphicsRefresh is also used to delay the cachedBitmap refresh.
+			__cacheAsBitmapCounter = @:privateAccess Graphics.__dirtyGraphicsDelay;
+		}
 
 	}
 
