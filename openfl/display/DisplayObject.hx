@@ -1240,6 +1240,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateCachedBitmap = true;
 			__updateFilters = __filters != null && __filters.length > 0;
 		} else {
+			// :TRICKY: delayScaleRotationGraphicsRefresh is also used to delay the cachedBitmap refresh.
 			__cacheAsBitmapCounter = @:privateAccess Graphics.__dirtyGraphicsDelay;
 		}
 
