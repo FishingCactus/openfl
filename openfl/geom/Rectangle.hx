@@ -232,6 +232,10 @@ class Rectangle implements hxbit.Serializable {
 
 	public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
 
+		if (width == 0 && height == 0) {
+			return;
+		}
+
 		if (this.width == 0 && this.height == 0) {
 
 			this.x = x;
