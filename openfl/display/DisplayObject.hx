@@ -481,7 +481,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__getTransformedBounds (rect, __renderTransform);
 			__getChildrenRenderBounds (rect);
 
-			if (__filters != null) {
+			if (__filters != null && !rect.isEmpty ()) {
 
 				@:privateAccess BitmapFilter.__expandBounds (__filters, rect);
 
