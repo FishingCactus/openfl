@@ -1440,7 +1440,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__filters = value;
 		} else {
 			__forceCacheAsBitmap = false;
-			cacheAsBitmap = false;
 			__updateFilters = false;
 			__filters = null;
 		}
