@@ -109,7 +109,10 @@ class BitmapFilter {
 			}
 
 			filter.dispose();
+
 		}
+
+		bitmap.disposeBackBuffer();
 
 	}
 

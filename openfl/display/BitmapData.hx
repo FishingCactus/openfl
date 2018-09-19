@@ -396,6 +396,14 @@ class BitmapData implements IBitmapDrawable {
 		}
 	}
 
+	public function disposeBackBuffer ():Void {
+		if (__pingPongTexture != null) {
+
+			__pingPongTexture.destroyOldRenderTexture ();
+
+		}
+	}
+
 
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 
