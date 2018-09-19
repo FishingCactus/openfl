@@ -82,6 +82,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		if ( __symbol != null ) {
 			__totalFrames = __symbol.frames.length;
+			cacheAsBitmap = __symbol.useUniqueSharedBitmapCache;
 		} else {
 			__totalFrames = 0;
 		}
