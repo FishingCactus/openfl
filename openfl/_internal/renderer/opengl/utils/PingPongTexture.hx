@@ -55,6 +55,21 @@ class PingPongTexture
 		renderTexture.resize(width, height);
 	}
 	
+	public function destroyOldRenderTexture() {
+		if ( __swapped ) {
+			if (__texture0 != null) {
+				__texture0.destroy();
+				__texture0 = null;
+			}
+		}
+		else {
+			if (__texture1 != null) {
+				__texture1.destroy();
+				__texture1 = null;
+			}
+		}
+	}
+	
 	public function destroy() {
 		if (__texture0 != null) {
 			__texture0.destroy();
