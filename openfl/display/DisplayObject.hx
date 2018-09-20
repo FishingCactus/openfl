@@ -764,6 +764,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__getRenderBounds (cachedBitmapBounds);
 
 		if (cachedBitmapBounds.width <= 0 || cachedBitmapBounds.height <= 0) {
+			@:privateAccess cachedBitmapData.__resize (0, 0, cachedBitmapData.physicalWidth, cachedBitmapData.physicalHeight);
+
 			return;
 		}
 
@@ -835,11 +837,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		__cacheGLMatrix.identity ();
-		__cacheGLMatrix.copyFrom (__renderTransform);
-		__cacheGLMatrix.translate (__offset.x, __offset.y);
+		if ( __cachedBitmap.width > 0 && __cachedBitmap.height > 0 ) {
+			__cacheGLMatrix.identity ();
+			__cacheGLMatrix.copyFrom (__renderTransform);
+			__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
+			renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
+		}
 
 	}
 
@@ -1230,7 +1234,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 			} else if ( translationChanged ) {
 				__graphics.resetGraphicsCounter();
-			} 
+			}
 		}
 	}
 
