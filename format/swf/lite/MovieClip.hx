@@ -745,7 +745,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function drawScale9Bitmap (renderSession:RenderSession):Void {
 
-		if (__cacheAsBitmap) {
+		if (__resolvedCacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;

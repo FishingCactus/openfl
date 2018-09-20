@@ -127,7 +127,7 @@ class Bitmap extends DisplayObject {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
-		if (__cacheAsBitmap) {
+		if (__resolvedCacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;

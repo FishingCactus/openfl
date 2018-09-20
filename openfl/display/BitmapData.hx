@@ -54,7 +54,7 @@ class BitmapData implements IBitmapDrawable {
 	public var transparent (default, null):Bool;
 	public var width (default, null):Float;
 
-	public var __cacheAsBitmap:Bool;
+	public var __resolvedCacheAsBitmap:Bool;
 	public var __renderAlpha:Float;
 	public var __renderColorTransform:ColorTransform;
 	public var __worldTransform:Matrix;

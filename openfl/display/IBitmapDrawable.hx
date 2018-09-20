@@ -11,7 +11,7 @@ interface IBitmapDrawable {
 	public var __worldTransform:Matrix;
 
 	private var __blendMode:BlendMode;
-	private var __cacheAsBitmap:Bool;
+	private var __resolvedCacheAsBitmap:Bool;
 
 	public function __renderGL (renderSession:RenderSession):Void;
 	public function __updateChildren (transformOnly:Bool):Void;
