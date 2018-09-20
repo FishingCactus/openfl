@@ -111,11 +111,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
 	private var __worldZ:Int;
-	private var __cacheAsBitmap:Bool = false;
+	private var __resolvedCacheAsBitmap:Bool = false;
+	private var __cacheAsBitmapFlag:Bool = false;
 	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cacheAsBitmapSmooth:Bool = null;
-	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
 	private var __cacheGLMatrix:Matrix;
@@ -617,7 +617,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!isRenderable() || __worldAlpha <= 0) return;
 
-		if (__cacheAsBitmap) {
+		if (__resolvedCacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;
@@ -1337,16 +1337,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private inline function get_cacheAsBitmap ():Bool {
 
-		return __cacheAsBitmap;
+		return __resolvedCacheAsBitmap;
 
 	}
 
 
 	private function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
-		if(cacheAsBitmap != __cacheAsBitmap) __setRenderDirty ();
+		if (cacheAsBitmap != __cacheAsBitmapFlag) __setRenderDirty ();
 
-		return __cacheAsBitmap = __forceCacheAsBitmap ? true : cacheAsBitmap;
+		__cacheAsBitmapFlag = cacheAsBitmap;
+		__resolvedCacheAsBitmap = __cacheAsBitmapFlag || (filters != null && filters.length > 0);
+
+		return cacheAsBitmap;
 
 	}
 
@@ -1438,16 +1441,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		if(value != null && value.length > 0) {
-			__forceCacheAsBitmap = true;
-			cacheAsBitmap = true;
 			__updateFilters = true;
 			__filters = value;
 		} else {
-			__forceCacheAsBitmap = false;
-			cacheAsBitmap = false;
 			__updateFilters = false;
 			__filters = null;
 		}
+
+		__resolvedCacheAsBitmap = __cacheAsBitmapFlag || (filters != null && filters.length > 0);
 
 		__setRenderDirty ();
 
@@ -1826,7 +1827,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function mustResetRenderColorTransform():Bool {
 
-		return __cacheAsBitmap || __isMask;
+		return __resolvedCacheAsBitmap || __isMask;
 
 	}
 }

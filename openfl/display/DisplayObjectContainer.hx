@@ -601,7 +601,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (!isRenderable() || __worldAlpha <= 0) return;
 
-		if (__cacheAsBitmap) {
+		if (__resolvedCacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;
@@ -817,15 +817,22 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
-		var oldCacheAsBitmap = __cacheAsBitmap;
-		var result = super.set_cacheAsBitmap(cacheAsBitmap);
-		if (oldCacheAsBitmap != result) {
-			var cachedParent = cacheAsBitmap ? this : null;
+		var oldResolvedCacheAsBitmap = __resolvedCacheAsBitmap;
+		super.set_cacheAsBitmap(cacheAsBitmap);
+
+		if (oldResolvedCacheAsBitmap != __resolvedCacheAsBitmap) {
+
+			var cachedParent = __resolvedCacheAsBitmap ? this : null;
+
 			for(child in __children){
+
 				child.updateCachedParent (cachedParent);
+
 			}
+
 		}
-		return result;
+
+		return cacheAsBitmap;
 
 	}
 

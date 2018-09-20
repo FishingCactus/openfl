@@ -82,6 +82,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		if ( __symbol != null ) {
 			__totalFrames = __symbol.frames.length;
+			cacheAsBitmap = __symbol.useUniqueSharedBitmapCache;
 		} else {
 			__totalFrames = 0;
 		}
@@ -744,7 +745,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function drawScale9Bitmap (renderSession:RenderSession):Void {
 
-		if (__cacheAsBitmap) {
+		if (__resolvedCacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;
