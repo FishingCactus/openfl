@@ -78,10 +78,8 @@ class DisplayObjectUtils {
     public static function takeScreenshot(displayObject:DisplayObject, snap = false):Bitmap {
         var renderSession:RenderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
         var bitmapData = @:privateAccess BitmapData.__asRenderTexture ();
-        var renderBounds = Rectangle.pool.get ();
         displayObject.__update(false, true);
-        displayObject.__cacheBitmapFn (bitmapData, renderBounds, renderSession);
-        Rectangle.pool.put (renderBounds);
+        displayObject.__cacheBitmapFn (bitmapData, renderSession);
 
         var screenshotBitmap:Bitmap = new Bitmap(bitmapData);
         screenshotBitmap.smoothing = !snap;
