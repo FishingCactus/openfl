@@ -118,7 +118,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
-	private var __cachedBitmapBounds:Rectangle;
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
@@ -737,15 +736,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		} else {
 
-			if (__cachedBitmapBounds == null) {
-				__cachedBitmapBounds = new Rectangle ();
-			}
-
 			if (__cachedBitmap == null) {
 				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 			}
 
-			__cacheBitmapFn (__cachedBitmap, __cachedBitmapBounds, renderSession, maskBitmap, maskMatrix);
+			__cacheBitmapFn (__cachedBitmap, renderSession, maskBitmap, maskMatrix);
 
 			__updateCachedBitmap = false;
 			__updateFilters = false;
@@ -757,13 +752,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	public function __cacheBitmapFn (cachedBitmapData:BitmapData, cachedBitmapBounds:Rectangle, renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
+	public function __cacheBitmapFn (cachedBitmapData:BitmapData, renderSession:RenderSession, maskBitmap: BitmapData = null, maskMatrix:Matrix = null):Void {
 
 		var padding:Int = __cachedBitmapPadding;
+
+		var cachedBitmapBounds:Rectangle = Rectangle.pool.get();
 
 		__getRenderBounds (cachedBitmapBounds);
 
 		if (cachedBitmapBounds.width <= 0 || cachedBitmapBounds.height <= 0) {
+			Rectangle.pool.put (cachedBitmapBounds);
+			@:privateAccess cachedBitmapData.__resize (0, 0, cachedBitmapData.physicalWidth, cachedBitmapData.physicalHeight);
+
 			return;
 		}
 
@@ -777,6 +777,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var transform = Matrix.pool.get ();
 		transform.copyFrom (__renderTransform);
 		transform.translate (padding - Math.ffloor(cachedBitmapBounds.x), padding - Math.ffloor(cachedBitmapBounds.y));
+
+		Rectangle.pool.put (cachedBitmapBounds);
 
 		var maskTransform:Matrix = null;
 
@@ -835,11 +837,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		__cacheGLMatrix.identity ();
-		__cacheGLMatrix.copyFrom (__renderTransform);
-		__cacheGLMatrix.translate (__offset.x, __offset.y);
+		if ( __cachedBitmap.width > 0 && __cachedBitmap.height > 0 ) {
+			__cacheGLMatrix.identity ();
+			__cacheGLMatrix.copyFrom (__renderTransform);
+			__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
+			renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, NEVER);
+		}
 
 	}
 
@@ -1230,7 +1234,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 			} else if ( translationChanged ) {
 				__graphics.resetGraphicsCounter();
-			} 
+			}
 		}
 	}
 
