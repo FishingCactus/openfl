@@ -952,7 +952,7 @@ class CanvasGraphics {
 		context.save ();
 		context.transform (c.matrix.a, c.matrix.b, c.matrix.c, c.matrix.d, c.matrix.tx, c.matrix.ty);
 
-		if (!hitTesting) {
+		if (c.bitmap != null && !hitTesting) {
 
 			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
 
