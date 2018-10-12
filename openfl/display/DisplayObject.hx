@@ -406,7 +406,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		if ( __cacheAsBitmapCounter > 0 ) {
-			if( --__cacheAsBitmapCounter < 0 ){
+			if( --__cacheAsBitmapCounter <= 0 ){
 				__updateCachedBitmap = true;
 				__updateFilters = __filters != null && __filters.length > 0;
 			}
