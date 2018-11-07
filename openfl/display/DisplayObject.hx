@@ -1019,20 +1019,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	{
 		if (parent != null) {
 
-			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
-
 			if (mustResetRenderColorTransform()) {
 				__renderAlpha = 1.0;
 				__worldAlpha = alpha * parent.__renderAlpha;
 				__renderColorTransform.reset ();
+				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
 			} else {
 				__renderAlpha = alpha * parent.__renderAlpha;
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
+				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 			}
 
 		} else {
-
 
 			__worldColorTransform.copyFrom(transform.colorTransform);
 			__worldAlpha = alpha;
