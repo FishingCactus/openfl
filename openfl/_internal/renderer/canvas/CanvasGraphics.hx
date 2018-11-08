@@ -9,6 +9,7 @@ import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
+import openfl.display.IBitmapData;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
@@ -30,7 +31,6 @@ import js.html.ImageData;
 #end
 
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 
 
@@ -121,12 +121,12 @@ class CanvasGraphics {
 	}
 
 
-	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
+	private static function createBitmapFill (bitmap:IBitmapData, bitmapRepeat:Bool) {
 
 		#if (js && html5)
 
-		bitmap.__sync ();
-		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		@:privateAccess bitmap.bd.__sync ();
+		return context.createPattern (bitmap.bd.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 
 		#else
 
@@ -944,6 +944,20 @@ class CanvasGraphics {
 		context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
 	}
 
+	private inline static function drawImageFromBitmapData(bd:IBitmapData) {
+
+		var uvs = bd.uvData;
+		var src = bd.bd.image.src;
+
+		if(uvs == null) {
+			context.drawImage (src, 0.0, 0.0, 1.0, 1.0);
+		} else {
+			var w:Int = untyped src.width;
+			var h:Int = untyped src.height;
+			context.drawImage (src, uvs.x0 * w, uvs.y0 * h, (uvs.x1 - uvs.x0) * w, (uvs.y2 - uvs.y0) * h, 0.0, 0.0, 1.0, 1.0);
+		}
+	}
+
 	private inline static function drawImage(data:DrawCommandReader)
 	{
 
@@ -954,7 +968,7 @@ class CanvasGraphics {
 
 		if (c.bitmap != null && !hitTesting) {
 
-			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
+			drawImageFromBitmapData(c.bitmap);
 
 		} else {
 
@@ -996,7 +1010,7 @@ class CanvasGraphics {
 
 		if (!hitTesting) {
 
-			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
+			drawImageFromBitmapData(c.bitmap);
 
 		} else {
 

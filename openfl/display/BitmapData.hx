@@ -9,6 +9,7 @@ import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.color.ARGB;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl.display.IBitmapData;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
@@ -42,16 +43,19 @@ import js.html.CanvasElement;
 @:autoBuild(openfl.Assets.embedBitmap())
 
 
-class BitmapData implements IBitmapDrawable {
+class BitmapData implements IBitmapDrawable implements IBitmapData {
 
 	public static var spritesheet:ISpritesheet;
 	private static var __isGLES:Null<Bool> = null;
 
+	public var bd (get, null):BitmapData;
 	public var height (default, null):Float;
 	public var image (get, null):Image;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
 	public var transparent (default, null):Bool;
+	public var uvData (get, set):TextureUvs;
+	public var valid (get, null):Bool;
 	public var width (default, null):Float;
 
 	public var __resolvedCacheAsBitmap:Bool;
@@ -71,6 +75,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __imageShouldBeSynced:Bool = false;
 	private var __uvData:TextureUvs;
 	private var __image:Image;
+	private var __height:Float;
+	private var __width:Float;
 
 
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -174,6 +180,23 @@ class BitmapData implements IBitmapDrawable {
 
 	}
 
+	public function get_bd() {
+		return this;
+	}
+
+	public function get_uvData() {
+		return __uvData;
+	}
+
+	public function set_uvData(uv:TextureUvs):TextureUvs {
+		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
+
+		return uv;
+	}
+
+	public function get_valid() {
+		return __isValid;
+	}
 
 	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void {
 
@@ -1299,7 +1322,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	public static function getFromSymbol (symbol:BitmapSymbol):BitmapData {
+	public static function getFromSymbol (symbol:BitmapSymbol):IBitmapData {
 
 		if (Assets.cache.hasBitmapData (symbol.path)) {
 
@@ -1341,7 +1364,7 @@ class BitmapData implements IBitmapDrawable {
 		return (spritesheet!= null && !spritesheet.isBitmapExcluded(frameName));
 	}
 
-	public static function getFromSpritesheet(id:Int, path:String):BitmapData {
+	public static function getFromSpritesheet(id:Int, path:String):IBitmapData {
 		if (Assets.cache.hasBitmapData (path)) {
 
 			return Assets.cache.getBitmapData (path);
@@ -1446,34 +1469,6 @@ class BitmapData implements IBitmapDrawable {
 		#end
 	#end
 }
-
-
-
-
-class TextureUvs {
-
-	public static var pool: ObjectPool<TextureUvs>	= new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
-
-	public var x0:Float = 0;
-	public var x1:Float = 0;
-	public var x2:Float = 0;
-	public var x3:Float = 0;
-	public var y0:Float = 0;
-	public var y1:Float = 0;
-	public var y2:Float = 0;
-	public var y3:Float = 0;
-
-	public inline function reset():Void {
-		x0 = x1 = x2 = x3 = y0 = y1 = y2 = y3 = 0;
-	}
-
-	public function new () {
-
-	}
-
-
-}
-
 
 #else
 typedef BitmapData = openfl._legacy.display.BitmapData;

@@ -5,7 +5,7 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import openfl.display.BitmapData.TextureUvs;
+import openfl.display.IBitmapData.TextureUvs;
 
 
 class RenderTexture {

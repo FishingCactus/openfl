@@ -7,8 +7,8 @@ import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
 import openfl._internal.renderer.opengl.shaders2.DefaultMaskedShader.MaskedUniform;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl._internal.renderer.RenderSession;
-import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
+import openfl.display.IBitmapData;
 import openfl.display.PixelSnapping;
 import openfl.display.Shader in FlashShader;
 import openfl.display.GLShaderData;
@@ -33,7 +33,6 @@ class VertexBufferContext
 	public var colors:UInt32Array;
 }
 
-@:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Shader)
@@ -59,7 +58,7 @@ class SpriteBatch {
 	public var preventFlush:Bool = false;
 
 	var clipRect:Rectangle;
-	var maskBitmap:BitmapData;
+	var maskBitmap:IBitmapData;
 	var maskMatrix:Matrix;
 
 	var maxSprites:Int;
@@ -160,7 +159,7 @@ class SpriteBatch {
 		gl = null;
 	}
 
-	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null, ?maskBitmap:BitmapData, ?maskMatrix:Matrix):Void {
+	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null, ?maskBitmap:IBitmapData, ?maskMatrix:Matrix):Void {
 
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
@@ -173,7 +172,7 @@ class SpriteBatch {
 		clipRect = null;
 	}
 
-	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
+	public function start(clipRect:Rectangle, mask: IBitmapData = null, maskMatrix:Matrix = null) {
 		drawing = true;
 
 		this.maskBitmap = mask;
@@ -186,13 +185,13 @@ class SpriteBatch {
 		flush();
 	}
 
-	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
+	public inline function renderBitmapData(bitmapData:IBitmapData, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 
-		renderBitmapDataEx(bitmapData, bitmapData.physicalWidth, bitmapData.physicalHeight, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
+		renderBitmapDataEx(bitmapData, bitmapData.physicalWidth, bitmapData.physicalHeight, bitmapData.uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
 	}
 
-	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
+	public function renderBitmapDataEx(bitmapData:IBitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Null<Bool>, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
 		var texture = bitmapData.getTexture(gl);
 
 		if (batchedSprites >= maxSprites) {
@@ -461,9 +460,9 @@ class SpriteBatch {
 			state = states[index] = new State();
 		}
 		state.texture = texture;
-		if (maskBitmap != null && @:privateAccess maskBitmap.__uvData != null) {
+		if (maskBitmap != null && @:privateAccess maskBitmap.uvData != null) {
 			state.maskTexture = maskBitmap.getTexture(gl);
-			var uvData = @:privateAccess maskBitmap.__uvData;
+			var uvData = @:privateAccess maskBitmap.uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
 			state.maskMatrix.copyFrom (maskMatrix);
 		} else {
@@ -510,7 +509,7 @@ class SpriteBatch {
 
 	}
 
-	inline function prepareShader(flashShader:FlashShader, ?bd:BitmapData) {
+	inline function prepareShader(flashShader:FlashShader, ?bd:IBitmapData) {
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
 			flashShader.__shader.wrapS = flashShader.repeatX;
@@ -523,9 +522,9 @@ class SpriteBatch {
 			if (bd != null) {
 				objSize.value[0] = bd.width;
 				objSize.value[1] = bd.height;
-				if(bd.__pingPongTexture != null) {
-					texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
-					texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+				if(@:privateAccess bd.bd.__pingPongTexture != null) {
+					texSize.value[0] = @:privateAccess bd.bd.__pingPongTexture.renderTexture.__width;
+					texSize.value[1] = @:privateAccess bd.bd.__pingPongTexture.renderTexture.__height;
 				} else {
 					texSize.value[0] = bd.width;
 					texSize.value[1] = bd.height;

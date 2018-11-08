@@ -52,7 +52,7 @@ class GLBitmap {
 
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
-		if (!bitmap.isRenderable() || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null || !bitmap.bitmapData.__isValid) return;
+		if (!bitmap.isRenderable() || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null || !bitmap.bitmapData.valid) return;
 
 		var renderTransform = Matrix.pool.get ();
 		renderTransform.copyFrom (bitmap.__renderTransform);

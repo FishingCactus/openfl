@@ -1,10 +1,10 @@
 package openfl._internal.renderer;
 
 
-import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.GraphicsPathWinding;
+import openfl.display.IBitmapData;
 import openfl.display.InterpolationMethod;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
@@ -234,7 +234,7 @@ class DrawCommandReader {
 
 	}
 
-	private inline function bitmapData (index:Int):BitmapData {
+	private inline function bitmapData (index:Int):IBitmapData {
 
 		return buffer.bd[bdPos + index];
 
@@ -284,7 +284,7 @@ class DrawCommandReader {
 abstract BeginBitmapFillView (DrawCommandReader) {
 
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var bitmap (get, never):IBitmapData; private inline function get_bitmap ():IBitmapData { return this.bitmapData (0); }
 	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }
@@ -374,7 +374,7 @@ abstract DrawEllipseView (DrawCommandReader) {
 abstract DrawImageView (DrawCommandReader) {
 
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var bitmap (get, never):IBitmapData; private inline function get_bitmap ():IBitmapData { return this.bitmapData (0); }
 	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (0); }
 
@@ -436,7 +436,7 @@ abstract EndFillView (DrawCommandReader) {
 abstract LineBitmapStyleView (DrawCommandReader) {
 
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return this.bitmapData (0); }
+	public var bitmap (get, never):IBitmapData; private inline function get_bitmap ():IBitmapData { return this.bitmapData (0); }
 	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return this.matrix (0); }
 	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }

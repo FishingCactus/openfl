@@ -1,7 +1,7 @@
 package format.swf.lite;
 
 
-import flash.display.BitmapData;
+import flash.display.IBitmapData;
 import flash.display.SimpleButton;
 import format.swf.lite.symbols.BitmapSymbol;
 import format.swf.lite.symbols.SpriteSymbol;
@@ -95,7 +95,7 @@ import openfl.Assets;
 	}
 
 
-	public function getBitmapData (className:String):BitmapData {
+	public function getBitmapData (className:String):IBitmapData {
 
 		var symbol = symbolClassNames.get(className);
 

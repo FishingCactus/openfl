@@ -24,6 +24,7 @@ import format.swf.lite.timeline.FrameObjectType;
 import format.swf.lite.SWFLite;
 import openfl.display.BitmapDataChannel;
 import openfl.display.FrameLabel;
+import openfl.display.IBitmapData.TextureUvs;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -786,7 +787,7 @@ class MovieClip extends flash.display.MovieClip {
 		var vs = [0, __scale9Rect.top / bitmapHeight, __scale9Rect.bottom/ bitmapHeight, 1];
 		var uvs:TextureUvs = TextureUvs.pool.get();
 
-		var bitmapDataUvs = @:privateAccess __9SliceBitmap.__uvData;
+		var bitmapDataUvs = @:privateAccess __9SliceBitmap.uvData;
 		var u_scale = bitmapDataUvs.x1 - bitmapDataUvs.x0;
 		var v_scale = bitmapDataUvs.y2 - bitmapDataUvs.y0;
 

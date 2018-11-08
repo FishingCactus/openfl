@@ -1,7 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
@@ -14,7 +13,6 @@ import js.html.ImageElement;
 #end
 
 
-@:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
 
@@ -22,7 +20,7 @@ import js.html.ImageElement;
 class Bitmap extends DisplayObject {
 
 
-	public var bitmapData:BitmapData;
+	public var bitmapData:IBitmapData;
 	public var pixelSnapping:PixelSnapping;
 	public var smoothing:Bool;
 
@@ -31,7 +29,7 @@ class Bitmap extends DisplayObject {
 	#end
 
 
-	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
+	public function new (bitmapData:IBitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
 
 		super ();
 
@@ -107,13 +105,6 @@ class Bitmap extends DisplayObject {
 		}
 
 		return false;
-
-	}
-
-
-	public override function __renderCanvas (renderSession:RenderSession):Void {
-
-		CanvasBitmap.render (this, renderSession);
 
 	}
 

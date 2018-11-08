@@ -10,6 +10,7 @@ import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.IBitmapData;
 import openfl.display.MovieClip;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -38,7 +39,6 @@ import openfl.utils.ByteArray;
 
 @:access(lime.Assets)
 @:access(openfl.AssetLibrary)
-@:access(openfl.display.BitmapData)
 @:access(openfl.text.Font)
 
 
@@ -89,7 +89,7 @@ class Assets {
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @return		A new BitmapData object
 	 */
-	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
+	public static function getBitmapData (id:String, useCache:Bool = true):IBitmapData {
 		
 		#if (tools && !display)
 		
@@ -131,7 +131,7 @@ class Assets {
 		
 	}
 
-	public static function getBitmapDataFromSymbol(symbol:BitmapSymbol, useCache:Bool = true):BitmapData {
+	public static function getBitmapDataFromSymbol(symbol:BitmapSymbol, useCache:Bool = true):IBitmapData {
 
 		if (BitmapData.isSpritesheetImage(symbol.path)) {
 			return BitmapData.getFromSpritesheet(symbol.id, symbol.path);
@@ -426,7 +426,7 @@ class Assets {
 	}
 	
 	
-	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
+	private static function isValidBitmapData (bitmapData:IBitmapData):Bool {
 		
 		#if (tools && !display)
 		#if flash
@@ -444,7 +444,7 @@ class Assets {
 		
 		#else
 		
-		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.bd.image != null #else bitmapData.bd.__handle != null #end);
 		
 		#end
 		#else
@@ -492,11 +492,11 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<BitmapData>
 	 */
-	public static function loadBitmapData (id:String, useCache:Null<Bool> = true, handler:BitmapData->Void = null):Future<BitmapData> {
+	public static function loadBitmapData (id:String, useCache:Null<Bool> = true, handler:IBitmapData->Void = null):Future<IBitmapData> {
 		
 		if (useCache == null) useCache = true;
 		
-		var promise = new Promise<BitmapData> ();
+		var promise = new Promise<IBitmapData> ();
 		
 		if (handler != null) {
 			
@@ -922,7 +922,7 @@ class Assets {
 	
 	public var enabled (get, set):Bool;
 	
-	/* deprecated */ @:dox(hide) public var bitmapData:Map<String, BitmapData>;
+	/* deprecated */ @:dox(hide) public var bitmapData:Map<String, IBitmapData>;
 	/* deprecated */ @:dox(hide) public var font:Map<String, Font>;
 	/* deprecated */ @:dox(hide) public var sound:Map<String, Sound>;
 	
@@ -931,7 +931,7 @@ class Assets {
 	
 	public function new () {
 		
-		bitmapData = new Map<String, BitmapData> ();
+		bitmapData = new Map<String, IBitmapData> ();
 		font = new Map<String, Font> ();
 		sound = new Map<String, Sound> ();
 		
@@ -942,7 +942,7 @@ class Assets {
 		
 		if (prefix == null) {
 			
-			bitmapData = new Map<String, BitmapData> ();
+			bitmapData = new Map<String, IBitmapData> ();
 			font = new Map<String, Font> ();
 			sound = new Map<String, Sound> ();
 			
@@ -989,7 +989,7 @@ class Assets {
 	}
 	
 	
-	public function getBitmapData (id:String):BitmapData {
+	public function getBitmapData (id:String):IBitmapData {
 		
 		return bitmapData.get (id);
 		
@@ -1052,7 +1052,7 @@ class Assets {
 	}
 	
 	
-	public function setBitmapData (id:String, bitmapData:BitmapData):Void {
+	public function setBitmapData (id:String, bitmapData:IBitmapData):Void {
 		
 		this.bitmapData.set (id, bitmapData);
 		
@@ -1102,7 +1102,7 @@ class Assets {
 	public var enabled (get, set):Bool;
 	
 	public function clear (prefix:String = null):Void;
-	public function getBitmapData (id:String):BitmapData;
+	public function getBitmapData (id:String):IBitmapData;
 	public function getFont (id:String):Font;
 	public function getSound (id:String):Sound;
 	public function hasBitmapData (id:String):Bool;
@@ -1111,7 +1111,7 @@ class Assets {
 	public function removeBitmapData (id:String):Bool;
 	public function removeFont (id:String):Bool;
 	public function removeSound (id:String):Bool;
-	public function setBitmapData (id:String, bitmapData:BitmapData):Void;
+	public function setBitmapData (id:String, bitmapData:IBitmapData):Void;
 	public function setFont (id:String, font:Font):Void;
 	public function setSound (id:String, sound:Sound):Void;
 	
