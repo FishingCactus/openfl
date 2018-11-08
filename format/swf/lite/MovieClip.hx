@@ -24,6 +24,7 @@ import format.swf.lite.timeline.FrameObjectType;
 import format.swf.lite.SWFLite;
 import openfl.display.BitmapDataChannel;
 import openfl.display.FrameLabel;
+import openfl.display.IBitmapData.TextureUvs;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

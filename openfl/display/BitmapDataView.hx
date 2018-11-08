@@ -4,7 +4,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLTexture;
 
 import openfl._internal.renderer.RenderSession;
-import openfl.display.BitmapData.TextureUvs;
+import openfl.display.IBitmapData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 

@@ -4,7 +4,6 @@ package openfl.display;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLTexture;
 
-import openfl.display.BitmapData.TextureUvs;
 import openfl.geom.Matrix;
 
 
@@ -21,4 +20,25 @@ interface IBitmapData {
 	public function getTexture (gl:GLRenderContext):GLTexture;
 
 	public function getLocalTransform (matrix:Matrix):Void;
+}
+
+class TextureUvs {
+
+	public static var pool: ObjectPool<TextureUvs>	= new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
+
+	public var x0:Float = 0;
+	public var x1:Float = 0;
+	public var x2:Float = 0;
+	public var x3:Float = 0;
+	public var y0:Float = 0;
+	public var y1:Float = 0;
+	public var y2:Float = 0;
+	public var y3:Float = 0;
+
+	public inline function reset():Void {
+		x0 = x1 = x2 = x3 = y0 = y1 = y2 = y3 = 0;
+	}
+
+	public function new () {
+	}
 }

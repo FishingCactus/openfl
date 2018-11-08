@@ -9,6 +9,7 @@ import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.color.ARGB;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl.display.IBitmapData;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
@@ -1468,35 +1469,6 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 		#end
 	#end
 }
-
-
-
-
-// :TODO: move to IBitmapData
-class TextureUvs {
-
-	public static var pool: ObjectPool<TextureUvs>	= new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
-
-	public var x0:Float = 0;
-	public var x1:Float = 0;
-	public var x2:Float = 0;
-	public var x3:Float = 0;
-	public var y0:Float = 0;
-	public var y1:Float = 0;
-	public var y2:Float = 0;
-	public var y3:Float = 0;
-
-	public inline function reset():Void {
-		x0 = x1 = x2 = x3 = y0 = y1 = y2 = y3 = 0;
-	}
-
-	public function new () {
-
-	}
-
-
-}
-
 
 #else
 typedef BitmapData = openfl._legacy.display.BitmapData;

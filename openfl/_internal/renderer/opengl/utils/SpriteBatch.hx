@@ -7,7 +7,6 @@ import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
 import openfl._internal.renderer.opengl.shaders2.DefaultMaskedShader.MaskedUniform;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl._internal.renderer.RenderSession;
-import openfl.display.BitmapData.TextureUvs;
 import openfl.display.DisplayObject;
 import openfl.display.IBitmapData;
 import openfl.display.PixelSnapping;
