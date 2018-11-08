@@ -164,7 +164,7 @@ class Preloader extends LimePreloader {
 
 	@:noCompletion private function sound_onIOError (event:IOErrorEvent):Void {
 
-		onError.dispatch( event.target.url );
+		onError.dispatch(event.target.soundName);
 
 		// even if a sound fails >> the loader needs to proceed >> the sound will be
 		// requested again if needed
