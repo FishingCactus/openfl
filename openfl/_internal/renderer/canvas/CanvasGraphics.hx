@@ -9,6 +9,7 @@ import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
+import openfl.display.IBitmapData;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
@@ -30,7 +31,6 @@ import js.html.ImageData;
 #end
 
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 
 
@@ -121,12 +121,12 @@ class CanvasGraphics {
 	}
 
 
-	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
+	private static function createBitmapFill (bitmap:IBitmapData, bitmapRepeat:Bool) {
 
 		#if (js && html5)
 
-		bitmap.__sync ();
-		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		@:privateAccess bitmap.bd.__sync ();
+		return context.createPattern (bitmap.bd.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 
 		#else
 
@@ -954,7 +954,7 @@ class CanvasGraphics {
 
 		if (c.bitmap != null && !hitTesting) {
 
-			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
+			context.drawImage (c.bitmap.bd.image.src, 0.0, 0.0, 1.0, 1.0);
 
 		} else {
 
@@ -996,7 +996,7 @@ class CanvasGraphics {
 
 		if (!hitTesting) {
 
-			context.drawImage (c.bitmap.image.src, 0.0, 0.0, 1.0, 1.0);
+			context.drawImage (c.bitmap.bd.image.src, 0.0, 0.0, 1.0, 1.0);
 
 		} else {
 

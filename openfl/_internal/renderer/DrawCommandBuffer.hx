@@ -5,6 +5,7 @@ import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.GraphicsPathWinding;
+import openfl.display.IBitmapData;
 import openfl.display.InterpolationMethod;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
@@ -32,7 +33,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	private var vi:UnshrinkableArray<Vector<Int>>;
 	private var bd_ids:UnshrinkableArray<Int>;
 
-	private var bd:UnshrinkableArray<BitmapData>;
+	private var bd:UnshrinkableArray<IBitmapData>;
 
 	public function new () {
 
@@ -92,7 +93,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	}
 
 
-	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+	public function beginBitmapFill(bitmap:IBitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 
 		types.push (BEGIN_BITMAP_FILL);
 		bd.push (bitmap);
@@ -237,7 +238,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	}
 
 
-	public function drawImage(bitmap:BitmapData, matrix:Matrix, smooth:Bool):Void {
+	public function drawImage(bitmap:IBitmapData, matrix:Matrix, smooth:Bool):Void {
 
 		types.push (DRAW_IMAGE);
 		bd.push (bitmap);
@@ -310,7 +311,7 @@ class DrawCommandBuffer implements hxbit.Serializable {
 	}
 
 
-	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+	public function lineBitmapStyle (bitmap:IBitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 
 		types.push (LINE_BITMAP_STYLE);
 		bd.push (bitmap);

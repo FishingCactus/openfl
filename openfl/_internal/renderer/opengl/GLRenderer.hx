@@ -32,7 +32,6 @@ import js.html.ImageData;
 @:access(openfl.display.Stage)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
-@:access(openfl.display.BitmapData)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 

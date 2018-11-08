@@ -8,9 +8,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 
-@:access(openfl.display.BitmapData)
-
-
 class BitmapDataTest {
 	
 	
