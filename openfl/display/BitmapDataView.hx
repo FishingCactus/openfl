@@ -30,8 +30,8 @@ class BitmapDataView implements IBitmapDrawable implements IBitmapData {
 		this.__bd = bd;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
 
-		this.height = this.physicalHeight = width;
-		this.width = this.physicalWidth = height;
+		this.height = this.physicalHeight = height;
+		this.width = this.physicalWidth = width;
 	}
 
 	public function get_bd() {
