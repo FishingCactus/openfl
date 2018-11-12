@@ -54,6 +54,7 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
 	public var transparent (default, null):Bool;
+	public var src (get, never):Dynamic;
 	public var uvData (get, set):TextureUvs;
 	public var valid (get, null):Bool;
 	public var width (default, null):Float;
@@ -182,6 +183,10 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 
 	public function get_bd() {
 		return this;
+	}
+
+	public function get_src() {
+		return image.src;
 	}
 
 	public function get_uvData() {
@@ -1397,6 +1402,7 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 		untyped $global.Tools.viewUploadedCachedBitmap = false;
 		untyped $global.Tools.viewBitmapData = viewBitmapData;
 		untyped $global.Tools.viewGLTexture = viewGLTexture;
+		untyped $global.Tools.viewCanvas = viewCanvas;
 		#if profile
 			untyped $global.Tools.viewTexture = viewTexture;
 			untyped $global.Tools.viewAllTextures = viewAllTextures;
@@ -1422,7 +1428,7 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 		gl.deleteFramebuffer(framebuffer);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, currentFrameBuffer);
 
-		var canvas = untyped $global.document.createElement('canvas');
+		var canvas:CanvasElement = untyped $global.document.createElement('canvas');
 		canvas.width = width;
 		canvas.height = height;
 		var context = canvas.getContext('2d');
@@ -1431,6 +1437,12 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 		imageData.data.set(data);
 		context.putImageData(imageData, 0, 0);
 
+		viewCanvas(canvas, extraTitle);
+	}
+
+	private static function viewCanvas(canvas:CanvasElement, ?extraTitle:String = "") {
+		var width = canvas.width;
+		var height = canvas.height;
 		var theTitle = extraTitle + " (" + width + "x" + height + ")";
 
 		var container = untyped $("<div></div>")

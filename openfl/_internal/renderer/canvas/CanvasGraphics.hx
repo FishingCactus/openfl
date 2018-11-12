@@ -120,13 +120,12 @@ class CanvasGraphics {
 
 	}
 
-
 	private static function createBitmapFill (bitmap:IBitmapData, bitmapRepeat:Bool) {
 
 		#if (js && html5)
 
 		@:privateAccess bitmap.bd.__sync ();
-		return context.createPattern (bitmap.bd.image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		return context.createPattern (bitmap.src, bitmapRepeat ? "repeat" : "no-repeat");
 
 		#else
 
@@ -538,14 +537,14 @@ class CanvasGraphics {
 						shapeSymbol.registerGraphics(graphics);
 						if (!disableCache) {
 							cachedBitmapData = shapeSymbol.getCachedBitmapData (renderTransform);
-		
+
 							if ( cachedBitmapData != null) {
 
 								graphics.__bitmap = cachedBitmapData;
 								graphics.dirty = false;
 
 								return;
-							} 
+							}
                         }
 
 						var renderScale = shapeSymbol.renderScale;
@@ -968,6 +967,7 @@ class CanvasGraphics {
 
 		if (c.bitmap != null && !hitTesting) {
 
+			// :TRICKY: don't use context.drawImage( c.bitmap.src, ... ) to avoid unnecessary render to canvas
 			drawImageFromBitmapData(c.bitmap);
 
 		} else {
@@ -1010,6 +1010,7 @@ class CanvasGraphics {
 
 		if (!hitTesting) {
 
+			// :TRICKY: don't use context.drawImage( c.bitmap.src, ... ) to avoid unnecessary render to canvas
 			drawImageFromBitmapData(c.bitmap);
 
 		} else {

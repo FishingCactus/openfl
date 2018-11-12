@@ -5,8 +5,11 @@ import lime.graphics.opengl.GLTexture;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.IBitmapData;
-import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
 
 class BitmapDataView implements IBitmapDrawable implements IBitmapData {
 
@@ -14,6 +17,7 @@ class BitmapDataView implements IBitmapDrawable implements IBitmapData {
 	public var height (default, null):Float;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
+	public var src (get, never):Dynamic;
 	public var uvData (get, set):TextureUvs;
 	public var valid (get, null):Bool;
 	public var width (default, null):Float;
@@ -25,17 +29,34 @@ class BitmapDataView implements IBitmapDrawable implements IBitmapData {
 	private var __blendMode:BlendMode;
 	private var __resolvedCacheAsBitmap:Bool;
 
+	private static var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+	private static var ctx:CanvasRenderingContext2D = canvas.getContext ("2d");
+
 	public function new (bd:BitmapData, uv:TextureUvs, width:Int, height:Int) {
 
 		this.__bd = bd;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
 
-		this.height = this.physicalHeight = width;
-		this.width = this.physicalWidth = height;
+		this.height = this.physicalHeight = height;
+		this.width = this.physicalWidth = width;
 	}
 
 	public function get_bd() {
 		return __bd;
+	}
+
+	public function get_src() {
+		canvas.width = Math.round (width);
+		canvas.height = Math.round(height);
+
+		ctx.setTransform (width, 0, 0, height, 0, 0);
+		var w:Int = __bd.physicalWidth;
+		var h:Int = __bd.physicalHeight;
+		var x = __uvData.x0 * w;
+		var y = __uvData.y0 * h;
+		ctx.drawImage (__bd.src, x, y, width, height, 0.0, 0.0, 1.0, 1.0);
+
+		return canvas;
 	}
 
 	public function get_uvData() {
