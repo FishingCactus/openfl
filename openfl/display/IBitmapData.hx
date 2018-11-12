@@ -13,6 +13,7 @@ interface IBitmapData {
 	public var height (default, null):Float;
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
+	public var src (get, never):Dynamic;
 	public var uvData (get, set):TextureUvs;
 	public var valid (get, null):Bool;
 	public var width (default, null):Float;

@@ -54,6 +54,7 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 	public var physicalHeight (default, null):Int;
 	public var physicalWidth (default, null):Int;
 	public var transparent (default, null):Bool;
+	public var src (get, never):Dynamic;
 	public var uvData (get, set):TextureUvs;
 	public var valid (get, null):Bool;
 	public var width (default, null):Float;
@@ -182,6 +183,10 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 
 	public function get_bd() {
 		return this;
+	}
+
+	public function get_src() {
+		return image.src;
 	}
 
 	public function get_uvData() {
