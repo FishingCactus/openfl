@@ -853,15 +853,28 @@ class TextEngine {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 					}
 					var subWordWidth:Float = 0.0;
-					for(i in 0...advances.length) {
-						var value = advances[i];
+					var advance_index:Int = 0;
+					while (advance_index < advances.length) {
+						var value = advances[advance_index];
 						subWordWidth += value;
 						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 * OFFSET_START ) {
-							textIndex = layoutGroup.startIndex + i;
+							textIndex = layoutGroup.startIndex + advance_index;
 							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
 							break;
 						}
+
+						++advance_index;
 					}
+
+					if (advance_index == advances.length) {
+						#if dev
+							if (subWordWidth > wordWidth) {
+								throw "word should have been split to fit width";
+							}
+						#end
+						textIndex = layoutGroup.startIndex + advance_index;
+					}
+
 					widthValue = width - 2 * OFFSET_START;
 				}
 				pushNewLine(textIndex);
