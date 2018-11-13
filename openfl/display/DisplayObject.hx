@@ -1343,16 +1343,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
+
 		if (cacheAsBitmap != __cacheAsBitmapFlag) __setRenderDirty ();
 
 		__cacheAsBitmapFlag = cacheAsBitmap;
-		__resolvedCacheAsBitmap = __cacheAsBitmapFlag || (filters != null && filters.length > 0);
+		__updateResolvedCacheAsBitmap();
 
 		return cacheAsBitmap;
 
 	}
 
+	private function __updateResolvedCacheAsBitmap() {
+		var oldResolvedCacheAsBitmap = __resolvedCacheAsBitmap;
+		__resolvedCacheAsBitmap = __cacheAsBitmapFlag || (filters != null && filters.length > 0);
 
+		if (oldResolvedCacheAsBitmap != __resolvedCacheAsBitmap) {
+			__onResolvedCacheAsBitmapChanged();
+		}
+	}
+
+	private function __onResolvedCacheAsBitmapChanged() {
+	}
 
 	private function set_forbidCachedBitmapUpdate (value:Bool):Bool {
 
@@ -1447,8 +1458,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__filters = null;
 		}
 
-		__resolvedCacheAsBitmap = __cacheAsBitmapFlag || (filters != null && filters.length > 0);
-
+		__updateResolvedCacheAsBitmap();
 		__setRenderDirty ();
 
 		return value;
