@@ -121,6 +121,13 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         return result;
     }
 
+    public function sliceArray(from:Int, ?end:Int):Array<T>
+    {
+        end = end == null ? this._length : cast Math.min(this._length, end);
+        var result = this._items.slice(from, end);
+        return result;
+    }
+
     public inline function reverse()
     {
         var i = 0;
