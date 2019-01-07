@@ -22,7 +22,9 @@ class RenderTexture {
 	private var __width:Int;
 	private var __height:Int;
 	private var __uvData:TextureUvs;
-	
+
+	private static var __initBuffer = new openfl.utils.UInt8Array( 1024 * 1024 * 4 );
+
 	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true, powerOfTwo:Bool = true) {
 		
 		this.gl = gl;
@@ -81,19 +83,25 @@ class RenderTexture {
 
 		var lastW = __width;
 		var lastH = __height;
-		
+
 		__width = pow2W;
 		__height = pow2H;
-		
+
 		createUVs();
-		
+
 		if (lastW == pow2W && lastH == pow2H) return;
-		
+
 		gl.bindTexture (gl.TEXTURE_2D, texture);
-		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, __width, __height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+		var size = __width * __height * 4;
+		if ( size > __initBuffer.length )
+		{
+			__initBuffer = new openfl.utils.UInt8Array (size);
+		}
+		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, __width, __height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __initBuffer);
 
 	}
-	
+
 	private function createUVs() {
 		if (__uvData == null) __uvData = new TextureUvs();
 		var w = width / __width;
