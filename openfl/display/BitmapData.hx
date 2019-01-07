@@ -732,13 +732,17 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, physicalWidth, physicalHeight, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 			#else
 
-				gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, (!textureImage.premultiplied && textureImage.transparent) ? 1 : 0 );
 
 				var glCompatibleBuffer : Dynamic = textureImage.buffer.glCompatibleBuffer;
 
 				if( glCompatibleBuffer == null ){
+					#if dev
+						if (!textureImage.premultiplied && textureImage.transparent) throw "can't use non premultiplied transparent textures";
+					#end
+					gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0 );
 					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, physicalWidth, physicalHeight, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 				} else {
+					gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, (!textureImage.premultiplied && textureImage.transparent) ? 1 : 0 );
 					gl.texImage2DWeb (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
 				}
 
