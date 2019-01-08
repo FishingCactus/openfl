@@ -76,6 +76,7 @@ class GradientFilter extends BitmapFilter {
 		}
 		else {
 			__lookupTexture = new BitmapData (256, 1);
+			__lookupTexture.image.buffer.premultiplied = true;
 			__textureCacheMap.set(hash, __lookupTexture);
 		}
 
