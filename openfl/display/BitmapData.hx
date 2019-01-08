@@ -737,7 +737,7 @@ class BitmapData implements IBitmapDrawable implements IBitmapData {
 
 				if( glCompatibleBuffer == null ){
 					#if dev
-						if (!textureImage.premultiplied && textureImage.transparent) throw "can't use non premultiplied transparent textures";
+						if (!textureImage.premultiplied && textureImage.transparent) throw "Alpha-premult is deprecated for non-DOM-Element uploads on Firefox. Must premultiply texture manually and set flags accordingly.";
 					#end
 					gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0 );
 					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, physicalWidth, physicalHeight, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
