@@ -9,6 +9,8 @@ class DeviceCapabilities
 
     private static var isMobileSafariValue = false;
     private static var isMobileSafariValueAlreadyChecked = false;
+    private static var isMobileBrowserValue = false;
+    private static var isMobileBrowserValueAlreadyChecked = false;
 
     public static function isMobileSafari(): Bool
     {
@@ -37,4 +39,27 @@ class DeviceCapabilities
         return isMobileSafariValue;
     }
 
+    public static function isMobileBrowser(): Bool
+    {
+        if (!isMobileBrowserValueAlreadyChecked)
+        {
+            #if (js && html5)
+
+               var ua = Browser.navigator.userAgent;
+
+                isMobileBrowserValue = ua.indexOf("Android") != -1
+                || ua.indexOf("webOS") != -1
+                || ua.indexOf("iPhone") != -1
+                || ua.indexOf("iPad") != -1
+                || ua.indexOf("iPod") != -1
+                || ua.indexOf("BlackBerry") != -1
+                || ua.indexOf("Windows Phone") != -1;
+
+            #else
+                isMobileBrowserValue = false;
+            #end
+            isMobileBrowserValueAlreadyChecked = true;
+        }
+        return isMobileBrowserValue;
+    }
 }
