@@ -32,7 +32,7 @@ import openfl.utils.Float32ArrayContainer;
 
         super();
 
-        if (DeviceCapabilities.isMobileSafari())
+        if (DeviceCapabilities.isIOs())
         {
             // ios can not display dropshadows with a blur bigger than 1px
             blurX = blurY = Math.min(blurX, 1);

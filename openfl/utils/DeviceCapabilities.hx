@@ -7,14 +7,14 @@ import js.Browser;
 class DeviceCapabilities
 {
 
-    private static var isMobileSafariValue = false;
-    private static var isMobileSafariValueAlreadyChecked = false;
+    private static var isIOsValue = false;
+    private static var isIOsValueAlreadyChecked = false;
     private static var isMobileBrowserValue = false;
     private static var isMobileBrowserValueAlreadyChecked = false;
 
-    public static function isMobileSafari(): Bool
+    public static function isIOs(): Bool
     {
-        if (!isMobileSafariValueAlreadyChecked)
+        if (!isIOsValueAlreadyChecked)
         {
             #if (js && html5)
                 var navigator = Browser.navigator;
@@ -25,18 +25,16 @@ class DeviceCapabilities
 
                 var ua = navigator.userAgent;
                 var iOS = ua.indexOf("iPad") != -1 || ua.indexOf("iPhone") != -1;
-                var webkit = ua.indexOf("WebKit") != -1;
-                var iOSSafari = iOS && webkit && ua.indexOf("CriOS") == -1;
-                isMobileSafariValue = iOSSafari;
-                isMobileSafariValueAlreadyChecked = true;
+                isIOsValue = iOS;
+                isIOsValueAlreadyChecked = true;
             #else
-            isMobileSafariValueAlreadyChecked = true;
-            isMobileSafariValue = false;
+            isIOsValueAlreadyChecked = true;
+            isIOsValue = false;
             #end
 
         }
 
-        return isMobileSafariValue;
+        return isIOsValue;
     }
 
     public static function isMobileBrowser(): Bool
