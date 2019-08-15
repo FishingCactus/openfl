@@ -1,5 +1,6 @@
 package openfl.filters;
 
+import openfl.utils.DeviceCapabilities;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
@@ -11,6 +12,11 @@ class GradientBevelFilter extends GradientFilter {
 	private var __shadowBitmapData:BitmapData;
 
 	public function new (distance:Float = 4, angle:Float = 45, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Float> = null, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, type: BitmapFilterType = BitmapFilterType.INNER, knockout:Bool = false) {
+        if (DeviceCapabilities.isIOs())
+        {
+            // ios can not display filters with a blur bigger than 1px
+            blurX = blurY = Math.min(blurX, 1);
+        }
 
 		super (distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout);
 
