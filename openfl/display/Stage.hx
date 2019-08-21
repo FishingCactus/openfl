@@ -1,6 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
-
+import openfl.utils.DeviceCapabilities;
 import haxe.EnumFlags;
 import haxe.ds.Vector as HaxeVector;
 import lime.app.Application;
@@ -886,11 +886,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 
 		__deltaTime = deltaTime;
-		// :TRICKY: Update mouse each frame, to show the correct cursor at all times.
-		if ( !__calledOnMouseThisFrame) {
-			__onMouse (null, __mouseX, __mouseY, 0);
-		}
-		__calledOnMouseThisFrame = false;
+
+        // :TRICKY: Update mouse each frame, to show the correct cursor at all times.
+
+        // :UPDATE: removed this functionality for mobile Browsers, otherwise "hovers"
+        // will stay in place for ever (always updated with last known mouseX/Y)
+
+        if (!DeviceCapabilities.isMobileBrowser())
+        {
+            if (!__calledOnMouseThisFrame)
+            {
+                __onMouse(null, __mouseX, __mouseY, 0);
+            }
+            __calledOnMouseThisFrame = false;
+        }
 
 		__updateAllChildrenStack();
 	}
