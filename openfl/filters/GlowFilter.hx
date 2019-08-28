@@ -1,6 +1,6 @@
 package openfl.filters; #if !openfl_legacy
 
-
+import openfl.utils.DeviceCapabilities;
 import openfl.display.BitmapData;
 import openfl.filters.commands.*;
 import openfl.geom.Rectangle;
@@ -21,6 +21,13 @@ import openfl.geom.Rectangle;
 	public function new (color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false, knockout:Bool = false) {
 
 		super ();
+
+        if (DeviceCapabilities.isIOs())
+        {
+            // ios can not display dropshadows with a blur bigger than 1px
+            blurX = blurY = Math.min(blurX, 1);
+            inner = true;
+        }
 
 		if (blurX == 0) {
 			blurX = 1;
