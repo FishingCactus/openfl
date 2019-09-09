@@ -5,6 +5,7 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.Shader in InternalShader;
 import openfl.geom.Matrix;
 import openfl.gl.GL;
+import openfl.utils.DeviceCapabilities;
 import lime.utils.Float32Array;
 
 using StringTools;
@@ -159,6 +160,10 @@ class Shader {
 	@:noCompletion private function __buildFragmentCode(code:String) {
 		var output = [];
 		
+		if (DeviceCapabilities.isIOs())
+		{
+			output.push('#define PLATFORM_IOS');
+		}
 		output.push('#ifdef GL_ES');
 		output.push(switch(precision) {
 			case HIGH: 		'precision highp float;';
@@ -178,6 +183,10 @@ class Shader {
 	@:noCompletion private function __buildVertexCode(code:String) {
 		var output = [];
 		
+		if (DeviceCapabilities.isIOs())
+		{
+			output.push('#define PLATFORM_IOS');
+		}
 		output.push('#ifdef GL_ES');
 		output.push(switch(precision) {
 			case HIGH: 		'precision highp float;';

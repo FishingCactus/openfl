@@ -22,13 +22,6 @@ import openfl.geom.Rectangle;
 
 		super ();
 
-        if (DeviceCapabilities.isIOs())
-        {
-            // ios can not display dropshadows with a blur bigger than 1px
-            blurX = blurY = Math.min(blurX, 1);
-            inner = true;
-        }
-
 		if (blurX == 0) {
 			blurX = 1;
 		}

@@ -3,6 +3,7 @@ package openfl.filters.commands;
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.display.Shader;
+import openfl.utils.DeviceCapabilities;
 import lime.utils.Float32Array;
 
 import openfl._internal.renderer.RenderSession;
@@ -10,6 +11,7 @@ import openfl._internal.renderer.RenderSession;
 class Blur1DCommand {
 
 	public static inline var MAXIMUM_FETCH_COUNT:Int = 64;
+	public static inline var MAXIMUM_FETCH_COUNT_IOS:Int = 32;
 	private static var __shader = new BlurShader ();
 
 	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, blur:Float, quality:Int, horizontal:Bool, strength:Float, offset:Point) {
@@ -85,9 +87,16 @@ class Blur1DCommand {
 
 		var totalFetchCount = weightTable.length;
 		var initialTotalFetchCount = totalFetchCount;
-		if (totalFetchCount > MAXIMUM_FETCH_COUNT) {
+		var platformFetchCount = 0;
+		if (DeviceCapabilities.isIOs()) {
+			platformFetchCount = MAXIMUM_FETCH_COUNT_IOS;
+		} else {
+			platformFetchCount = MAXIMUM_FETCH_COUNT;
+		}
 
-			var trimCount = totalFetchCount - MAXIMUM_FETCH_COUNT;
+		if (totalFetchCount > platformFetchCount) {
+
+			var trimCount = totalFetchCount - platformFetchCount;
 			var halfTrimCount = (trimCount + 1) >> 1;
 
 			weightTable = weightTable.subarray (halfTrimCount, totalFetchCount - halfTrimCount);
@@ -159,7 +168,11 @@ private class BlurShader extends Shader {
 	@fragment var fragment = [
 		'uniform vec2 uTexCoordDelta;',
 		'uniform float uFetchCount;',
+		'#ifdef PLATFORM_IOS',
+		'uniform float uWeightTable[${Blur1DCommand.MAXIMUM_FETCH_COUNT_IOS}];',
+		'#else',
 		'uniform float uWeightTable[${Blur1DCommand.MAXIMUM_FETCH_COUNT}];',
+		'#endif',
 
 		'void main(void)',
 		'{',
